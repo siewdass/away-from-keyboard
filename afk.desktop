@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=AFK
+Comment=TIBIA MMORPG
+Exec=bash -c 'cd /home/$USER/away-from-keyboard && DISPLAY=:1.0 ./afk $(lsblk --nodeps -no serial /dev/sda) > /dev/null 2>&1; $SHELL'
+Icon=/opt/tibia/tibia.ico
+Terminal=false
+Type=Application
+Categories=Game;

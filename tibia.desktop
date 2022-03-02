@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Tibia
+Comment=TIBIA MMORPG
+Exec=bash -c 'Xephyr -keybd ephyr,,,xkbmodel=pc105,xkblayout=latam,us,xkbrules=evdev,xkboption=grp:alts_toogle -br -ac -noreset -screen 1012x642 -title Tibia :1 > /dev/null 2>&1 & sleep 2 & DISPLAY=:1.0 openbox > /dev/null 2>&1 & sleep 2 & DISPLAY=:1.0 /opt/tibia/Tibia > /dev/null 2>&1; $SHELL'
+Icon=/opt/tibia/tibia.ico
+Terminal=false
+Type=Application
+Categories=Game;
