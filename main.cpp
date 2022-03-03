@@ -24,6 +24,9 @@ Inputs inputs;
 Character character;
 Licence licence;
 
+string id;
+string user;
+
 void updateThread( ) {
 
 	while ( true ) {
@@ -408,7 +411,8 @@ void alarmThread( ) {
 
 		if ( running ) {
 			if ( values.alarm ) {
-				system( "mpg123 alarma.mp3 > /dev/null 2>&1" );
+				
+				system( "mpg123 /home/" + user.c_str( ) + "/afk/alarma.mp3 > /dev/null 2>&1" );
 				time.sleep( 60000 );
 				if ( character.hunt == "target" ) {
 					inputs.keyboard( character.healing1 );
@@ -433,7 +437,11 @@ void run( ) {
 	status.id = id;
 	viewport.id = id;
 
-	character.load( "character.json" );
+	string file = "/home/" + user + "/afk/character.json";
+
+	console.log( file );
+
+	character.load( file.c_str( ) );
 	script.load( "maps/" + character.script );
 
 	if ( id != 0 ) {
@@ -460,7 +468,8 @@ int main( int argc, char** argv ) {
 	
 	licence.load( "/tmp/licence.json" );
 
-	string id = argv[ 1 ];
+	id = argv[ 1 ];
+	user = argv[ 2 ];
 
 	for ( auto entry : licence.accepted ) {
 		if ( entry == id ) {
