@@ -53,6 +53,8 @@ void updateThread( ) {
 			values.boxTarget = boxTarget;
 			values.alarm = alarm;
 
+			console.log( x, y );
+
 			time.sleep( 200 );
 
 		} else {
