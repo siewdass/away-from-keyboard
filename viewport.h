@@ -10,4 +10,5 @@ public:
 	int sqm = 41; 
 	Point xy( int, int );
 	tuple < int, vector < Point >, bool, string, bool, Point, bool > check( );
+	Point TARGET;
 };

@@ -406,7 +406,7 @@ void alarmThread( ) {
 
 		if ( running ) {
 			if ( values.alarm ) {
-				system( "mpg123 alarma.mp3" );
+				system( "mpg123 alarma.mp3 > /dev/null 2>&1" );
 				time.sleep( 60000 );
 				if ( character.hunt == "target" ) {
 					inputs.keyboard( character.healing1 );

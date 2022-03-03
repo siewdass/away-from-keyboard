@@ -42,7 +42,7 @@
   "Shovel": "",
   "Pick": "",
   "Rope": "",
-  "Hunt": "box",
+  "Hunt": "target",
   "Leave": "capacity",
-  "Script": "m.json"
+  "Script": "Thais - Trolls.json"
 }

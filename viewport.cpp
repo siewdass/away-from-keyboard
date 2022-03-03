@@ -93,7 +93,7 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
 
     int width = sqm * 15;
     int height = sqm * 11;
-    Point TARGET;
+
     bool oldTarget;
 
     Mat GW = screenshot.get( id, 189, 40, 615, 451 );
