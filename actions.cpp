@@ -63,7 +63,7 @@ tuple < bool, string, string, string, string, int, int, int > Actions::supporter
     return make_tuple( false, "", "", "", "", 0, 0, 0 );
 }
 
-tuple < bool, string, string, string, string, int, int, int > Actions::attacker( Values values ) {
+bool Actions::attacker( Values values ) {
 
     if ( values.monsters.size( ) >= 2 || values.box >= 1 ) {
 
@@ -132,13 +132,13 @@ tuple < bool, string, string, string, string, int, int, int > Actions::attacker(
         if ( count == 3 ) {
             keepAttacking = false;
             single = false;
-            return make_tuple( true, "", "", "", "", 0, 0, 0 );
+            return true;
         } else {
             count += 1;
         }
     }
 
-    return make_tuple( false, "", "", "", "", 0, 0, 0 );
+    return false;
 }
 
 bool Actions::looter( ) {

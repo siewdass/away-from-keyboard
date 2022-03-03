@@ -23,6 +23,7 @@ public:
 	vector < Point > flasks;
 	Point targetPosition;
 	bool boxTarget;
+	bool alarm;
 };
 
 class Mode {

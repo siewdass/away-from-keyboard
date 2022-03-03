@@ -193,7 +193,7 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
         }
     }
 
-    imwrite( "screenshot.png", GW );
+    //imwrite( "screenshot.png", GW );
 
     return make_tuple( box, arr, visibleMonsters, side, target, TARGET, oldTarget );
 }

@@ -24,8 +24,6 @@ Inputs inputs;
 Character character;
 Licence licence;
 
-vector < tuple < string, string, string, string, int, int, int > > QUEUE;
-
 void updateThread( ) {
 
 	while ( true ) {
@@ -33,7 +31,7 @@ void updateThread( ) {
 		if ( running ) {
 
 			auto [ box,monsters, visibleMonsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( );
-			auto [ health, mana, hungry, paralyze, poison, haste, x, y, z, minimap, flasks ] = status.update( script.positions );
+			auto [ health, mana, hungry, paralyze, poison, haste, x, y, z, minimap, flasks, alarm ] = status.update( script.positions );
 
 			values.box = box;
 			values.monsters = monsters;
@@ -53,6 +51,7 @@ void updateThread( ) {
 			values.y = y;
 			values.z = z;
 			values.boxTarget = boxTarget;
+			values.alarm = alarm;
 
 			time.sleep( 200 );
 
@@ -79,6 +78,7 @@ void alternatorThread( ) {
 					mode.walking = false;
 				}
 				if ( !mode.attacking && values.x == lastX && values.y == lastY && values.box >= 4 ) {
+					//console.log( "TTTTTTTTRRRRRRRRRRAAAAAAAAAPPPPPPPP" );
 					mode.attacking = true;
 					mode.walking = false;
 				} else {
@@ -86,10 +86,9 @@ void alternatorThread( ) {
 					lastY = values.y;
 				}
 
-			} else if ( mode.attacking ) {
+			} else if ( mode.attacking ) {		
 
-				auto [ res, type, key, modifier, spell, x, y, button ] = actions.attacker( values );
-				mode.looting = res;
+				mode.looting = actions.attacker( values );
 				if ( mode.looting ) {
 					mode.attacking = false;
 				}
@@ -166,7 +165,7 @@ void healThread( ) {
 			time.sleep( 500 );
 
 		} else {
-  			time.sleep( 2000 );
+  		time.sleep( 2000 );
 		}
 	}
 }
@@ -214,6 +213,68 @@ void toolsThread( ) {
 	}
 }
 
+void autoattackTargetThread( ) {
+
+	bool keepAttacking;
+	double autoAttackCooldown = 0;
+
+	time.sleep( 3000 );
+
+	while ( true ) {
+
+		if ( running ) {
+
+			try {
+
+				if ( mode.walking ) {
+					if ( values.monsters.size( ) == 0 ) {
+						mode.attacking = actions.walker( values, script );
+						if ( mode.attacking ) {
+							mode.walking = false;
+						}
+					} else {
+						mode.attacking = true;
+						mode.walking = false;
+					}
+				} else if ( mode.attacking ) {
+					if ( values.monsters.size( ) > 0 ) {
+						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
+							inputs.keyboard( "space" );
+							autoAttackCooldown = time.clock( ) + 1000;
+							mode.looting = true;
+							mode.attacking = false;
+						}
+					} else {
+						mode.walking = true;
+						mode.attacking = false;
+					}
+				} else if ( mode.looting ) {
+					if ( !values.isTargeting ) {
+						mode.walking = actions.looter( );
+						if ( mode.walking && values.monsters.size( ) > 0 ) {
+							mode.looting = false;
+							mode.attacking = true;
+							mode.walking = false;
+						} else if ( mode.walking && values.monsters.size( ) == 0 ) {
+							mode.looting = false;
+							mode.attacking = false;
+							mode.walking = true;
+						}
+					}
+				}
+
+			} catch ( const exception &err ) {
+				console.log( "ERROR:", err.what( ) );
+			}
+
+			time.sleep( 500 );
+		} else {
+			time.sleep( 2000 );
+		}
+
+	}
+}
+
 void autoAttackThread( ) {
 
 	bool keepAttacking;
@@ -254,7 +315,7 @@ void autoAttackThread( ) {
 			}
 
 		} else {
-  			time.sleep( 2000 );
+  		time.sleep( 2000 );
 		}
 	}
 }
@@ -337,6 +398,33 @@ void attackThread( ) {
 	}
 }
 
+void alarmThread( ) {
+
+	time.sleep( 3000 );
+
+	while ( true ) {
+
+		if ( running ) {
+			if ( values.alarm ) {
+				system( "mpg123 alarma.mp3" );
+				time.sleep( 60000 );
+				if ( character.hunt == "target" ) {
+					inputs.keyboard( character.healing1 );
+					time.sleep( 1100 );
+					inputs.keyboard( character.healing1 );
+					time.sleep( 1100 );
+					inputs.keyboard( character.healing1 );
+					time.sleep( 1100 );
+					inputs.keyboard( character.healing1 );
+					time.sleep( 1100 );
+				}
+			}
+			time.sleep( 2000 );
+		}
+		
+	}
+}
+
 void run( ) {
 
 	int id = client.get( );
@@ -348,13 +436,17 @@ void run( ) {
 
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
+		thread( alarmThread ).detach( );
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
 			thread( autoAttackThread ).detach( );
 			thread( attackThread ).detach( );
+			thread( healThread ).detach( );
+			thread( toolsThread ).detach( );
+		} else if ( character.vocation == "knight" && character.hunt == "target" ) {
+			thread( autoattackTargetThread ).detach( );
+		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
 		}
-		thread( healThread ).detach( );
-		thread( toolsThread ).detach( );
 	}
 
 }

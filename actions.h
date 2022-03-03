@@ -49,7 +49,7 @@ public:
     bool runaway( Values, Script );
     tuple < bool, string, string, string, string, int, int, int > potions( int, int );
     tuple < bool, string, string, string, string, int, int, int > supporter( Values );
-    tuple < bool, string, string, string, string, int, int, int > attacker( Values );
+    bool attacker( Values );
     void autoAttack( vector < Point > );
     tuple < int, int > gameWindow( int, int );
     tuple < int, int > mapWindow( int, int );

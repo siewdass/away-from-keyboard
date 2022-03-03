@@ -10,13 +10,39 @@ using namespace std;
 Screenshot screenshot;
 Converter converter;
 Acknow acknow;
-Mat HP, MP, BD, FK, minimap;
+Mat HP, MP, BD, FK, minimap, BATTLE, CHAT;
 vector < Pixel > HealthPoints;
 vector < Pixel > ManaPoints;
 vector < Pixel > BenefitsAndDamages;
 vector < Point > Flask;
+vector < Pixel > battle;
+vector < Pixel > chat;
 
-tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point > > Status::update( vector < Position > positions ) {
+tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool > Status::update( vector < Position > positions ) {
+
+    bool alarm = false;
+
+    BATTLE = screenshot.get( id, 26, 30, 1, 1 );
+    battle = acknow.inspect( BATTLE );
+
+    for ( Pixel pixel : battle ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+        if ( r == 0 && g == 0 && b == 0 ) {
+            alarm = true;
+            break;
+        }
+    }
+
+    CHAT = screenshot.get( id, 189, 575, 1, 42 );
+    chat = acknow.inspect( CHAT );
+
+    for ( Pixel pixel : chat ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+        if ( r == 96 && g == 248 && b == 248 ) {
+            alarm = true;
+            break;
+        }
+    }
 
     HP = screenshot.get( id, 188, 5, 267, 1 );
     HealthPoints = acknow.inspect( HP );
@@ -24,9 +50,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     for ( Pixel pixel : HealthPoints ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
-        if ( r >= 32 && r <= 46 &&
-             g >= 32 && g <= 46 &&
-             b >= 32 && b <= 46 ) {
+        if ( r >= 32 && r <= 46 && g >= 32 && g <= 46 && b >= 32 && b <= 46 ) {
             health -= 1;
         }
     }
@@ -87,8 +111,6 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     int x = 0, y = 0, z = 0;
 
-    //std::cout << map << std::endl;
-
     for ( int i = 0; i < positions.size( ); i++ ) {
         //std::cout << "\nAAAAA\n" << map << "\nBBBBB\n" << positions[ i ].img << "\nCCCCC\n" << std::endl;
         if ( map == positions[ i ].img ) {
@@ -97,20 +119,8 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
             z = positions[ i ].z;
         }
     }
-
-    /*std::cout 
-    << "x: " << x 
-    << ", y: " << y
-    << ", z: " << z
-    << ", health: " << health 
-    << ", mana: " << mana 
-    << ", hungry: " << hungry 
-    << ", paralyze: " << paralyze 
-    << ", poison: " << poison 
-    << ", isTargeting: " << isTargeting
-    << std::endl;*/
     
-    //imwrite( "screenshot.png", BD );
+    //imwrite( "screenshot.png", CHAT );
 
-    return make_tuple( health, mana, hungry, paralyze, poison, haste, x, y, z, map, Flask );
+    return make_tuple( health, mana, hungry, paralyze, poison, haste, x, y, z, map, Flask, alarm );
 }

@@ -168,7 +168,7 @@ void toolsThread( ) {
 	}
 }
 
-void autoattackThread( ) {
+void autoattackTargetThread( ) {
 
 	bool keepAttacking;
 	double autoAttackCooldown = 0;
