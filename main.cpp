@@ -407,12 +407,15 @@ void alarmThread( ) {
 
 	time.sleep( 3000 );
 
+	string mp3 = "mpg123 /home/" + user + "/afk/alarma.mp3 > /dev/null 2>&1";
+	
 	while ( true ) {
 
 		if ( running ) {
 			if ( values.alarm ) {
 				
-				system( "mpg123 /home/" + user.c_str( ) + "/afk/alarma.mp3 > /dev/null 2>&1" );
+				system( mp3.c_str( ) );
+
 				time.sleep( 60000 );
 				if ( character.hunt == "target" ) {
 					inputs.keyboard( character.healing1 );
@@ -439,10 +442,8 @@ void run( ) {
 
 	string file = "/home/" + user + "/afk/character.json";
 
-	console.log( file );
-
 	character.load( file.c_str( ) );
-	script.load( "maps/" + character.script );
+	script.load( "/opt/afk/maps/" + character.script );
 
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
