@@ -342,7 +342,9 @@ void autoAttackThread( ) {
 								for ( Point point : values.monsters ) {
 									if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
 										auto [ x, y ] = actions.gameWindow( point.x, point.y );
+										inputs.shiftDown( );
 										inputs.mouse( x, y, 3 );
+										inputs.shiftUp( );
 										autoAttackCooldown = time.clock( ) + 1000;
 										break;
 									}
