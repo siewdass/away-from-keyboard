@@ -158,6 +158,20 @@ void healThread( ) {
 						inputs.keyboard( character.healing1 );
 						healCooldown = time.clock( ) + global;
 						healCooldown1 = time.clock( ) + global;
+					} else if ( values.paralyze && character.hunt == "target" ) {
+						if ( character.healing1 != "" ) {
+							inputs.keyboard( character.healing1 );
+							healCooldown = time.clock( ) + global;
+						} else if ( character.healing2 != "" ) {
+							inputs.keyboard( character.healing2 );
+							healCooldown = time.clock( ) + global;
+						}  else if ( character.healing3 != "" ) {
+							inputs.keyboard( character.healing3 );
+							healCooldown = time.clock( ) + global;
+						}
+					} else if ( values.poison && character.curepoison != "" ) {
+						inputs.keyboard( character.curepoison );
+						healCooldown = time.clock( ) + global;
 					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent <= 95 ) {
 						inputs.keyboard( character.recovery );
 						healCooldown = time.clock( ) + global;

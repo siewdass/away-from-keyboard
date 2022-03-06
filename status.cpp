@@ -120,7 +120,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
     
-    //imwrite( "screenshot.png", CHAT );
+    //imwrite( "screenshot.png", BD );
 
     return make_tuple( health, mana, hungry, paralyze, poison, haste, x, y, z, map, Flask, alarm );
 }
