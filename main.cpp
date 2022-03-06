@@ -149,7 +149,7 @@ void healThread( ) {
 					if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
 						inputs.keyboard( character.healing3 );
 						healCooldown = time.clock( ) + global;
-						healCooldown1 = time.clock( ) + global;
+						healCooldown3 = time.clock( ) + global;
 					} else if ( time.clock( ) > healCooldown2 && character.healing2 != "" && hppercent <= character.healing2percent ) {
 						inputs.keyboard( character.healing2 );
 						healCooldown = time.clock( ) + global;
@@ -157,7 +157,7 @@ void healThread( ) {
 					} else if ( time.clock( ) > healCooldown1 && character.healing1 != "" && hppercent <= character.healing1percent ) {
 						inputs.keyboard( character.healing1 );
 						healCooldown = time.clock( ) + global;
-						healCooldown3 = time.clock( ) + global;
+						healCooldown1 = time.clock( ) + global;
 					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent <= 95 ) {
 						inputs.keyboard( character.recovery );
 						healCooldown = time.clock( ) + global;
