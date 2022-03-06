@@ -285,6 +285,7 @@ void autoattackTargetThread( ) {
 				} else if ( mode.looting ) {
 
 					if ( !values.isTargeting ) {
+						
 						if ( character.vocation == "knight" ) {
 							mode.walking = actions.looter( );
 							if ( mode.walking && values.monsters.size( ) > 0 ) {
