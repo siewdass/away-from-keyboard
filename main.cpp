@@ -301,7 +301,7 @@ void autoattackTargetThread( ) {
 							}
 						} else {
 							auto [ X, Y ] = actions.mapWindow( values.targetPosition.x, values.targetPosition.y );
-							inputs.mouse( 898 + ( 1 * X ), 59 + ( 1 * Y ), 1 );
+							inputs.mouse( 898 + X, 59 + Y, 1 );
 							time.sleep( 3000 );
 							mode.walking = actions.looter( );
 							auto [ XX, YY ] = actions.gameWindow( 0, 0 );
