@@ -147,16 +147,16 @@ void healThread( ) {
 				}
 
 				if ( time.clock( ) > healCooldown && values.mana >= 5 ) {
-					if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
-						inputs.keyboard( character.healing3 );
+					if ( time.clock( ) > healCooldown3 && character.healing1 != "" && hppercent <= character.healing1percent ) {
+						inputs.keyboard( character.healing1 );
 						healCooldown = time.clock( ) + global;
 						healCooldown3 = time.clock( ) + global;
 					} else if ( time.clock( ) > healCooldown2 && character.healing2 != "" && hppercent <= character.healing2percent ) {
 						inputs.keyboard( character.healing2 );
 						healCooldown = time.clock( ) + global;
 						healCooldown2 = time.clock( ) + global;
-					} else if ( time.clock( ) > healCooldown1 && character.healing1 != "" && hppercent <= character.healing1percent ) {
-						inputs.keyboard( character.healing1 );
+					} else if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
+						inputs.keyboard( character.healing3 );
 						healCooldown = time.clock( ) + global;
 						healCooldown1 = time.clock( ) + global;
 					} else if ( values.paralyze && character.paralyze != "" ) {
@@ -542,10 +542,6 @@ int main( int argc, char** argv ) {
 	return 0;
 }
 
-
-//auto [ x, y ] = actions.mapWindow( 0, -56 );
-//console.log( x, y );
-//inputs.mouse( x, y, 1 );
 // cambiar Point por un nuevo struct y 
 // detectar cantidad de vida segun pixeles
 // internos de la barra de vida

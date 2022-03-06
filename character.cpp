@@ -37,11 +37,11 @@ void Character::load( const char* file ) {
 	healing1 = h1.readString( "Hotkey" );
 	healing1percent = h1.readInteger( "Percent" );
 
-	Json h2 = config.readObject( "Healing1" );
+	Json h2 = config.readObject( "Healing2" );
 	healing2 = h2.readString( "Hotkey" );
 	healing2percent = h2.readInteger( "Percent" );
 
-	Json h3 = config.readObject( "Healing1" );
+	Json h3 = config.readObject( "Healing3" );
 	healing3 = h3.readString( "Hotkey" );
 	healing3percent = h3.readInteger( "Percent" );
 
