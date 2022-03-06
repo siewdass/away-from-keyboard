@@ -3,7 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/usr/include/libappindicator-0.1"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
