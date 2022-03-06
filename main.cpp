@@ -273,6 +273,7 @@ void autoattackTargetThread( ) {
 				} else if ( mode.attacking ) {
 					if ( values.monsters.size( ) > 0 ) {
 						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
+							inputs.keyboard( "escape" );
 							inputs.keyboard( "space" );
 							autoAttackCooldown = time.clock( ) + 1000;
 							mode.looting = true;
@@ -299,7 +300,9 @@ void autoattackTargetThread( ) {
 							}
 						} else {
 							auto [ X, Y ] = actions.gameWindow( values.targetPosition.x, values.targetPosition.y );
+							inputs.shiftDown( );
 							inputs.mouse( X, Y, 3 );
+							inputs.shiftUp( );
 							time.sleep( 3000 );
 							mode.looting = false;
 							mode.attacking = false;
@@ -342,9 +345,7 @@ void autoAttackThread( ) {
 								for ( Point point : values.monsters ) {
 									if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
 										auto [ x, y ] = actions.gameWindow( point.x, point.y );
-										inputs.shiftDown( );
 										inputs.mouse( x, y, 3 );
-										inputs.shiftUp( );
 										autoAttackCooldown = time.clock( ) + 1000;
 										break;
 									}
