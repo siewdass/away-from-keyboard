@@ -131,13 +131,12 @@ void healThread( ) {
 
 		if ( Pause ) {
 			
-			int hppercent = ( double )values.health / 267 * 100;
-			int mppercent = ( double )values.mana / 267 * 100;
+			int hppercent = ( double ) values.health / 267 * 100;
+			int mppercent = ( double ) values.mana / 267 * 100;
 
 			try {
 
 				if ( time.clock( ) > potionCooldown ) {
-
 					if ( character.healthpotion != "" && hppercent <= character.healthpotionpercent ) {
 						inputs.keyboard( character.healthpotion );
 						potionCooldown = time.clock( ) + global;
@@ -145,7 +144,6 @@ void healThread( ) {
 						inputs.keyboard( character.manapotion );
 						potionCooldown = time.clock( ) + global;
 					}
-
 				}
 
 				if ( time.clock( ) > healCooldown && values.mana >= 5 ) {
@@ -177,7 +175,8 @@ void healThread( ) {
 			} catch ( const std::exception& e ) {
 				console.log( "ERROR:", e.what( ) );
 			}
-			time.sleep( 500 );
+
+			time.sleep( 300 );
 
 		} else {
   		time.sleep( 2000 );
