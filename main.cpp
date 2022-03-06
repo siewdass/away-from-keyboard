@@ -56,7 +56,7 @@ void updateThread( ) {
 			values.boxTarget = boxTarget;
 			values.alarm = alarm;
 
-			console.log( x, y );
+			//console.log( x, y );
 
 			time.sleep( 200 );
 
@@ -161,7 +161,7 @@ void healThread( ) {
 					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent <= 95 ) {
 						inputs.keyboard( character.recovery );
 						healCooldown = time.clock( ) + global;
-						healCooldown3 = time.clock( ) + 63000;
+						recoveryCooldown = time.clock( ) + 63000;
 					}
 				}
 			} catch ( const std::exception& e ) {
@@ -169,6 +169,35 @@ void healThread( ) {
 			}
 			time.sleep( 500 );
 
+		} else {
+  		time.sleep( 2000 );
+		}
+	}
+}
+
+void ammoThread( ) {
+
+	double quiver = 0, throwing = 0;
+	time.sleep( 4000 );
+
+	while ( true ) {
+		
+		if ( running ) {
+
+			try {
+
+				if ( time.clock( ) > quiver && character.quiver != "" ) {
+					inputs.keyboard( character.quiver );
+					inputs.keyboard( character.quiver );
+					inputs.keyboard( character.quiver );
+					quiver = time.clock( ) + 180000;
+				}
+
+			} catch ( const std::exception& e ) {
+				console.log( "ERROR:", e.what( ) );
+			}
+
+			time.sleep( 2000 );
 		} else {
   		time.sleep( 2000 );
 		}
@@ -254,17 +283,24 @@ void autoattackTargetThread( ) {
 						mode.attacking = false;
 					}
 				} else if ( mode.looting ) {
+
 					if ( !values.isTargeting ) {
-						mode.walking = actions.looter( );
-						if ( mode.walking && values.monsters.size( ) > 0 ) {
-							mode.looting = false;
-							mode.attacking = true;
-							mode.walking = false;
-						} else if ( mode.walking && values.monsters.size( ) == 0 ) {
-							mode.looting = false;
-							mode.attacking = false;
-							mode.walking = true;
+						if ( character.vocation == "knight" ) {
+							mode.walking = actions.looter( );
+							if ( mode.walking && values.monsters.size( ) > 0 ) {
+								mode.looting = false;
+								mode.attacking = true;
+								mode.walking = false;
+							} else if ( mode.walking && values.monsters.size( ) == 0 ) {
+								mode.looting = false;
+								mode.attacking = false;
+								mode.walking = true;
+							}
+						} else {
+							auto [ X, Y ] actions.gameWindow( values.targetPosition.x, values.targetPosition.y );
+							inputs.mouse( X, Y, 3 );
 						}
+
 					}
 				}
 
@@ -296,7 +332,7 @@ void autoAttackThread( ) {
 				if ( mode.attacking ) {
 					if ( values.box >= 3 || keepAttacking ) {
 						keepAttacking = true;
-						if ( time.clock( ) > autoAttackCooldown && !values.boxTarget ) {
+						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
 							if ( values.box >= 1 ) {
 								for ( Point point : values.monsters ) {
 									if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
@@ -351,15 +387,15 @@ void attackThread( ) {
 						if ( values.box >= 3 || keepAttacking ) {
 							keepAttacking = true;
 							if ( time.clock( ) > attackCooldown ) {
-								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.boxTarget && values.box == 1 ) {
+								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
 									inputs.keyboard( character.annihilation );
 									attackCooldown = time.clock( ) + global*2;
 									attackCooldown1 = time.clock( ) + 31500;
-								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
+								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
 									inputs.keyboard( character.brutalstrike );
 									attackCooldown = time.clock( ) + global;
 									attackCooldown2 = time.clock( ) + 6300;
-								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.boxTarget && values.box == 1 ) {
+								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
 									inputs.keyboard( character.whirlwindthrow );
 									attackCooldown = time.clock( ) + global;
 									attackCooldown3 = time.clock( ) + 6300;
@@ -376,7 +412,7 @@ void attackThread( ) {
 									attackCooldown = time.clock( ) + global;
 									attackCooldown6 = time.clock( ) + 6300;
 								} else if ( character.frontsweep != "" && time.clock( ) > attackCooldown7 && values.box >= 2 ) {
-									string modifier = "shift+";
+									string modifier = "control+";
 									modifier.append( values.side );
 									inputs.keywith( modifier.c_str( ) );
 									time.sleep( 100 );
@@ -457,6 +493,8 @@ void run( ) {
 		} else if ( character.vocation == "knight" && character.hunt == "target" ) {
 			thread( autoattackTargetThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
+			thread( autoattackTargetThread ).detach( );
+			thread( ammoThread ).detach( );
 		}
 	}
 
