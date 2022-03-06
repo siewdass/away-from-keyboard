@@ -34,7 +34,7 @@ void updateThread( ) {
 		if ( Pause ) {
 
 			auto [ box,monsters, visibleMonsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( );
-			auto [ health, mana, hungry, paralyze, poison, haste, x, y, z, minimap, flasks, alarm ] = status.update( script.positions );
+			auto [ health, mana, hungry, paralyze, poison, haste, x, y, z, minimap, flasks, alarm, weapon ] = status.update( script.positions );
 
 			values.box = box;
 			values.monsters = monsters;
@@ -55,6 +55,7 @@ void updateThread( ) {
 			values.z = z;
 			values.boxTarget = boxTarget;
 			values.alarm = alarm;
+			values.weapon = weapon;
 
 			//console.log( x, y );
 
@@ -147,16 +148,16 @@ void healThread( ) {
 				}
 
 				if ( time.clock( ) > healCooldown && values.mana >= 5 ) {
-					if ( time.clock( ) > healCooldown3 && character.healing1 != "" && hppercent <= character.healing1percent ) {
-						inputs.keyboard( character.healing1 );
+					if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
+						inputs.keyboard( character.healing3 );
 						healCooldown = time.clock( ) + global;
 						healCooldown3 = time.clock( ) + global;
 					} else if ( time.clock( ) > healCooldown2 && character.healing2 != "" && hppercent <= character.healing2percent ) {
 						inputs.keyboard( character.healing2 );
 						healCooldown = time.clock( ) + global;
 						healCooldown2 = time.clock( ) + global;
-					} else if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
-						inputs.keyboard( character.healing3 );
+					} else if ( time.clock( ) > healCooldown1 && character.healing1 != "" && hppercent <= character.healing1percent ) {
+						inputs.keyboard( character.healing1 );
 						healCooldown = time.clock( ) + global;
 						healCooldown1 = time.clock( ) + global;
 					} else if ( values.paralyze && character.paralyze != "" ) {
@@ -200,6 +201,9 @@ void ammoThread( ) {
 					inputs.keyboard( character.quiver );
 					inputs.keyboard( character.quiver );
 					quiver = time.clock( ) + 180000;
+				} else if ( time.clock( ) > throwing && !values.weapon && character.throwing != "" ) {
+					inputs.keyboard( character.throwing );
+					throwing = time.clock( ) + 3000;
 				}
 
 			} catch ( const std::exception& e ) {

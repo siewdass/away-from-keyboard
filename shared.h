@@ -24,6 +24,7 @@ public:
 	Point targetPosition;
 	bool boxTarget;
 	bool alarm;
+	bool weapon;
 };
 
 class Mode {

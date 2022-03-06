@@ -10,15 +10,28 @@ using namespace std;
 Screenshot screenshot;
 Converter converter;
 Acknow acknow;
-Mat HP, MP, BD, FK, minimap, BATTLE, CHAT;
+Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, WEAPON;
 vector < Pixel > HealthPoints;
 vector < Pixel > ManaPoints;
 vector < Pixel > BenefitsAndDamages;
 vector < Point > Flask;
 vector < Pixel > battle;
 vector < Pixel > chat;
+vector < Pixel > weapon;
 
-tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool > Status::update( vector < Position > positions ) {
+tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool > Status::update( vector < Position > positions ) {
+
+    bool weaponEquipped = false;
+
+    WEAPON = screenshot.get( id, 862, 186, 1, 1 );
+    weapon = acknow.inspect( WEAPON );
+
+    for ( Pixel pixel : weapon ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+        if ( r == 101 && g == 104 && b == 106 ) {
+            weaponEquipped = true;
+        }
+    }
 
     bool alarm = false;
 
@@ -29,7 +42,6 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         int r = pixel.r, g = pixel.g, b = pixel.b;
         if ( r == 0 && g == 0 && b == 0 ) {
             alarm = true;
-            break;
         }
     }
 
@@ -120,7 +132,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
     
-    //imwrite( "screenshot.png", BD );
+    imwrite( "screenshot.png", WEAPON );
 
-    return make_tuple( health, mana, hungry, paralyze, poison, haste, x, y, z, map, Flask, alarm );
+    return make_tuple( health, mana, hungry, paralyze, poison, haste, x, y, z, map, Flask, alarm, weaponEquipped );
 }
