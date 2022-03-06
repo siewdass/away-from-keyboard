@@ -300,6 +300,7 @@ void autoattackTargetThread( ) {
 						} else {
 							auto [ X, Y ] actions.gameWindow( values.targetPosition.x, values.targetPosition.y );
 							inputs.mouse( X, Y, 3 );
+							time.sleep( 3000 );
 							mode.looting = false;
 							mode.attacking = false;
 							mode.walking = true;
