@@ -273,7 +273,7 @@ void autoattackTargetThread( ) {
 				} else if ( mode.attacking ) {
 					if ( values.monsters.size( ) > 0 ) {
 						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
-							inputs.keyboard( "esc" );
+							inputs.keyboard( "Escape" );
 							inputs.keyboard( "space" );
 							autoAttackCooldown = time.clock( ) + 1000;
 							mode.looting = true;
