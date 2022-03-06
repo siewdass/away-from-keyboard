@@ -300,13 +300,15 @@ void autoattackTargetThread( ) {
 							}
 						} else {
 							auto [ X, Y ] = actions.gameWindow( values.targetPosition.x, values.targetPosition.y );
-							inputs.shiftDown( );
+							inputs.mouse( X, Y, 1 );
+							time.sleep( 3000 );
+							mode.walking = actions.looter( );
+							/*inputs.shiftDown( );
 							inputs.mouse( X, Y, 3 );
 							inputs.shiftUp( );
-							time.sleep( 3000 );
+							time.sleep( 3000 );*/
 							mode.looting = false;
 							mode.attacking = false;
-							mode.walking = true;
 						}
 
 					}
