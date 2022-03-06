@@ -10,7 +10,7 @@ tuple < int, int > Actions::gameWindow( int x, int y ) {
 }
 
 tuple < int, int > Actions::mapWindow( int x, int y ) {
-    int left = 898, top = 61;
+    int left = 898, top = 59;
     int X = left + x;
     int Y = top + y;
     return make_tuple( X, Y );
