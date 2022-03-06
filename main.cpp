@@ -285,7 +285,7 @@ void autoattackTargetThread( ) {
 				} else if ( mode.looting ) {
 
 					if ( !values.isTargeting ) {
-						
+
 						if ( character.vocation == "knight" ) {
 							mode.walking = actions.looter( );
 							if ( mode.walking && values.monsters.size( ) > 0 ) {
@@ -300,6 +300,9 @@ void autoattackTargetThread( ) {
 						} else {
 							auto [ X, Y ] actions.gameWindow( values.targetPosition.x, values.targetPosition.y );
 							inputs.mouse( X, Y, 3 );
+							mode.looting = false;
+							mode.attacking = false;
+							mode.walking = true;
 						}
 
 					}
