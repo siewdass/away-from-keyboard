@@ -303,8 +303,8 @@ void autoattackTargetThread( ) {
 							inputs.mouse( X, Y, 1 );
 							time.sleep( 3000 );
 							mode.walking = actions.looter( );
-							auto [ X, Y ] = actions.gameWindow( 0, 0 );
-							inputs.mouse( X, Y, 3 );
+							auto [ XX, YY ] = actions.gameWindow( 0, 0 );
+							inputs.mouse( XX, YY, 3 );
 							/*inputs.shiftDown( );
 							inputs.mouse( X, Y, 3 );
 							inputs.shiftUp( );
