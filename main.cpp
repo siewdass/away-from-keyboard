@@ -524,6 +524,9 @@ void run( ) {
 
 int main( int argc, char** argv ) {
 
+	auto [ x, y ] = actions.gameWindow( 0, 0 );
+	console.log( x, y );
+
 	system( "rm -f /tmp/licence.json" );
 	system( "wget -O /tmp/licence.json https://siewdass.github.io/licence.json > /dev/null 2>&1" );
 	

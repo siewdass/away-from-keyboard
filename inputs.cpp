@@ -23,7 +23,7 @@ void Inputs::mouseMove( int x, int y ) {
 void Inputs::mouseDrag( int x, int y ) {
   xdo_move_mouse( xdo, x, y, CURRENTWINDOW );
   xdo_mouse_down( xdo, CURRENTWINDOW, 1 );
-  xdo_move_mouse( xdo, 310, 250, CURRENTWINDOW );
+  xdo_move_mouse( xdo, 497, 260, CURRENTWINDOW );
   xdo_mouse_up( xdo, CURRENTWINDOW, 1 );
 }
 
