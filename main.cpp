@@ -448,12 +448,12 @@ void run( ) {
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
 		thread( alarmThread ).detach( );
+		thread( toolsThread ).detach( );
+		thread( healThread ).detach( );
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
 			thread( autoAttackThread ).detach( );
 			thread( attackThread ).detach( );
-			thread( healThread ).detach( );
-			thread( toolsThread ).detach( );
 		} else if ( character.vocation == "knight" && character.hunt == "target" ) {
 			thread( autoattackTargetThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
