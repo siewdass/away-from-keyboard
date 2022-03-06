@@ -57,7 +57,7 @@ void updateThread( ) {
 			values.alarm = alarm;
 			values.weapon = weapon;
 
-			console.log( weapon );
+			///console.log( weapon );
 
 			time.sleep( 200 );
 
