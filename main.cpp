@@ -135,6 +135,7 @@ void healThread( ) {
 			int mppercent = ( double )values.mana / 267 * 100;
 
 			try {
+
 				if ( time.clock( ) > potionCooldown ) {
 
 					if ( character.healthpotion != "" && hppercent <= character.healthpotionpercent ) {
@@ -144,7 +145,9 @@ void healThread( ) {
 						inputs.keyboard( character.manapotion );
 						potionCooldown = time.clock( ) + global;
 					}
+
 				}
+
 				if ( time.clock( ) > healCooldown && values.mana >= 5 ) {
 					if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
 						inputs.keyboard( character.healing3 );
@@ -158,17 +161,9 @@ void healThread( ) {
 						inputs.keyboard( character.healing1 );
 						healCooldown = time.clock( ) + global;
 						healCooldown1 = time.clock( ) + global;
-					} else if ( values.paralyze && character.hunt == "target" ) {
-						if ( character.healing1 != "" ) {
-							inputs.keyboard( character.healing1 );
-							healCooldown = time.clock( ) + global;
-						} else if ( character.healing2 != "" ) {
-							inputs.keyboard( character.healing2 );
-							healCooldown = time.clock( ) + global;
-						}  else if ( character.healing3 != "" ) {
-							inputs.keyboard( character.healing3 );
-							healCooldown = time.clock( ) + global;
-						}
+					} else if ( values.paralyze && character.paralyze != "" ) {
+						inputs.keyboard( character.paralyze );
+						healCooldown = time.clock( ) + global;
 					} else if ( values.poison && character.curepoison != "" ) {
 						inputs.keyboard( character.curepoison );
 						healCooldown = time.clock( ) + global;
@@ -178,6 +173,7 @@ void healThread( ) {
 						recoveryCooldown = time.clock( ) + 63000;
 					}
 				}
+
 			} catch ( const std::exception& e ) {
 				console.log( "ERROR:", e.what( ) );
 			}
