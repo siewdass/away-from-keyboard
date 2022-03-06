@@ -203,7 +203,7 @@ void ammoThread( ) {
 					quiver = time.clock( ) + 180000;
 				} else if ( time.clock( ) > throwing && values.weapon && character.throwing != "" ) {
 					inputs.keyboard( character.throwing );
-					throwing = time.clock( ) + 3000;
+					throwing = time.clock( ) + 2000;
 				}
 
 			} catch ( const std::exception& e ) {
