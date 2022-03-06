@@ -1,4 +1,5 @@
 #include "status.h"
+#include "utils.h"
 #include "screenshot.h"
 #include "acknow.h"
 #include "converter.h"
@@ -23,13 +24,14 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     bool weaponEquipped = false;
 
-    WEAPON = screenshot.get( id, 862, 186, 1, 1 );
+    WEAPON = screenshot.get( id, 861, 186, 1, 1 );
     weapon = acknow.inspect( WEAPON );
 
     for ( Pixel pixel : weapon ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
-        if ( r == 101 && g == 104 && b == 106 ) {
+        if ( r == 94 && g == 96 && b == 98 ) {
             weaponEquipped = true;
+            break;
         }
     }
 
@@ -42,6 +44,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         int r = pixel.r, g = pixel.g, b = pixel.b;
         if ( r == 0 && g == 0 && b == 0 ) {
             alarm = true;
+            break;
         }
     }
 

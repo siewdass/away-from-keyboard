@@ -57,7 +57,7 @@ void updateThread( ) {
 			values.alarm = alarm;
 			values.weapon = weapon;
 
-			//console.log( x, y );
+			console.log( weapon );
 
 			time.sleep( 200 );
 
@@ -201,9 +201,9 @@ void ammoThread( ) {
 					inputs.keyboard( character.quiver );
 					inputs.keyboard( character.quiver );
 					quiver = time.clock( ) + 180000;
-				} else if ( time.clock( ) > throwing && !values.weapon && character.throwing != "" ) {
+				} else if ( time.clock( ) > throwing && values.weapon && character.throwing != "" ) {
 					inputs.keyboard( character.throwing );
-					throwing = time.clock( ) + 5000;
+					throwing = time.clock( ) + 3000;
 				}
 
 			} catch ( const std::exception& e ) {
