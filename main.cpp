@@ -367,7 +367,7 @@ void autoAttackThread( ) {
 				if ( mode.attacking ) {
 					if ( values.box >= 3 || keepAttacking ) {
 						keepAttacking = true;
-						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
+						if ( time.clock( ) > autoAttackCooldown && !values.boxTarget ) {
 							if ( values.box >= 1 ) {
 								for ( Point point : values.monsters ) {
 									if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
@@ -421,15 +421,15 @@ void attackThread( ) {
 						if ( values.box >= 3 || keepAttacking ) {
 							keepAttacking = true;
 							if ( time.clock( ) > attackCooldown ) {
-								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
+								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.annihilation );
 									attackCooldown = time.clock( ) + global*2;
 									attackCooldown1 = time.clock( ) + 31500;
-								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
+								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.brutalstrike );
 									attackCooldown = time.clock( ) + global;
 									attackCooldown2 = time.clock( ) + 6300;
-								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
+								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.whirlwindthrow );
 									attackCooldown = time.clock( ) + global;
 									attackCooldown3 = time.clock( ) + 6300;
