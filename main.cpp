@@ -262,6 +262,7 @@ void toolsThread( ) {
 void autoattackTargetThread( ) {
 
 	bool keepAttacking;
+	double attackCooldown = 0;
 	double autoAttackCooldown = 0;
 
 	time.sleep( 3000 );
@@ -325,6 +326,14 @@ void autoattackTargetThread( ) {
 							time.sleep( 3000 );*/
 							mode.looting = false;
 							mode.attacking = false;
+						}
+					} else if ( character.vocation == "paladin" ) {
+						
+						if ( time.clock( ) > attackCooldown ) {
+							if ( character.divinemissile != "" ) {
+								inputs.keyboard( character.divinemissile );
+								attackCooldown = time.clock( ) + 2100;
+							}
 						}
 
 					}
