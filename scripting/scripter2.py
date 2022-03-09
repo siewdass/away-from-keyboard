@@ -42,7 +42,7 @@ def on_press( key ):
 					mouse.position = ( 525, 225 )
 				elif key == keys[ 1 ]:
 					pressed = 'west'
-					mouse.position = ( 485, 265 )
+					mouse.position = ( 465, 265 )
 				elif key == keys[ 2 ]:
 					pressed = 'south'
 					mouse.position = ( 525, 301 )
