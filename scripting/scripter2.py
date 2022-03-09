@@ -39,16 +39,16 @@ def on_press( key ):
 			if key in keys:
 				if key == keys[ 0 ]:
 					pressed = 'north'
-					mouse.position = ( 313, 225 )
+					mouse.position = ( 525, 225 )
 				elif key == keys[ 1 ]:
 					pressed = 'west'
-					mouse.position = ( 273, 265 )
+					mouse.position = ( 485, 265 )
 				elif key == keys[ 2 ]:
 					pressed = 'south'
-					mouse.position = ( 313, 301 )
+					mouse.position = ( 525, 301 )
 				elif key == keys[ 3 ]:
 					pressed = 'east'
-					mouse.position = ( 353, 265 )
+					mouse.position = ( 565, 265 )
 
 				mouse.press( Click.left )
 				mouse.release( Click.left )
@@ -57,7 +57,7 @@ def on_press( key ):
 				mouse.position = ( 200, 600 )
 				
 				sleep( 1 )
-				img = screenshot.get( x = 633, y = 5, width = 106, height = 109 )
+				img = screenshot.get( x = 845, y = 5, width = 106, height = 109 )
 
 				if not old == img:
 					if pressed == 'north':
