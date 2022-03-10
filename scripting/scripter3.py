@@ -11,8 +11,8 @@ import threading
 from os import system, getcwd
 
 config = { }
-x = 0
-y = 0
+x = 17
+y = 4
 z = 0
 map = [ ]
 pressed = ""
