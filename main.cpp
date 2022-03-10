@@ -57,7 +57,7 @@ void updateThread( ) {
 			values.alarm = alarm;
 			values.weapon = weapon;
 
-			///console.log( weapon );
+			console.log( x, y );
 
 			time.sleep( 200 );
 
@@ -367,7 +367,7 @@ void autoAttackThread( ) {
 				if ( mode.attacking ) {
 					if ( values.box >= 3 || keepAttacking ) {
 						keepAttacking = true;
-						if ( time.clock( ) > autoAttackCooldown && !values.boxTarget ) {
+						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
 							if ( values.box >= 1 ) {
 								for ( Point point : values.monsters ) {
 									if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {

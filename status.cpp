@@ -135,7 +135,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
     
-    //imwrite( "screenshot.png", MAP );
+    //simwrite( "screenshot.png", MAP );
 
     return make_tuple( health, mana, hungry, paralyze, poison, haste, x, y, z, map, Flask, alarm, weaponEquipped );
 }

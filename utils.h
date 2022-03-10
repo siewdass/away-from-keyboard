@@ -23,23 +23,39 @@ class Time {
 };
 
 class {
-  public:
-    template < typename A >
-    void log( A arg ) {
-       cout << arg << endl;
-    }
+public:
+	template < typename A >
+	void log( A arg ) {
+		cout << arg << endl;
+	}
 	template < typename A, typename B >
 	void log( A arg, B arg2 ) {
-       cout << arg << " " << arg2 << endl;
-    }
+		cout << arg << " " << arg2 << endl;
+	}
 	template < typename A, typename B, typename C >
 	void log( A arg, B arg2, C arg3 ) {
-       cout << arg << " " << arg2 << " " << arg3 << endl;
-    }
+		cout << arg << " " << arg2 << " " << arg3 << endl;
+	}
 	template < typename A, typename B, typename C, typename D >
 	void log( A arg, B arg2, C arg3, D arg4 ) {
-       cout << arg << " " << arg2 << " " <<  arg3 << " " << arg4 << endl;
-    }
+    cout << arg << " " << arg2 << " " <<  arg3 << " " << arg4 << endl;
+  }
+	template < typename A, typename B, typename C, typename D, typename E>
+	void log( A arg, B arg2, C arg3, D arg4, E arg5 ) {
+    cout << arg << " " << arg2 << " " <<  arg3 << " " << arg4 << " " << arg5 << endl;
+  }
+	template < typename A, typename B, typename C, typename D, typename E, typename F>
+	void log( A arg, B arg2, C arg3, D arg4, E arg5, F arg6 ) {
+    cout << arg << " " << arg2 << " " <<  arg3 << " " << arg4 << " " << arg5 << " " << arg6 << endl;
+  }
+	template < typename A, typename B, typename C, typename D, typename E, typename F, typename G>
+	void log( A arg, B arg2, C arg3, D arg4, E arg5, F arg6, G arg7 ) {
+    cout << arg << " " << arg2 << " " <<  arg3 << " " << arg4 << " " << arg5 << " " << arg6 << " " << arg7 << endl;
+  }
+	template < typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H>
+	void log( A arg, B arg2, C arg3, D arg4, E arg5, F arg6, G arg7, H arg8 ) {
+    cout << arg << " " << arg2 << " " <<  arg3 << " " << arg4 << " " << arg5 << " " << arg6 << " " << arg7 << " " << arg8 << endl;
+  }
 } console;
 
 class Json {
