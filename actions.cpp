@@ -245,16 +245,16 @@ bool Actions::walker( Values values, Script script ) {
 
             if ( paths.size( ) > 0 ) {
 
-                if ( paths.size( ) >= 13 ) {
-                    x = paths[ 12 ].x;
-                    y = paths[ 12 ].y;
+                if ( paths.size( ) >= 57 ) {
+                    x = paths[ 56 ].x;
+                    y = paths[ 56 ].y;
                 } else {
                     x = paths[ paths.size( ) -1 ].x;
                     y = paths[ paths.size( ) -1 ].y;
                 }
 
-                console.log( "from x:", values.x, "from y:", values.y );
-                console.log( "to x:", x, "to y:", y );
+                console.log( paths.size( ) -1 );
+                console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
 
                 int X = x - values.x; 
                 int Y = y - values.y; 
@@ -262,7 +262,7 @@ bool Actions::walker( Values values, Script script ) {
                 //inputs.keyboard( "Escape" );
                 //time.sleep( 100 );
                 inputs.mouse( left + ( pixel * X ), top + ( pixel * Y ), 1 );
-                console.log( left + ( pixel * X ), top + ( pixel * Y ), 1 );
+                //console.log( left + ( pixel * X ), top + ( pixel * Y ), 1 );
                 walkCoolDown =  time.clock( ) + 1000;
                 return false;
             }
