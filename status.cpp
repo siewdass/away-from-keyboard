@@ -11,13 +11,14 @@ using namespace std;
 Screenshot screenshot;
 Converter converter;
 Acknow acknow;
-Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, WEAPON, RING, AMULET;
+Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON, RING, AMULET;
 vector < Pixel > HealthPoints;
 vector < Pixel > ManaPoints;
 vector < Pixel > BenefitsAndDamages;
 vector < Point > Flask;
 vector < Pixel > battle;
 vector < Pixel > chat;
+vector < Pixel > lootchat;
 vector < Pixel > weapon, ring, amulet;
 
 tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
@@ -160,6 +161,23 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
             z = positions[ i ].z;
         }
     }
+
+    bool Status::valuableLoot( ) {
+    bool valuableLoot = false;
+
+	LOOTCHAT = screenshot.get( id, 509, 575, 305, 42 );
+    lootchat = acknow.inspect( LOOTCHAT );
+
+    for ( Pixel pixel : lootchat ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+		// console.log( r, g, b);
+        if ( r == 0 && g == 240 && b == 0 || r == 32 && g == 160 && b == 255 || r == 255 && g == 104 && b == 255 || r == 240 && g == 240 && 0 ) {
+            valuableLoot = true;
+            break;
+        }
+    }
+    return valuableLoot;
+ }
     
     //imwrite( "screenshot.png", RING );
 

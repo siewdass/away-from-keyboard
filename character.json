@@ -22,8 +22,8 @@
     "EtherealSpear": "",
     "DivineMissile": "r",
     "CureCurse": "",
-    "Quiver": "f",
-    "Throwing": ""
+    "Quiver": "",
+    "Throwing": "f"
   },
   "Healing1": { "Percent": 83, "Hotkey": "1" },
   "Healing2": { "Percent": 74, "Hotkey": "2" },

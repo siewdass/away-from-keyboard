@@ -82,11 +82,7 @@ void updateThread( ) {
 			values.necklace = necklace;
 			values.ring = ring;
 
-<<<<<<< HEAD
-			console.log( x, y, necklace, ring );
-=======
 			///console.log( weapon );
->>>>>>> 69d6d77a7ff23c8c7a7da9f40d03cecd99d443be
 
 			time.sleep( 200 );
 
