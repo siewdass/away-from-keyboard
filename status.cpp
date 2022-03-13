@@ -11,16 +11,16 @@ using namespace std;
 Screenshot screenshot;
 Converter converter;
 Acknow acknow;
-Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, WEAPON;
+Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, WEAPON, RING, AMULET;
 vector < Pixel > HealthPoints;
 vector < Pixel > ManaPoints;
 vector < Pixel > BenefitsAndDamages;
 vector < Point > Flask;
 vector < Pixel > battle;
 vector < Pixel > chat;
-vector < Pixel > weapon;
+vector < Pixel > weapon, ring, amulet;
 
-tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool > Status::update( vector < Position > positions ) {
+tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
 
     bool weaponEquipped = false;
 
@@ -31,6 +31,32 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         int r = pixel.r, g = pixel.g, b = pixel.b;
         if ( r == 94 && g == 96 && b == 98 ) {
             weaponEquipped = true;
+            break;
+        }
+    }
+
+    bool amuletEquipped = true;
+
+    AMULET = screenshot.get( id, 862, 158, 1, 1 );
+    amulet = acknow.inspect( AMULET );
+
+    for ( Pixel pixel : amulet ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+        if ( r == 71 && g == 73 && b == 76 ) {
+            amuletEquipped = false;
+            break;
+        }
+    }
+
+    bool ringEquipped = true;
+
+    RING = screenshot.get( id, 861, 220, 1, 1 );
+    ring = acknow.inspect( RING );
+
+    for ( Pixel pixel : ring ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+        if ( r == 88 && g == 91 && b == 94 ) {
+            ringEquipped = false;
             break;
         }
     }
@@ -135,7 +161,21 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
     
-    //simwrite( "screenshot.png", MAP );
+    //imwrite( "screenshot.png", RING );
 
-    return make_tuple( health, mana, hungry, paralyze, poison, haste, x, y, z, map, Flask, alarm, weaponEquipped );
+    return make_tuple(
+        health,
+        mana,
+        hungry,
+        paralyze,
+        poison,
+        haste,
+        x, y, z,
+        map,
+        Flask,
+        alarm,
+        weaponEquipped,
+        amuletEquipped,
+        ringEquipped
+    );
 }

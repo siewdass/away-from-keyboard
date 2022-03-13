@@ -33,8 +33,31 @@ void updateThread( ) {
 
 		if ( Pause ) {
 
-			auto [ box,monsters, visibleMonsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( );
-			auto [ health, mana, hungry, paralyze, poison, haste, x, y, z, minimap, flasks, alarm, weapon ] = status.update( script.positions );
+			auto [
+				box,
+				monsters,
+				visibleMonsters,
+				side,
+				isTargeting,
+				targetPosition,
+				boxTarget
+			] = viewport.check( );
+			
+			auto [
+				health,
+				mana,
+				hungry,
+				paralyze,
+				poison,
+				haste,
+				x, y, z,
+				minimap,
+				flasks,
+				alarm,
+				weapon,
+				necklace,
+				ring
+			] = status.update( script.positions );
 
 			values.box = box;
 			values.monsters = monsters;
@@ -56,8 +79,10 @@ void updateThread( ) {
 			values.boxTarget = boxTarget;
 			values.alarm = alarm;
 			values.weapon = weapon;
+			values.necklace = necklace;
+			values.ring = ring;
 
-			console.log( x, y );
+			console.log( x, y, necklace, ring );
 
 			time.sleep( 200 );
 
@@ -219,6 +244,7 @@ void ammoThread( ) {
 void toolsThread( ) {
 
 	double eat = 0,
+		amulet,
 		ring = 0,
 		f = 0,
 		haste = 0;
@@ -242,10 +268,14 @@ void toolsThread( ) {
 						inputs.keyboard( character.food );
 						inputs.keyboard( character.food );
 						inputs.keyboard( character.food );
-					} else if ( character.ring != "" &&  time.clock( ) > ring ) {
+					} else if ( character.ring != "" && values.ring == false ) {
 						inputs.keyboard( character.ring );
 						inputs.keyboard( character.ring );
 						inputs.keyboard( character.ring );
+					} else if ( character.necklace != "" && values.necklace == false ) {
+						inputs.keyboard( character.necklace );
+						inputs.keyboard( character.necklace );
+						inputs.keyboard( character.necklace );
 					}
 				}
 			} catch ( const std::exception& e ) {
