@@ -6,6 +6,4 @@ alarma.mp3
 package-lock.json
 __pycache__
 a.out
-package/opt/afk/afk/
-!**/package/opt/afk/maps
 afk.deb
