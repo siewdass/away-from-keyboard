@@ -18,7 +18,7 @@
     "client2": "Xephyr -keybd ephyr,,,xkbmodel=pc105,xkblayout=latam,us,xkbrules=evdev,xkboption=grp:alts_toogle -br -ac -noreset -screen 1012x642 -title Tibia :3 > /dev/null 2>&1 & DISPLAY=:3.0 openbox > /dev/null 2>&1 & DISPLAY=:3.0 /opt/tibia/Tibia > /dev/null 2>&1",
     "pull": "git pull",
     "push": "git add . && git commit -m '-' && git pull && git push",
-    "package": "cp afk package/opt/afk/ && dpkg-deb -Z xz -b package afk.deb rm package/opt/afk/afk"
+    "package": "cp afk package/opt/afk/ && dpkg-deb -Z xz -b package afk.deb && rm package/opt/afk/afk"
   },
   "author": "",
   "license": "ISC"
