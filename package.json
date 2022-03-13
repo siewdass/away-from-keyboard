@@ -5,13 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "DISPLAY=:1 /opt/afk/afk $(lsblk --nodeps -no serial /dev/sda) $USER",
-<<<<<<< HEAD
-    "build": "g++ script.cpp status.cpp acknow.cpp viewport.cpp screenshot.cpp inputs.cpp utils.cpp actions.cpp character.cpp astar.cpp path.cpp licence.cpp converter.cpp main.cpp -o afk -std=c++17 -lX11 -lxdo -ljsoncpp -lpthread `pkg-config --cflags --libs opencv gtk+-2.0 appindicator-0.1` -Wno-deprecated-declarations && cp afk /opt/afk/ && cp afk package/opt/afk/",
-=======
     "start2": "DISPLAY=:1 ./fred",
     "build": "g++ script.cpp status.cpp acknow.cpp viewport.cpp screenshot.cpp inputs.cpp utils.cpp actions.cpp character.cpp astar.cpp path.cpp licence.cpp converter.cpp main.cpp -o afk -std=c++17 -lX11 -lxdo -ljsoncpp -lpthread `pkg-config --cflags --libs opencv gtk+-2.0 appindicator-0.1` -Wno-deprecated-declarations && cp afk /opt/afk/",
     "build2": "g++ screenshot.cpp acknow.cpp viewport.cpp fredTest.cpp -o fred -std=c++17 -lX11 -lxdo -ljsoncpp -lpthread `pkg-config --cflags --libs opencv gtk+-2.0 appindicator-0.1` ",
->>>>>>> 69d6d77a7ff23c8c7a7da9f40d03cecd99d443be
     "check": "python3 rgb.py > /dev/null 2>&1",
     "script": "cd scripting && DISPLAY=:1 ./scripter2.py",
     "s": "cd scripting && DISPLAY=:1 ./scripter3.py",
