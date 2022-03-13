@@ -82,7 +82,11 @@ void updateThread( ) {
 			values.necklace = necklace;
 			values.ring = ring;
 
+<<<<<<< HEAD
 			console.log( x, y, necklace, ring );
+=======
+			///console.log( weapon );
+>>>>>>> 69d6d77a7ff23c8c7a7da9f40d03cecd99d443be
 
 			time.sleep( 200 );
 
@@ -291,6 +295,7 @@ void toolsThread( ) {
 
 void autoattackTargetThread( ) {
 
+	bool valuableLoot;
 	bool keepAttacking;
 	double attackCooldown = 0;
 	double autoAttackCooldown = 0;
@@ -329,7 +334,9 @@ void autoattackTargetThread( ) {
 				} else if ( mode.looting ) {
 
 					if ( !values.isTargeting ) {
-
+						valuableLoot = status.valuableLoot( );
+						console.log( valuableLoot );
+						if ( valuableLoot ) {
 						if ( character.vocation == "knight" ) {
 							mode.walking = actions.looter( );
 							if ( mode.walking && values.monsters.size( ) > 0 ) {
@@ -354,6 +361,12 @@ void autoattackTargetThread( ) {
 							inputs.mouse( X, Y, 3 );
 							inputs.shiftUp( );
 							time.sleep( 3000 );*/
+							mode.looting = false;
+							mode.attacking = false;
+						}
+						}
+						else {
+							mode.walking = true;
 							mode.looting = false;
 							mode.attacking = false;
 						}
