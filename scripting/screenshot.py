@@ -15,5 +15,5 @@ class screenshot:
 		base64 = b64encode( encode ).decode( 'utf-8' )
 		
 		#if kwargs[ "save" ]:
-		#	cv.imwrite( 'screenshot.png', img )
+		#cv.imwrite( 'screenshot.png', img )
 		return base64

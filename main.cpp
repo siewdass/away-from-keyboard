@@ -319,11 +319,11 @@ void autoattackTargetThread( ) {
 							inputs.mouse( X, Y, 1 );
 							time.sleep( 3000 );
 							mode.walking = actions.looter( );
-							auto [ XX, YY ] = actions.gameWindow( 0, 0 );
+							/*auto [ XX, YY ] = actions.gameWindow( 0, 0 );
 							inputs.shiftDown( );
 							inputs.mouse( XX, YY, 3 );
 							inputs.shiftUp( );
-							/*inputs.shiftDown( );
+							inputs.shiftDown( );
 							inputs.mouse( X, Y, 3 );
 							inputs.shiftUp( );
 							time.sleep( 3000 );*/
@@ -430,15 +430,15 @@ void attackThread( ) {
 						if ( values.box >= 3 || keepAttacking ) {
 							keepAttacking = true;
 							if ( time.clock( ) > attackCooldown ) {
-								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
+								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.annihilation );
 									attackCooldown = time.clock( ) + global*2;
 									attackCooldown1 = time.clock( ) + 31500;
-								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
+								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.brutalstrike );
 									attackCooldown = time.clock( ) + global;
 									attackCooldown2 = time.clock( ) + 6300;
-								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
+								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.whirlwindthrow );
 									attackCooldown = time.clock( ) + global;
 									attackCooldown3 = time.clock( ) + 6300;
@@ -567,5 +567,4 @@ int main( int argc, char** argv ) {
 // detectar cantidad de vida segun pixeles
 // internos de la barra de vida
 // autoattack siempre al que tenga mas vida
-// if ( !x ) { return } 
 // exori min = minimo 2

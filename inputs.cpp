@@ -28,7 +28,7 @@ void Inputs::mouseDrag( int x, int y ) {
 }
 
 void Inputs::keyboard( std::string key ) {
-  std::cout << key << std::endl;
+  //std::cout << key << std::endl;
   xdo_send_keysequence_window_down( xdo, CURRENTWINDOW, key.c_str( ), 0 );
   xdo_send_keysequence_window_up( xdo, CURRENTWINDOW, key.c_str( ), 0 );
 }
