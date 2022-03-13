@@ -11,13 +11,14 @@ using namespace std;
 Screenshot screenshot;
 Converter converter;
 Acknow acknow;
-Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, WEAPON;
+Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON;
 vector < Pixel > HealthPoints;
 vector < Pixel > ManaPoints;
 vector < Pixel > BenefitsAndDamages;
 vector < Point > Flask;
 vector < Pixel > battle;
 vector < Pixel > chat;
+vector < Pixel > lootchat;
 vector < Pixel > weapon;
 
 tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool > Status::update( vector < Position > positions ) {
@@ -34,7 +35,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
             break;
         }
     }
-
+    
     bool alarm = false;
 
     BATTLE = screenshot.get( id, 26, 30, 1, 1 );
@@ -139,3 +140,20 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     return make_tuple( health, mana, hungry, paralyze, poison, haste, x, y, z, map, Flask, alarm, weaponEquipped );
 }
+
+ bool Status::valuableLoot( ) {
+    bool valuableLoot = false;
+
+	LOOTCHAT = screenshot.get( id, 509, 575, 305, 42 );
+    lootchat = acknow.inspect( LOOTCHAT );
+
+    for ( Pixel pixel : lootchat ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+		// console.log( r, g, b);
+        if ( r == 0 && g == 240 && b == 0 || r == 32 && g == 160 && b == 255 || r == 255 && g == 104 && b == 255 || r == 240 && g == 240 && 0 ) {
+            valuableLoot = true;
+            break;
+        }
+    }
+    return valuableLoot;
+ }
