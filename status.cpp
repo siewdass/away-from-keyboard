@@ -162,22 +162,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    bool Status::valuableLoot( ) {
-    bool valuableLoot = false;
-
-	LOOTCHAT = screenshot.get( id, 509, 575, 305, 42 );
-    lootchat = acknow.inspect( LOOTCHAT );
-
-    for ( Pixel pixel : lootchat ) {
-        int r = pixel.r, g = pixel.g, b = pixel.b;
-		// console.log( r, g, b);
-        if ( r == 0 && g == 240 && b == 0 || r == 32 && g == 160 && b == 255 || r == 255 && g == 104 && b == 255 || r == 240 && g == 240 && 0 ) {
-            valuableLoot = true;
-            break;
-        }
-    }
-    return valuableLoot;
-    }
+   
     
     //imwrite( "screenshot.png", RING );
 
@@ -197,3 +182,20 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         ringEquipped
     );
 }
+
+ bool Status::valuableLoot( ) {
+    bool valuableLoot = false;
+
+	LOOTCHAT = screenshot.get( id, 509, 575, 305, 42 );
+    lootchat = acknow.inspect( LOOTCHAT );
+
+    for ( Pixel pixel : lootchat ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+		// console.log( r, g, b);
+        if ( r == 0 && g == 240 && b == 0 || r == 32 && g == 160 && b == 255 || r == 255 && g == 104 && b == 255 || r == 240 && g == 240 && 0 ) {
+            valuableLoot = true;
+            break;
+        }
+    }
+    return valuableLoot;
+    }
