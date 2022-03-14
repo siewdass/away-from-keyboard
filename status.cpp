@@ -177,7 +177,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
     return valuableLoot;
- }
+    }
     
     //imwrite( "screenshot.png", RING );
 
