@@ -134,6 +134,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     FK = screenshot.get( id, 836, 304, 176, 296 );
     Flask = acknow.flask( FK );
+    
     /*isTargeting = false;
 
     for ( Pixel pixel : Battle ) {
@@ -162,8 +163,6 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-   
-    
     //imwrite( "screenshot.png", RING );
 
     return make_tuple(
@@ -184,6 +183,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 }
 
  bool Status::valuableLoot( ) {
+
     bool valuableLoot = false;
 
 	LOOTCHAT = screenshot.get( id, 509, 575, 305, 42 );
@@ -191,11 +191,11 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     for ( Pixel pixel : lootchat ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
-		// console.log( r, g, b);
         if ( r == 0 && g == 240 && b == 0 || r == 32 && g == 160 && b == 255 || r == 255 && g == 104 && b == 255 || r == 240 && g == 240 && 0 ) {
             valuableLoot = true;
             break;
         }
     }
+
     return valuableLoot;
-    }
+}
