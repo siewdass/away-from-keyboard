@@ -8,11 +8,11 @@
 using namespace std;
 
 class Script {
-	public:
-		vector < vector < vector < int > > > map;
-		vector < Waypoint > waypoints;
-		vector < Position > positions;
-		void load( string );
+public:
+	vector < vector < vector < int > > > map;
+	vector < Waypoint > waypoints;
+	vector < Position > positions;
+	void load( string );
 };
 
 #endif // SCRIPT_H

@@ -82,7 +82,7 @@ void updateThread( ) {
 			values.necklace = necklace;
 			values.ring = ring;
 
-			///console.log( weapon );
+			//console.log( x, y );
 
 			time.sleep( 200 );
 
@@ -241,6 +241,37 @@ void toolsThread( ) {
 	}
 }
 
+void keepDistance( ) {
+
+	time.sleep( 1000 );
+
+	while ( running ) {
+		
+		if ( Pause ) {
+			try {
+
+				if ( mode.attacking ) {
+					if ( values.monsters.size( ) > 0 ) {
+						if ( values.isTargeting ) {
+							//if ( time.clock( ) > autoAttackCooldown ) {
+
+							//}
+						}
+					}
+				}
+
+			} catch ( const exception &err ) {
+				console.log( "ERROR:", err.what( ) );
+			}
+
+			time.sleep( 500 );
+		} else {
+			time.sleep( 2000 );
+		}
+
+	}
+}
+
 void autoattackTargetThread( ) {
 
 	vector <lootPoint> lootPoints;
@@ -257,53 +288,56 @@ void autoattackTargetThread( ) {
 		
 		if ( Pause ) {
 			try {
-				if ( values.x == 0 && values.y == 0 ) {
-					count2 += 1;
-					if ( count2 >= 7 ) {
-					 	inputs.keyboard( "s" );
-					}
-				}
 
-				if ( mode.walking ) {
+				if ( mode.walking ) { // WALK
+
 					if ( values.monsters.size( ) == 0 ) {
+
 						if ( lootPoints.size( ) >= 1 ) {
+
 							lootSpot = actions.lootway( values, script, lootPoints[0] );
 							if ( lootSpot ) {
 								actions.looter( );
 								lootPoints.erase(lootPoints.begin()+0);			
 							}
-						}
-						else {
+
+						} else {
 							mode.attacking = actions.walker( values, script );
-						} 
+						}
+
 						if ( mode.attacking ) {
 							mode.walking = false;
 						}
+
 					} else {
 						mode.attacking = true;
 						mode.walking = false;
 					}
-				} else if ( mode.attacking ) {
-					if ( values.isTargeting ) {
-						mode.looting = true;
-						mode.attacking = false;				
-					}
+
+				} else if ( mode.attacking ) { // ATTACK
+
 					if ( values.monsters.size( ) > 0 ) {
-						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
-							inputs.keyboard( "Escape" );
-							time.sleep( 1000 );
-							inputs.keyboard( "space" );
-							autoAttackCooldown = time.clock( ) + 1000;
-							mode.looting = true;
-							mode.attacking = false;
+						if ( !values.isTargeting ) {
+							if ( time.clock( ) > autoAttackCooldown ) {
+								inputs.keyboard( "Escape" );
+								time.sleep( 1000 );
+								inputs.keyboard( "space" );
+								autoAttackCooldown = time.clock( ) + 1000;
+							}
+						} else if ( time.clock( ) > attackCooldown ) {
+							if ( character.divinemissile != "" ) {
+								inputs.keyboard( character.divinemissile );
+								attackCooldown = time.clock( ) + 2100;
+							}
 						}
 					} else {
 						mode.walking = true;
 						mode.attacking = false;
 					}
-				} else if ( mode.looting ) {
 
-					if ( !values.isTargeting ) {
+				} else if ( mode.looting ) { // LOOT
+
+					/*if ( !values.isTargeting ) {
 						valuableLoot = status.valuableLoot( );
 						if ( valuableLoot ) {
 							for ( int i = 0; i < script.positions.size(); i++ ) {
@@ -338,7 +372,7 @@ void autoattackTargetThread( ) {
 							}
 						}
 
-					}
+					}*/
 				}
 
 			} catch ( const exception &err ) {
