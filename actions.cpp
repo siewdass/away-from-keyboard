@@ -324,14 +324,6 @@ bool Actions::runaway( Values values, Script script ) {
             console.log( "walk" );
 
             auto paths = path.find( script.map[ z ], from, to );
-
-            /*string print;
-            for ( var p : paths ) {
-                print += "(" + to_string( p.x );
-                print += "," + to_string( p.y ) + ")";
-            }*/
-            //console.log( print );
-
             if ( paths.size( ) > 0 ) {
 
                 if ( paths.size( ) >= 1 ) {
@@ -383,7 +375,7 @@ bool Actions::lootway( Values values, Script script, lootPoint lootpoint ) {
             to.y = lootpoint.y;
             try {
             auto paths = path.find( script.map[ z ], from, to );
-            console.log( position, runPosition);
+            console.log( position, runPosition );
 
             if ( paths.size( ) > 0 ) {
 

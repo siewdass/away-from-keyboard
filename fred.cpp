@@ -306,9 +306,15 @@ void autoattackTargetThread( ) {
 					if ( !values.isTargeting ) {
 						valuableLoot = status.valuableLoot( );
 						if ( valuableLoot ) {
-							lootPoint p = lootPoint( );
-							p.add( values.x + values.targetPosition.x, values.y + values.targetPosition.y );
-							lootPoints.push_back( p );
+							for ( int i = 0; i < script.positions.size(); i++ ) {
+								if ( values.x + values.targetPosition.x == script.positions[i].x &&
+								values.y + values.targetPosition.y == script.positions[i].y ) {	
+									lootPoint p = lootPoint( );							
+									p.add( values.x + values.targetPosition.x, values.y + values.targetPosition.y );
+									lootPoints.push_back( p );
+									break;
+								}
+							}
 							mode.walking = true;
 							mode.looting = false;
 							mode.attacking = false;
@@ -319,8 +325,8 @@ void autoattackTargetThread( ) {
 					 	mode.attacking = false;
 						}
 					} else if ( character.vocation == "paladin" ) {
-						if ( values.targetPosition.x <= 3 && values.targetPosition.x > 0 || values.targetPosition.x >= -3 && values.targetPosition.x < 0  ) {
-							if ( values.targetPosition.y <= 3 && values.targetPosition.y > 0 || values.targetPosition.y >= -3 && values.targetPosition.y < 0  ) {
+						if ( values.targetPosition.x <= 3 && values.targetPosition.x >= 0 || values.targetPosition.x >= -3 && values.targetPosition.x <= 0  ) {
+							if ( values.targetPosition.y <= 3 && values.targetPosition.y >= 0 || values.targetPosition.y >= -3 && values.targetPosition.y <= 0  ) {
 								actions.runaway( values, script );
 							}
 						}
