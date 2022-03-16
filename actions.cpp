@@ -278,7 +278,7 @@ bool Actions::runaway( Values values, Script script ) {
     } else if ( values.minimap != old  ) {
         count = 0;
         old = values.minimap;
-    } if ( count >= 4 ) {
+    } if ( count >= 2 ) {
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
 
@@ -333,6 +333,65 @@ bool Actions::runaway( Values values, Script script ) {
                 if ( paths.size( ) >= 1 ) {
                     x = paths[ 1 ].x;
                     y = paths[ 1 ].y;
+                } else {
+                    x = paths[ paths.size( ) -1 ].x;
+                    y = paths[ paths.size( ) -1 ].y;
+                }
+
+                console.log( "from x:", values.x, "from y:", values.y );
+                console.log( "to x:", x, "to y:", y );
+
+                int X = x - values.x; 
+                int Y = y - values.y; 
+
+                //inputs.keyboard( "Escape" );
+                //time.sleep( 100 );
+                inputs.mouse( left + ( pixel * X ), top + ( pixel * Y ), 1 );
+                console.log( left + ( pixel * X ), top + ( pixel * Y ), 1 );
+                walkCoolDown =  time.clock( ) + 1000;
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
+bool Actions::lootway( Values values, Script script, lootPoint lootpoint ) {
+    console.log( "ejecutado" );
+    if ( values.minimap == old ) {
+        count += 1;
+    } else if ( values.minimap != old  ) {
+        count = 0;
+        old = values.minimap;
+    } if ( count >= 5 ) {
+        count = 0;
+        if ( time.clock( ) > walkCoolDown ) {
+
+            if ( values.x == lootpoint.x &&
+                 values.y == lootpoint.y ) {
+                console.log( "loot" );
+                return true;
+            }
+
+            from.x = values.x;
+            from.y = values.y;
+            to.x = lootpoint.x;
+            to.y = lootpoint.y;
+
+            auto paths = path.find( script.map[ z ], from, to );
+
+            /*string print;
+            for ( var p : paths ) {
+                print += "(" + to_string( p.x );
+                print += "," + to_string( p.y ) + ")";
+            }*/
+            //console.log( print );
+
+            if ( paths.size( ) > 0 ) {
+
+                if ( paths.size( ) >= 41 ) {
+                    x = paths[ 40 ].x;
+                    y = paths[ 40 ].y;
                 } else {
                     x = paths[ paths.size( ) -1 ].x;
                     y = paths[ paths.size( ) -1 ].y;

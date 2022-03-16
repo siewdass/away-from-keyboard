@@ -295,6 +295,7 @@ void autoattackTargetThread( ) {
 	bool keepAttacking;
 	double attackCooldown = 0;
 	double autoAttackCooldown = 0;
+	int count2 = 0;
 
 	time.sleep( 3000 );
 
@@ -302,6 +303,12 @@ void autoattackTargetThread( ) {
 		
 		if ( Pause ) {
 			try {
+				if ( values.x == 0 && values.y == 0 ) {
+					count2 += 1;
+					if ( count2 >= 7 ) {
+					 	inputs.keyboard( "s" );
+					}
+				}
 
 				if ( mode.walking ) {
 					if ( values.monsters.size( ) == 0 ) {
@@ -330,8 +337,8 @@ void autoattackTargetThread( ) {
 				} else if ( mode.looting ) {
 
 					if ( !values.isTargeting ) {
-						valuableLoot = status.valuableLoot( );
-						console.log( valuableLoot );
+						 valuableLoot = status.valuableLoot( );
+						 console.log( valuableLoot );
 						if ( valuableLoot ) {
 						if ( character.vocation == "knight" ) {
 							mode.walking = actions.looter( );
@@ -360,12 +367,12 @@ void autoattackTargetThread( ) {
 							mode.looting = false;
 							mode.attacking = false;
 						}
-						}
-						else {
-							mode.walking = true;
-							mode.looting = false;
-							mode.attacking = false;
-						}
+						 }
+						 else {
+					 	mode.walking = true;
+					 	mode.looting = false;
+					 	mode.attacking = false;
+						 }
 					} else if ( character.vocation == "paladin" ) {
 						
 						if ( time.clock( ) > attackCooldown ) {
