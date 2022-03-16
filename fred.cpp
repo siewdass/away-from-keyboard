@@ -284,6 +284,10 @@ void autoattackTargetThread( ) {
 						mode.walking = false;
 					}
 				} else if ( mode.attacking ) {
+					if ( values.isTargeting ) {
+						mode.looting = true;
+						mode.attacking = false;				
+					}
 					if ( values.monsters.size( ) > 0 ) {
 						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
 							inputs.keyboard( "Escape" );
@@ -315,7 +319,12 @@ void autoattackTargetThread( ) {
 					 	mode.attacking = false;
 						}
 					} else if ( character.vocation == "paladin" ) {
-						actions.runaway( );
+						if ( values.targetPosition.x <= 3 && values.targetPosition.x > 0 || values.targetPosition.x >= -3 && values.targetPosition.x < 0  ) {
+							if ( values.targetPosition.y <= 3 && values.targetPosition.y > 0 || values.targetPosition.y >= -3 && values.targetPosition.y < 0  ) {
+								actions.runaway( values, script );
+							}
+						}
+						// actions.runaway( );
 						if ( time.clock( ) > attackCooldown ) {
 							if ( character.divinemissile != "" ) {
 								inputs.keyboard( character.divinemissile );

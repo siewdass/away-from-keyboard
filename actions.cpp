@@ -176,6 +176,7 @@ bool Actions::walker( Values values, Script script ) {
         count = 0;
         old = values.minimap;
     } if ( count >= 3 ) {
+        runPosition = position-1;
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
 
@@ -272,7 +273,7 @@ bool Actions::walker( Values values, Script script ) {
 }
 
 bool Actions::runaway( Values values, Script script ) {
-    console.log( "ejecutado" );
+   
     if ( values.minimap == old ) {
         count += 1;
     } else if ( values.minimap != old  ) {
@@ -281,43 +282,46 @@ bool Actions::runaway( Values values, Script script ) {
     } if ( count >= 2 ) {
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
-
-            if ( values.x == script.waypoints[ position ].x &&
-                 values.y == script.waypoints[ position ].y ) {
+            if ( values.x == script.waypoints[ runPosition ].x &&
+                 values.y == script.waypoints[ runPosition ].y ) {
                 console.log( "run" );
-                if ( position == 0 ) {
-                    position += 1;
+                if ( runPosition == position - 2 ) {
+                    runPosition += 1;
                 } else { 
-                    position -= 1;
+                    runPosition -= 1;
                 }
-            } else if ( ( values.x == script.waypoints[ position ].x -1 || 
-                          values.x == script.waypoints[ position ].x +1 ) && 
-                        ( values.y == script.waypoints[ position ].y -1 || 
-                          values.y == script.waypoints[ position ].y +1 ||
-                          values.y == script.waypoints[ position ].y )  ) {
+            } else if ( ( values.x == script.waypoints[ runPosition ].x -1 || 
+                          values.x == script.waypoints[ runPosition ].x +1 ) && 
+                        ( values.y == script.waypoints[ runPosition ].y -1 || 
+                          values.y == script.waypoints[ runPosition ].y +1 ||
+                          values.y == script.waypoints[ runPosition ].y )  ) {
                 console.log( "run wrong x" );
-                if ( position == 0 ) {
-                    position += 1;
+                if ( runPosition == position - 2 ) {
+                    runPosition += 1;
                 } else { 
-                    position -= 1;
+                    runPosition -= 1;
                 }
-            } else if ( ( values.y == script.waypoints[ position ].y -1 || 
-                          values.y == script.waypoints[ position ].y +1 ) && 
-                        ( values.x == script.waypoints[ position ].x -1 || 
-                          values.x == script.waypoints[ position ].x +1 ||
-                          values.x == script.waypoints[ position ].x ) ) {
+            } else if ( ( values.y == script.waypoints[ runPosition ].y -1 || 
+                          values.y == script.waypoints[ runPosition ].y +1 ) && 
+                        ( values.x == script.waypoints[ runPosition ].x -1 || 
+                          values.x == script.waypoints[ runPosition ].x +1 ||
+                          values.x == script.waypoints[ runPosition ].x ) ) {
                 console.log( "run wrong y" );
-                if ( position == 0 ) {
-                    position += 1;
+                if ( runPosition == position - 2 ) {
+                    runPosition += 1;
                 } else { 
-                    position -= 1;
+                    runPosition -= 1;
                 }
             }
 
+            if ( runPosition < 0 ) {
+                runPosition = 1;
+            }
             from.x = values.x;
             from.y = values.y;
-            to.x = script.waypoints[ position ].x;
-            to.y = script.waypoints[ position ].y;
+            to.x = script.waypoints[ runPosition ].x;
+            to.y = script.waypoints[ runPosition ].y;
+            console.log( "walk" );
 
             auto paths = path.find( script.map[ z ], from, to );
 
@@ -331,8 +335,8 @@ bool Actions::runaway( Values values, Script script ) {
             if ( paths.size( ) > 0 ) {
 
                 if ( paths.size( ) >= 1 ) {
-                    x = paths[ 1 ].x;
-                    y = paths[ 1 ].y;
+                    x = paths[ 0 ].x;
+                    y = paths[ 0 ].y;
                 } else {
                     x = paths[ paths.size( ) -1 ].x;
                     y = paths[ paths.size( ) -1 ].y;
@@ -363,7 +367,7 @@ bool Actions::lootway( Values values, Script script, lootPoint lootpoint ) {
     } else if ( values.minimap != old  ) {
         count = 0;
         old = values.minimap;
-    } if ( count >= 5 ) {
+    } if ( count >= 3 ) {
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
 
@@ -377,15 +381,9 @@ bool Actions::lootway( Values values, Script script, lootPoint lootpoint ) {
             from.y = values.y;
             to.x = lootpoint.x;
             to.y = lootpoint.y;
-
+            try {
             auto paths = path.find( script.map[ z ], from, to );
-
-            /*string print;
-            for ( var p : paths ) {
-                print += "(" + to_string( p.x );
-                print += "," + to_string( p.y ) + ")";
-            }*/
-            //console.log( print );
+            console.log( position, runPosition);
 
             if ( paths.size( ) > 0 ) {
 
@@ -409,6 +407,14 @@ bool Actions::lootway( Values values, Script script, lootPoint lootpoint ) {
                 console.log( left + ( pixel * X ), top + ( pixel * Y ), 1 );
                 walkCoolDown =  time.clock( ) + 1000;
                 return false;
+            }
+            else {
+                console.log( "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                return true; 
+            }
+
+            } catch ( const std::exception& err ) {
+                return true;
             }
         }
     }

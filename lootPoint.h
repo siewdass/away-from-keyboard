@@ -6,11 +6,11 @@ class lootPoint {
 	int x;
 	int y;
 	lootPoint( ) {
-		this->x = 0;
-		this->y = 0;
+		x = 0;
+		y = 0;
 	}
-	void add( int x, int y ) {
-		this->x = x;
-		this->y = y; 
+	void add( int X, int Y ) {
+		x = X;
+		y = Y; 
 	}
 };

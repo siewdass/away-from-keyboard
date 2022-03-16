@@ -39,6 +39,7 @@ public:
 
     string old = "";
     int count = 0;
+    int runPosition = 0;    
     int walkCoolDown = 0;
     int x = 0, y = 0, z = 0;
     int position = 0;
