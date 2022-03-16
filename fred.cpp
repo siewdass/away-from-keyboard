@@ -257,9 +257,19 @@ void autoattackTargetThread( ) {
 		
 		if ( Pause ) {
 			try {
+				if ( values.isTargeting ) {
+					if ( values.targetPosition.x <= 3 && values.targetPosition.x >= 0 ||
+						 values.targetPosition.x >= -3 && values.targetPosition.x <= 0  ) {
+							if ( values.targetPosition.y <= 3 && values.targetPosition.y >= 0 || 
+							values.targetPosition.y >= -3 && values.targetPosition.y <= 0  ) {
+								actions.runaway( values, script );
+							}
+					}
+				}
 				if ( values.x == 0 && values.y == 0 ) {
 					count2 += 1;
-					if ( count2 >= 7 ) {
+					if ( count2 >= 8 ) {
+						count2 = 0;
 					 	inputs.keyboard( "s" );
 					}
 				}
@@ -325,11 +335,6 @@ void autoattackTargetThread( ) {
 					 	mode.attacking = false;
 						}
 					} else if ( character.vocation == "paladin" ) {
-						if ( values.targetPosition.x <= 3 && values.targetPosition.x >= 0 || values.targetPosition.x >= -3 && values.targetPosition.x <= 0  ) {
-							if ( values.targetPosition.y <= 3 && values.targetPosition.y >= 0 || values.targetPosition.y >= -3 && values.targetPosition.y <= 0  ) {
-								actions.runaway( values, script );
-							}
-						}
 						// actions.runaway( );
 						if ( time.clock( ) > attackCooldown ) {
 							if ( character.divinemissile != "" ) {
