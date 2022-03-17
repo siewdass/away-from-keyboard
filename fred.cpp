@@ -253,9 +253,15 @@ void keepDistance( ) {
 				if ( mode.attacking ) {
 					if ( values.monsters.size( ) > 0 ) {
 						if ( values.isTargeting ) {
-							//if ( time.clock( ) > autoAttackCooldown ) {
 
-							//}
+							if ( values.targetPosition.x <= 3 && values.targetPosition.x >= 0 ||
+							     values.targetPosition.x >= -3 && values.targetPosition.x <= 0 ) {
+								if ( values.targetPosition.y <= 3 && values.targetPosition.y >= 0 ||
+								     values.targetPosition.y >= -3 && values.targetPosition.y <= 0 ) {
+									actions.runaway( values, script );
+								}
+							}
+
 						}
 					}
 				}
@@ -264,7 +270,7 @@ void keepDistance( ) {
 				console.log( "ERROR:", err.what( ) );
 			}
 
-			time.sleep( 500 );
+			time.sleep( 300 );
 		} else {
 			time.sleep( 2000 );
 		}
@@ -309,23 +315,7 @@ void autoattackTargetThread( ) {
 				if ( mode.walking ) { // WALK
 
 					if ( values.monsters.size( ) == 0 ) {
-
-						if ( lootPoints.size( ) >= 1 ) {
-
-							lootSpot = actions.lootway( values, script, lootPoints[0] );
-							if ( lootSpot ) {
-								actions.looter( );
-								lootPoints.erase(lootPoints.begin()+0);			
-							}
-
-						} else {
-							mode.attacking = actions.walker( values, script );
-						}
-
-						if ( mode.attacking ) {
-							mode.walking = false;
-						}
-
+						actions.walker( values, script );
 					} else {
 						mode.attacking = true;
 						mode.walking = false;
@@ -337,7 +327,7 @@ void autoattackTargetThread( ) {
 						if ( !values.isTargeting ) {
 							if ( time.clock( ) > autoAttackCooldown ) {
 								inputs.keyboard( "Escape" );
-								time.sleep( 1000 );
+								time.sleep( 200 );
 								inputs.keyboard( "space" );
 								autoAttackCooldown = time.clock( ) + 1000;
 							}
@@ -391,7 +381,7 @@ void autoattackTargetThread( ) {
 				console.log( "ERROR:", err.what( ) );
 			}
 
-			time.sleep( 500 );
+			time.sleep( 300 );
 		} else {
 			time.sleep( 2000 );
 		}
@@ -451,6 +441,7 @@ void run( ) {
 			thread( autoattackTargetThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
 			thread( autoattackTargetThread ).detach( );
+			thread( keepDistance ).detach( );
 			thread( ammoThread ).detach( );
 		}
 	}

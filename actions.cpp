@@ -274,12 +274,14 @@ bool Actions::walker( Values values, Script script ) {
 
 bool Actions::runaway( Values values, Script script ) {
    
+    console.log( runPosition, position );
+
     if ( values.minimap == old ) {
         count += 1;
     } else if ( values.minimap != old  ) {
         count = 0;
         old = values.minimap;
-    } if ( count >= 2 ) {
+    } if ( count >= 1 ) {
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
             if ( values.x == script.waypoints[ runPosition ].x &&
@@ -314,9 +316,10 @@ bool Actions::runaway( Values values, Script script ) {
                 }
             }
 
-            if ( runPosition < 0 ) {
+            if ( runPosition <= 0 ) {
                 runPosition = 1;
             }
+            
             from.x = values.x;
             from.y = values.y;
             to.x = script.waypoints[ runPosition ].x;
@@ -327,8 +330,8 @@ bool Actions::runaway( Values values, Script script ) {
             if ( paths.size( ) > 0 ) {
 
                 if ( paths.size( ) >= 1 ) {
-                    x = paths[ 0 ].x;
-                    y = paths[ 0 ].y;
+                    x = paths[ 2 ].x;
+                    y = paths[ 2 ].y;
                 } else {
                     x = paths[ paths.size( ) -1 ].x;
                     y = paths[ paths.size( ) -1 ].y;
