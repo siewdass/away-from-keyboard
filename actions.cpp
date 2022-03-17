@@ -175,7 +175,7 @@ bool Actions::walker( Values values, Script script ) {
     } else if ( values.minimap != old  ) {
         count = 0;
         old = values.minimap;
-    } if ( count >= 3 ) {
+    } if ( count >= 2 ) {
         runPosition = position-1;
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
@@ -274,23 +274,23 @@ bool Actions::walker( Values values, Script script ) {
 
 bool Actions::runaway( Values values, Script script ) {
    
-    console.log( runPosition, position );
-
     if ( values.minimap == old ) {
         count += 1;
     } else if ( values.minimap != old  ) {
         count = 0;
         old = values.minimap;
-    } if ( count >= 1 ) {
+    } if ( count >= 2 ) {
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
             if ( values.x == script.waypoints[ runPosition ].x &&
                  values.y == script.waypoints[ runPosition ].y ) {
                 console.log( "run" );
-                if ( runPosition == position - 2 ) {
-                    runPosition += 1;
-                } else { 
+                if ( runPosition == 0 ) {
+                    runPosition = 1;
+                } else if ( runPosition == position - 1) { 
                     runPosition -= 1;
+                } else if ( runPosition == position - 2 ) {
+                    runPosition += 1;
                 }
             } else if ( ( values.x == script.waypoints[ runPosition ].x -1 || 
                           values.x == script.waypoints[ runPosition ].x +1 ) && 
@@ -298,10 +298,12 @@ bool Actions::runaway( Values values, Script script ) {
                           values.y == script.waypoints[ runPosition ].y +1 ||
                           values.y == script.waypoints[ runPosition ].y )  ) {
                 console.log( "run wrong x" );
-                if ( runPosition == position - 2 ) {
-                    runPosition += 1;
-                } else { 
+                if ( runPosition == 0 ) {
+                    runPosition = 1;
+                } else if ( runPosition == position - 1) { 
                     runPosition -= 1;
+                } else if ( runPosition == position - 2 ) {
+                    runPosition += 1;
                 }
             } else if ( ( values.y == script.waypoints[ runPosition ].y -1 || 
                           values.y == script.waypoints[ runPosition ].y +1 ) && 
@@ -309,17 +311,18 @@ bool Actions::runaway( Values values, Script script ) {
                           values.x == script.waypoints[ runPosition ].x +1 ||
                           values.x == script.waypoints[ runPosition ].x ) ) {
                 console.log( "run wrong y" );
-                if ( runPosition == position - 2 ) {
-                    runPosition += 1;
-                } else { 
+                if ( runPosition == 0 ) {
+                    runPosition = 1;
+                } else if ( runPosition == position - 1) { 
                     runPosition -= 1;
+                } else if ( runPosition == position - 2 ) {
+                    runPosition += 1;
                 }
             }
 
-            if ( runPosition <= 0 ) {
-                runPosition = 1;
+            if ( runPosition < 0 ) {
+                runPosition = 0;
             }
-            
             from.x = values.x;
             from.y = values.y;
             to.x = script.waypoints[ runPosition ].x;
@@ -330,8 +333,8 @@ bool Actions::runaway( Values values, Script script ) {
             if ( paths.size( ) > 0 ) {
 
                 if ( paths.size( ) >= 1 ) {
-                    x = paths[ 2 ].x;
-                    y = paths[ 2 ].y;
+                    x = paths[ 0 ].x;
+                    y = paths[ 0 ].y;
                 } else {
                     x = paths[ paths.size( ) -1 ].x;
                     y = paths[ paths.size( ) -1 ].y;

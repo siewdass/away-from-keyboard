@@ -295,27 +295,17 @@ void autoattackTargetThread( ) {
 		if ( Pause ) {
 			try {
 
-				/*if ( values.isTargeting ) {
-					if ( values.targetPosition.x <= 3 && values.targetPosition.x >= 0 ||
-						 values.targetPosition.x >= -3 && values.targetPosition.x <= 0  ) {
-							if ( values.targetPosition.y <= 3 && values.targetPosition.y >= 0 || 
-							values.targetPosition.y >= -3 && values.targetPosition.y <= 0  ) {
-								actions.runaway( values, script );
-							}
-					}
-				}
-				if ( values.x == 0 && values.y == 0 ) {
-					count2 += 1;
-					if ( count2 >= 8 ) {
-						count2 = 0;
-					 	inputs.keyboard( "s" );
-					}
-				}*/
-
 				if ( mode.walking ) { // WALK
-
+	
 					if ( values.monsters.size( ) == 0 ) {
-						actions.walker( values, script );
+						if ( lootPoints.size( ) >= 1 ) {
+							lootSpot = actions.lootway( values, script, lootPoints[0] );
+							if ( lootSpot ) {
+								actions.looter( );
+								lootPoints.erase(lootPoints.begin()+0);			
+							}
+						} else { actions.walker( values, script ); }
+						
 					} else {
 						mode.attacking = true;
 						mode.walking = false;
@@ -326,8 +316,7 @@ void autoattackTargetThread( ) {
 					if ( values.monsters.size( ) > 0 ) {
 						if ( !values.isTargeting ) {
 							if ( time.clock( ) > autoAttackCooldown ) {
-								inputs.keyboard( "Escape" );
-								time.sleep( 200 );
+								time.sleep( 50 );
 								inputs.keyboard( "space" );
 								autoAttackCooldown = time.clock( ) + 1000;
 							}
@@ -338,13 +327,6 @@ void autoattackTargetThread( ) {
 							}
 						}
 					} else {
-						mode.walking = true;
-						mode.attacking = false;
-					}
-
-				} else if ( mode.looting ) { // LOOT
-
-					/*if ( !values.isTargeting ) {
 						valuableLoot = status.valuableLoot( );
 						if ( valuableLoot ) {
 							for ( int i = 0; i < script.positions.size(); i++ ) {
@@ -353,28 +335,16 @@ void autoattackTargetThread( ) {
 									lootPoint p = lootPoint( );							
 									p.add( values.x + values.targetPosition.x, values.y + values.targetPosition.y );
 									lootPoints.push_back( p );
+									console.log( values.x + values.targetPosition.x, values.y + values.targetPosition.y );
 									break;
 								}
 							}
-							mode.walking = true;
-							mode.looting = false;
-							mode.attacking = false;
-						}
-						else {
-					 	mode.walking = true;
-					 	mode.looting = false;
-					 	mode.attacking = false;
-						}
-					} else if ( character.vocation == "paladin" ) {
-						// actions.runaway( );
-						if ( time.clock( ) > attackCooldown ) {
-							if ( character.divinemissile != "" ) {
-								inputs.keyboard( character.divinemissile );
-								attackCooldown = time.clock( ) + 2100;
-							}
-						}
+						}		
+						mode.walking = true;
+						mode.attacking = false;
+					}
 
-					}*/
+				} else if ( mode.looting ) { 
 				}
 
 			} catch ( const exception &err ) {
