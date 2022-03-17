@@ -296,7 +296,7 @@ void autoattackTargetThread( ) {
 			try {
 
 				if ( mode.walking ) { // WALK
-	
+					
 					if ( values.monsters.size( ) == 0 ) {
 						if ( lootPoints.size( ) >= 1 ) {
 							lootSpot = actions.lootway( values, script, lootPoints[0] );
