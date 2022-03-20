@@ -358,7 +358,7 @@ bool Actions::runaway( Values values, Script script ) {
     return false;
 }
 
-bool Actions::lootway( Values values, Script script, lootPoint lootpoint ) {
+bool Actions::lootway( Values values, Script script, Point lootpoint ) {
     console.log( "ejecutado" );
     if ( values.minimap == old ) {
         count += 1;

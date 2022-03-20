@@ -280,7 +280,8 @@ void keepDistance( ) {
 
 void autoattackTargetThread( ) {
 
-	vector <lootPoint> lootPoints;
+	Point p;
+	vector <Point> lootPoints;
 	bool valuableLoot;
 	bool keepAttacking;
 	double attackCooldown = 0;
@@ -303,7 +304,7 @@ void autoattackTargetThread( ) {
 							lootSpot = actions.lootway( values, script, lootPoints[0] );
 							if ( lootSpot ) {
 								actions.looter( );
-								lootPoints.erase(lootPoints.begin()+0);			
+								lootPoints.erase(lootPoints.begin());			
 							}
 						} else { actions.walker( values, script ); }
 						
@@ -331,9 +332,9 @@ void autoattackTargetThread( ) {
 						if ( valuableLoot ) {
 							for ( int i = 0; i < script.positions.size(); i++ ) {
 								if ( values.x + values.targetPosition.x == script.positions[i].x &&
-								values.y + values.targetPosition.y == script.positions[i].y ) {	
-									lootPoint p = lootPoint( );							
-									p.add( values.x + values.targetPosition.x, values.y + values.targetPosition.y );
+								values.y + values.targetPosition.y == script.positions[i].y ) {
+									p.x = values.x + values.targetPosition.x;
+									p.y = values.y + values.targetPosition.y;
 									lootPoints.push_back( p );
 									console.log( values.x + values.targetPosition.x, values.y + values.targetPosition.y );
 									break;

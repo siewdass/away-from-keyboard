@@ -9,7 +9,6 @@
 #include "utils.h"
 #include "inputs.h"
 #include "path.h"
-#include "lootPoint.h"
 using namespace cv;
 using namespace std;
 
@@ -49,7 +48,7 @@ public:
     bool looter( );
     bool walker( Values, Script );
     bool runaway( Values, Script );
-    bool lootway( Values, Script, lootPoint);
+    bool lootway( Values, Script, Point);
     tuple < bool, string, string, string, string, int, int, int > potions( int, int );
     tuple < bool, string, string, string, string, int, int, int > supporter( Values );
     bool attacker( Values );
