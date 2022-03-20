@@ -1,0 +1,10 @@
+#! /bin/sh
+set -e
+if [ -d "/opt/afk" ]
+  then
+    echo Deleting files...
+    rm -rf /opt/afk
+    rm -rf /usr/share/applications/afk.desktop
+    rm -rf /usr/share/applications/tibiabot.desktop
+fi
+exit 0
