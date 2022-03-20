@@ -312,7 +312,7 @@ void autoattackTargetThread( ) {
 						mode.walking = false;
 					}
 
-				} else if ( mode.attacking ) { // ATTACK webo
+				} else if ( mode.attacking ) { // ATTACK 
 
 					if ( values.monsters.size( ) > 0 ) {
 						if ( !values.isTargeting ) {
