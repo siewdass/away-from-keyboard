@@ -322,14 +322,13 @@ void autoattackTargetThread( ) {
 					if ( values.monsters.size( ) > 0 ) {
 						if ( !values.isTargeting ) {
 							if ( time.clock( ) > autoAttackCooldown ) {
-								time.sleep( 50 );
 								inputs.keyboard( "space" );
 								autoAttackCooldown = time.clock( ) + 1000;
 							}
 						} else if ( time.clock( ) > attackCooldown ) {
 							if ( character.divinemissile != "" ) {
 								inputs.keyboard( character.divinemissile );
-								attackCooldown = time.clock( ) + 2100;
+								attackCooldown = time.clock( ) + 2050;
 							}
 						}
 					} else {

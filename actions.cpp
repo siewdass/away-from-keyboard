@@ -333,8 +333,8 @@ bool Actions::runaway( Values values, Script script ) {
             if ( paths.size( ) > 0 ) {
 
                 if ( paths.size( ) >= 1 ) {
-                    x = paths[ 1 ].x;
-                    y = paths[ 1 ].y;
+                    x = paths[ 0 ].x;
+                    y = paths[ 0 ].y;
                 } else {
                     x = paths[ paths.size( ) -1 ].x;
                     y = paths[ paths.size( ) -1 ].y;
