@@ -296,7 +296,7 @@ void autoattackTargetThread( ) {
 			try {
 
 				if ( mode.walking ) { // WALK
-				
+
 					if ( values.x == 0 && values.y == 0 ) {
 						count2 += 1;
 						if ( count2 >= 8 ) {
@@ -306,6 +306,7 @@ void autoattackTargetThread( ) {
 					}
 
 					if ( values.monsters.size( ) == 0 ) {
+						
 						if ( lootPoints.size( ) >= 1 ) {
 							lootSpot = actions.lootway( values, script, lootPoints[0] );
 							if ( lootSpot ) {
@@ -347,7 +348,7 @@ void autoattackTargetThread( ) {
 									break;
 								}
 							}
-						}		
+						}
 						mode.walking = true;
 						mode.attacking = false;
 					}
