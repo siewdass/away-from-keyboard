@@ -6,7 +6,8 @@ extern "C" {
 #include <string.h> 
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
+#include <unistd.h>
+
 
 xdo_t * xdo = xdo_new( NULL );
 
@@ -14,6 +15,8 @@ void Inputs::mouse( int x, int y, int button ) {
   xdo_move_mouse( xdo, x, y, CURRENTWINDOW );
   xdo_mouse_down( xdo, CURRENTWINDOW, button );
   xdo_mouse_up( xdo, CURRENTWINDOW, button );
+  //usleep( 500 );
+  //xdo_move_mouse( xdo, 50, 500, CURRENTWINDOW );
 }
 
 void Inputs::mouseMove( int x, int y ) {

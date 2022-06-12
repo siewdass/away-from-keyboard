@@ -135,14 +135,18 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
 
                             //targeting.clear( );
 
+
+                            //imwrite( "screenshot.png", img );
+
                             int X = x - 7, Y = y + 45;
 
                             for ( int i = 0; i <= 3; i++ ) {
                                 for ( int j = 0; j <= 42; j++ ) {
                                     pixel = Acknow::rgb( img, X + j, Y + i );
+
                                     if ( pixel.r == rb & pixel.g == gb & pixel.b == bb ||
-                                         pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ||
-                                         pixel.r == 255 & pixel.g == 57 & pixel.b == 57 ) {
+                                        pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ) {
+                                        //pixel.r == 254 && pixel.g >= 57 && pixel.g <= 128 && pixel.b >= 57 && pixel.b <= 128 ) {
                                         //targeting.push_back( 1 );
                                         targeting = true;
                                         //cv::Rect rect( X, Y, 42, 3 );
@@ -159,15 +163,10 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
 
                                 for ( int i = 0; i <= 42; i++ ) {
                                     for ( int j = 0; j <= 3; j++ ) {
-                                        pixel = Acknow::rgb( img, X + j, Y + i );
-                                        if ( pixel.r == rb & pixel.g == gb & pixel.b == bb ||
-                                            pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ||
-                                            pixel.r == 255 & pixel.g == 57 & pixel.b == 57 ) {
+                                    if ( pixel.r == rb & pixel.g == gb & pixel.b == bb ||
+                                        pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ) {
+                                            // pixel.r == 254 && pixel.g >= 57 && pixel.g <= 128 && pixel.b >= 57 && pixel.b <= 128 ) {
                                             targeting = true;
-                                            //cv::Rect rect( X, Y, 3, 42 );
-                                            //cv::rectangle( img, rect, cv::Scalar( 0, 255, 255 ) );
-                                            //target.x = x;
-                                            //target.y = y;
                                             break;
                                         }
                                     }
@@ -186,9 +185,7 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
     } catch ( exception &e ) {
     }
 
-    if ( targeting.size( ) == 2 ) {
-        target = true;
-    }
+    //imwrite( "screenshot.png", img );
 
     return make_tuple( target, arr );
 }
