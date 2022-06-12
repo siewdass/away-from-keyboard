@@ -43,17 +43,25 @@
     ]
   ],
   "waypoints": [
-  	{
-      "x": 4,
-      "y": 12,
+
+    {
+      "x": 8,
+      "y": 11,
       "z": 0,
       "action": "attack"
     },
     {
-      "x": 63,
-      "y": 14,
+      "x": 38,
+      "y": 28,
       "z": 0,
-      "action": "attack<"
+      "action": "attack"
+    },
+
+    {
+      "x": 56,
+      "y": 17,
+      "z": 0,
+      "action": "attack"
     }
   ],
   "positions": [

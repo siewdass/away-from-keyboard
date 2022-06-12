@@ -82,7 +82,7 @@ void updateThread( ) {
 			values.necklace = necklace;
 			values.ring = ring;
 
-			///console.log( weapon );
+			console.log( isTargeting, boxTarget );
 
 			time.sleep( 200 );
 
@@ -286,6 +286,67 @@ void toolsThread( ) {
 		} else {
   		time.sleep( 2000 );
 		}
+	}
+}
+
+void knightTargetThread( ) {
+
+	double autoAttackCooldown = 0;
+
+	time.sleep( 3000 );
+
+	while ( running ) {
+		
+		if ( Pause ) {
+			try {
+
+				if ( mode.walking ) {
+
+					if ( values.monsters.size( ) == 0 ) {
+						actions.walker( values, script );
+					} else {
+						mode.attacking = true;
+						mode.walking = false;
+					}
+
+				} else if ( mode.attacking ) {
+
+					if ( !values.isTargeting && values.monsters.size( ) > 0 ) {
+						if ( time.clock( ) > autoAttackCooldown ) {
+							inputs.keyboard( "space" );
+							autoAttackCooldown = time.clock( ) + 1000;
+							mode.looting = true;
+							mode.attacking = false;
+						}
+					} else {
+						mode.walking = true;
+						mode.attacking = false;
+					}
+
+				} else if ( mode.looting ) {
+
+					if ( !values.isTargeting ) {
+						actions.looter( );
+						if ( values.monsters.size( ) > 0 ) {
+							mode.looting = false;
+							mode.attacking = true;
+						} else {
+							mode.looting = false;
+							mode.walking = true;
+						}
+					}
+
+				}
+
+			} catch ( const exception &err ) {
+				console.log( "ERROR:", err.what( ) );
+			}
+
+			time.sleep( 500 );
+		} else {
+			time.sleep( 2000 );
+		}
+
 	}
 }
 
@@ -571,7 +632,7 @@ void run( ) {
 			thread( autoAttackThread ).detach( );
 			thread( attackThread ).detach( );
 		} else if ( character.vocation == "knight" && character.hunt == "target" ) {
-			thread( autoattackTargetThread ).detach( );
+			thread( knightTargetThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
 			thread( autoattackTargetThread ).detach( );
 			thread( ammoThread ).detach( );

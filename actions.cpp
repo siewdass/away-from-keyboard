@@ -333,8 +333,8 @@ bool Actions::runaway( Values values, Script script ) {
             if ( paths.size( ) > 0 ) {
 
                 if ( paths.size( ) >= 1 ) {
-                    x = paths[ 1 ].x;
-                    y = paths[ 1 ].y;
+                    x = paths[ 0 ].x;
+                    y = paths[ 0 ].y;
                 } else {
                     x = paths[ paths.size( ) -1 ].x;
                     y = paths[ paths.size( ) -1 ].y;
@@ -358,7 +358,7 @@ bool Actions::runaway( Values values, Script script ) {
     return false;
 }
 
-bool Actions::lootway( Values values, Script script, lootPoint lootpoint ) {
+bool Actions::lootway( Values values, Script script, Point lootpoint ) {
     console.log( "ejecutado" );
     if ( values.minimap == old ) {
         count += 1;
