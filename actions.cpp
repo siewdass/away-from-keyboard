@@ -175,7 +175,7 @@ bool Actions::walker( Values values, Script script ) {
     } else if ( values.minimap != old  ) {
         count = 0;
         old = values.minimap;
-    } if ( count >= 2 ) {
+    } if ( count >= 4 ) {
         runPosition = position-1;
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
@@ -254,7 +254,7 @@ bool Actions::walker( Values values, Script script ) {
                     y = paths[ paths.size( ) -1 ].y;
                 }
 
-                console.log( paths.size( ) -1 );
+                //console.log( paths.size( ) -1 );
                 console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
 
                 int X = x - values.x; 

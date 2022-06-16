@@ -82,12 +82,12 @@ void updateThread( ) {
 			values.necklace = necklace;
 			values.ring = ring;
 
-			console.log( isTargeting, boxTarget );
+			//console.log( isTargeting, boxTarget );
 
 			time.sleep( 200 );
 
 		} else {
-  		time.sleep( 2000 );
+			time.sleep( 2000 );
 		}
 
 	}

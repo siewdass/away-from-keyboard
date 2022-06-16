@@ -163,7 +163,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    //imwrite( "screenshot.png", RING );
+    //imwrite( "screenshot.png", MAP );
 
     return make_tuple(
         health,
