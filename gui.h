@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include <libappindicator/app-indicator.h>
+#include <filesystem>
 
 typedef void ( *Function )( );
 bool Pause = false;
@@ -39,7 +40,25 @@ void Interface( int argc, char** argv, Function callback ) {
 
   gtk_init( &argc, &argv );
   int n = 0;
-  appindicator = app_indicator_new( "AFK", "/opt/tibia/tibia.ico", APP_INDICATOR_CATEGORY_APPLICATION_STATUS );
+
+  bool Bot1 = std::filesystem::exists( "/opt/afk/bot1" );
+  bool Bot2 = std::filesystem::exists( "/opt/afk/bot2" );
+  bool Bot3 = std::filesystem::exists( "/opt/afk/bot3" );
+  bool Bot4 = std::filesystem::exists( "/opt/afk/bot4" );
+
+  const char* ico = "";
+
+  if ( Bot4 ) {
+    ico = "/opt/afk/t4.png";
+  } else if ( Bot3 ) {
+    ico = "/opt/afk/t3.png";
+  } else if ( Bot2 ) {
+    ico = "/opt/afk/t2.png";
+  } else {
+    ico = "/opt/afk/t1.png";
+  }
+
+  appindicator = app_indicator_new( "AFK", ico, APP_INDICATOR_CATEGORY_APPLICATION_STATUS );
 
   menu = gtk_menu_new( );
   play = gtk_menu_item_new_with_label( "Play" );

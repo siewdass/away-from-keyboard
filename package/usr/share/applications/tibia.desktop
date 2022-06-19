@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Tibia
+Comment=TIBIA MMORPG
+Exec=/opt/tibia/Tibia
+Icon=/opt/tibia/tibia.ico
+Terminal=false
+Type=Application
+Categories=Game;
