@@ -23,7 +23,6 @@ public:
 	string whirlwindthrow = "";
 	string sharpshooter = "";
   string divinedazzle = "";
-  string salvation = "";
   string divinecaldera = "";
   string arearune = "";
   string strongetherealspear = "";

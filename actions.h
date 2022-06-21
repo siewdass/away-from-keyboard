@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "inputs.h"
 #include "path.h"
+#include "global.h"
 using namespace cv;
 using namespace std;
 
@@ -41,7 +42,7 @@ public:
     int runPosition = 0;    
     int walkCoolDown = 0;
     int x = 0, y = 0, z = 0;
-    int position = 0;
+    //int position = 0;
     int left = 898, top = 59, pixel = 1;
     Point from, to;
 

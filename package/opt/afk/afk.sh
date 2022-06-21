@@ -3,7 +3,7 @@ BOT=1
 DONE=0
 
 while ! [ $DONE == 1 ]; do
-  FILE=/opt/afk/bot$BOT
+  FILE=/tmp/afk$BOT
   if [ -e "$FILE" ]; then
     if [ $BOT == 1 ]; then
       BOT=2
@@ -17,6 +17,8 @@ while ! [ $DONE == 1 ]; do
   fi
 done
 
-touch /opt/afk/bot$BOT
-DISPLAY=:$BOT /opt/afk/afk $(lsblk --nodeps -no serial /dev/sda) $USER > /dev/null 2>&1
-rm /opt/afk/bot$BOT
+NAME=$(DISPLAY=:$BOT xwininfo -root -children | grep Tibia | cut -d '"' -f 2 | sed s/"Tibia - "// | sed 's/ //g')
+
+touch /tmp/afk$BOT
+DISPLAY=:$BOT /opt/afk/afk $(lsblk --nodeps -no serial /dev/sda) $USER $NAME
+rm /tmp/afk$BOT

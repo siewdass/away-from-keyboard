@@ -23,7 +23,6 @@ void Character::load( const char* file ) {
 	Json paladin = config.readObject( "Paladin" );
 	sharpshooter = paladin.readString( "Sharpshooter" );
 	divinedazzle = paladin.readString( "DivineDazzle" );
-	salvation = paladin.readString( "Salvation" );
 	divinecaldera = paladin.readString( "DivineCaldera" );
 	arearune = paladin.readString( "AreaRune" );
 	strongetherealspear = paladin.readString( "StrongEtherealSpear" );

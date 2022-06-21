@@ -26,6 +26,9 @@ Licence licence;
 
 string id;
 string user;
+string name;
+
+
 
 void updateThread( ) {
 
@@ -225,7 +228,7 @@ void ammoThread( ) {
 					inputs.keyboard( character.quiver );
 					inputs.keyboard( character.quiver );
 					inputs.keyboard( character.quiver );
-					quiver = time.clock( ) + 180000;
+					quiver = time.clock( ) + 60000;
 				} else if ( values.weapon && character.throwing != "" ) {
 					inputs.keyboard( character.throwing );
 				}
@@ -282,6 +285,67 @@ void toolsThread( ) {
 				console.log( "ERROR:", e.what( ) );
 			}
 			time.sleep( 2000 );
+
+		} else {
+  		time.sleep( 2000 );
+		}
+	}
+}
+
+void attackPaladinBox( ) {
+
+	bool keepAttacking;
+	double global = 2100;
+	double attackCooldown = 0,
+		attackCooldown1 = 0,
+		attackCooldown2 = 0,
+		attackCooldown3 = 0,
+		attackCooldown4 = 0,
+		attackCooldown5 = 0,
+		attackCooldown6 = 0,
+		attackCooldown7 = 0;
+
+	time.sleep( 3000 );
+
+	while ( running ) {
+		
+		if ( Pause ) {
+			try {
+				if ( mode.attacking ) {
+
+					if ( values.mana > 10 ) {
+						if ( values.box >= 3 || keepAttacking ) {
+							keepAttacking = true;
+							if ( time.clock( ) > attackCooldown ) {
+								if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown1 && values.boxTarget && values.box == 1 ) {
+									inputs.keyboard( character.strongetherealspear );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown1 = time.clock( ) + 8400;
+								} else if ( character.etherealspear != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
+									inputs.keyboard( character.etherealspear );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown2 = time.clock( ) + 2100;
+								} else if ( character.divinecaldera != "" && time.clock( ) > attackCooldown3 && values.box >= 2 ) {
+									inputs.keyboard( character.divinecaldera );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown3 = time.clock( ) + 4200;
+								} else if ( character.arearune != "" && time.clock( ) > attackCooldown4 && values.box >= 2 ) {
+									inputs.keyboard( character.arearune );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown4 = time.clock( ) + 6300;
+								}
+							}
+						}
+					}
+					time.sleep( 100 );
+				} else {
+					keepAttacking = false;
+					time.sleep( 1000 );
+				}
+
+			} catch ( const std::exception& e ) {
+				console.log( "ERROR:", e.what( ) );
+			}
 
 		} else {
   		time.sleep( 2000 );
@@ -617,7 +681,13 @@ void run( ) {
 	status.id = id;
 	viewport.id = id;
 
-	string file = "/home/" + user + "/afk/character.json";
+	string file = "/home/" +user+ "/afk/" +name+ ".json";
+
+	console.log( file );
+
+  bool exists = std::filesystem::exists( file.c_str( ) );
+
+	if ( !exists ) { return; }
 
 	character.load( file.c_str( ) );
 	script.load( "/opt/afk/maps/" + character.script );
@@ -633,6 +703,11 @@ void run( ) {
 			thread( attackThread ).detach( );
 		} else if ( character.vocation == "knight" && character.hunt == "target" ) {
 			thread( knightTargetThread ).detach( );
+		} else if ( character.vocation == "paladin" && character.hunt == "box" ) {
+			thread( alternatorThread ).detach( );
+			thread( autoAttackThread ).detach( );
+			thread( attackPaladinBox ).detach( );
+			thread( ammoThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
 			thread( autoattackTargetThread ).detach( );
 			thread( ammoThread ).detach( );
@@ -650,6 +725,7 @@ int main( int argc, char** argv ) {
 
 	id = argv[ 1 ];
 	user = argv[ 2 ];
+	name = argv[ 3 ];
 
 	for ( auto entry : licence.accepted ) {
 		if ( entry == id ) {
