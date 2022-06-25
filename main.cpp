@@ -28,8 +28,6 @@ string id;
 string user;
 string name;
 
-
-
 void updateThread( ) {
 
 	while ( true ) {
@@ -317,22 +315,26 @@ void attackPaladinBox( ) {
 						if ( values.box >= 3 || keepAttacking ) {
 							keepAttacking = true;
 							if ( time.clock( ) > attackCooldown ) {
-								if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown1 && values.boxTarget && values.box == 1 ) {
+								if ( character.sharpshooter != "" && time.clock( ) > attackCooldown1 && values.boxTarget && values.box == 1 ) {
+									inputs.keyboard( character.sharpshooter );
+									attackCooldown = time.clock( ) + 300;
+									attackCooldown1 = time.clock( ) + 10600;
+								} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.strongetherealspear );
 									attackCooldown = time.clock( ) + global;
-									attackCooldown1 = time.clock( ) + 8400;
-								} else if ( character.etherealspear != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
+									attackCooldown2 = time.clock( ) + 8400;
+								} else if ( character.etherealspear != "" && time.clock( ) > attackCooldown3 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.etherealspear );
 									attackCooldown = time.clock( ) + global;
-									attackCooldown2 = time.clock( ) + 2100;
-								} else if ( character.divinecaldera != "" && time.clock( ) > attackCooldown3 && values.box >= 2 ) {
+									attackCooldown3 = time.clock( ) + 2100;
+								} else if ( character.divinecaldera != "" && time.clock( ) > attackCooldown4 && values.box >= 2 ) {
 									inputs.keyboard( character.divinecaldera );
 									attackCooldown = time.clock( ) + global;
-									attackCooldown3 = time.clock( ) + 4200;
-								} else if ( character.arearune != "" && time.clock( ) > attackCooldown4 && values.box >= 2 ) {
+									attackCooldown4 = time.clock( ) + 4200;
+								} else if ( character.arearune != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
 									inputs.keyboard( character.arearune );
 									attackCooldown = time.clock( ) + global;
-									attackCooldown4 = time.clock( ) + 6300;
+									attackCooldown5 = time.clock( ) + 6300;
 								}
 							}
 						}
@@ -567,7 +569,7 @@ void autoAttackThread( ) {
 	}
 }
 
-void attackThread( ) {
+void attackKnightBox( ) {
 
 	bool keepAttacking;
 	double global = 2100;
@@ -700,7 +702,7 @@ void run( ) {
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
 			thread( autoAttackThread ).detach( );
-			thread( attackThread ).detach( );
+			thread( attackKnightBox ).detach( );
 		} else if ( character.vocation == "knight" && character.hunt == "target" ) {
 			thread( knightTargetThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "box" ) {
