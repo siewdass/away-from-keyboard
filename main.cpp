@@ -662,11 +662,13 @@ void autoAttackThread( ) {
 							}
 						}
 					}
+
+					time.sleep( 100 );
+
 				} else {
 					keepAttacking = false;
+					time.sleep( 500 );
 				}
-
-				time.sleep( 500 );
 
 			} catch ( const exception &err ) {
 				console.log( "ERROR:", err.what( ) );
