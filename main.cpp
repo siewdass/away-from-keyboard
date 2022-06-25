@@ -83,7 +83,7 @@ void updateThread( ) {
 			values.necklace = necklace;
 			values.ring = ring;
 
-			//console.log( isTargeting, boxTarget );
+			console.log( isTargeting, boxTarget );
 
 			time.sleep( 200 );
 
@@ -317,6 +317,83 @@ void toolsThread( ) {
 	}
 }
 
+void attackKnightBox( ) {
+
+	bool keepAttacking;
+	double global = 2100;
+	double attackCooldown = 0,
+		attackCooldown1 = 0,
+		attackCooldown2 = 0,
+		attackCooldown3 = 0,
+		attackCooldown4 = 0,
+		attackCooldown5 = 0,
+		attackCooldown6 = 0,
+		attackCooldown7 = 0;
+
+	time.sleep( 3000 );
+
+	while ( running ) {
+		
+		if ( Pause ) {
+			try {
+				if ( mode.attacking ) {
+
+					if ( values.mana > 10 ) {
+						if ( values.box >= 3 || keepAttacking ) {
+							keepAttacking = true;
+							if ( time.clock( ) > attackCooldown ) {
+								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
+									inputs.keyboard( character.annihilation );
+									attackCooldown = time.clock( ) + global*2;
+									attackCooldown1 = time.clock( ) + 31500;
+								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
+									inputs.keyboard( character.brutalstrike );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown2 = time.clock( ) + 6300;
+								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
+									inputs.keyboard( character.whirlwindthrow );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown3 = time.clock( ) + 6300;
+								} else if ( character.groundshaker != "" && time.clock( ) > attackCooldown4 && values.box <= 3 && values.monsters.size( ) >= 5 ) {
+									inputs.keyboard( character.groundshaker );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown4 = time.clock( ) + 8400;
+								} else if ( character.berserker != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
+									inputs.keyboard( character.berserker );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown5 = time.clock( ) + 4200;
+								} else if ( character.fierceberserker != "" && time.clock( ) > attackCooldown6 && values.box >= 2 ) {
+									inputs.keyboard( character.fierceberserker );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown6 = time.clock( ) + 6300;
+								} else if ( character.frontsweep != "" && time.clock( ) > attackCooldown7 && values.box >= 2 ) {
+									string modifier = "control+";
+									modifier.append( values.side );
+									inputs.keywith( modifier.c_str( ) );
+									time.sleep( 100 );
+									inputs.keyboard( character.frontsweep );
+									attackCooldown = time.clock( ) + global;
+									attackCooldown7 = time.clock( ) + 6300;
+								}
+							}
+						}
+					}
+					time.sleep( 100 );
+				} else {
+					keepAttacking = false;
+					time.sleep( 1000 );
+				}
+
+			} catch ( const std::exception& e ) {
+				console.log( "ERROR:", e.what( ) );
+			}
+
+		} else {
+  		time.sleep( 2000 );
+		}
+	}
+}
+
 void attackPaladinBox( ) {
 
 	bool keepAttacking;
@@ -344,13 +421,13 @@ void attackPaladinBox( ) {
 							if ( time.clock( ) > attackCooldown ) {
 								if ( character.sharpshooter != "" && time.clock( ) > attackCooldown1 && values.box >= 2 ) {
 									inputs.keyboard( character.sharpshooter );
-									attackCooldown = time.clock( ) + 500;
+									attackCooldown = time.clock( ) + 1000;
 									attackCooldown1 = time.clock( ) + 15000;
-								} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
+								} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
 									inputs.keyboard( character.strongetherealspear );
 									attackCooldown = time.clock( ) + global;
 									attackCooldown2 = time.clock( ) + 8400;
-								} else if ( character.etherealspear != "" && time.clock( ) > attackCooldown3 && values.boxTarget && values.box == 1 ) {
+								} else if ( character.etherealspear != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
 									inputs.keyboard( character.etherealspear );
 									attackCooldown = time.clock( ) + global;
 									attackCooldown3 = time.clock( ) + 2100;
@@ -360,8 +437,11 @@ void attackPaladinBox( ) {
 									attackCooldown4 = time.clock( ) + 4200;
 								} else if ( character.arearune != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
 									inputs.keyboard( character.arearune );
+									//time.sleep( 100 );
+									//inputs.mouse( values.targetPosition.x, values.targetPosition.y, 0 );
+									//console.log( values.targetPosition.x, values.targetPosition.y );
 									attackCooldown = time.clock( ) + global;
-									attackCooldown5 = time.clock( ) + 6300;
+									attackCooldown5 = time.clock( ) + 2100;
 								}
 							}
 						}
@@ -443,7 +523,7 @@ void knightTargetThread( ) {
 	}
 }
 
-void autoattackTargetThread( ) {
+void paladinTargetThread( ) {
 
 	bool valuableLoot;
 	bool keepAttacking;
@@ -580,91 +660,14 @@ void autoAttackThread( ) {
 							}
 						}
 					}
-					time.sleep( 500 );
 				} else {
 					keepAttacking = false;
-					time.sleep( 2000 );
 				}
+
+				time.sleep( 500 );
 
 			} catch ( const exception &err ) {
 				console.log( "ERROR:", err.what( ) );
-			}
-
-		} else {
-  		time.sleep( 2000 );
-		}
-	}
-}
-
-void attackKnightBox( ) {
-
-	bool keepAttacking;
-	double global = 2100;
-	double attackCooldown = 0,
-		attackCooldown1 = 0,
-		attackCooldown2 = 0,
-		attackCooldown3 = 0,
-		attackCooldown4 = 0,
-		attackCooldown5 = 0,
-		attackCooldown6 = 0,
-		attackCooldown7 = 0;
-
-	time.sleep( 3000 );
-
-	while ( running ) {
-		
-		if ( Pause ) {
-			try {
-				if ( mode.attacking ) {
-
-					if ( values.mana > 10 ) {
-						if ( values.box >= 3 || keepAttacking ) {
-							keepAttacking = true;
-							if ( time.clock( ) > attackCooldown ) {
-								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.boxTarget && values.box == 1 ) {
-									inputs.keyboard( character.annihilation );
-									attackCooldown = time.clock( ) + global*2;
-									attackCooldown1 = time.clock( ) + 31500;
-								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
-									inputs.keyboard( character.brutalstrike );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown2 = time.clock( ) + 6300;
-								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.boxTarget && values.box == 1 ) {
-									inputs.keyboard( character.whirlwindthrow );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown3 = time.clock( ) + 6300;
-								} else if ( character.groundshaker != "" && time.clock( ) > attackCooldown4 && values.box <= 3 && values.monsters.size( ) >= 5 ) {
-									inputs.keyboard( character.groundshaker );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown4 = time.clock( ) + 8400;
-								} else if ( character.berserker != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
-									inputs.keyboard( character.berserker );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown5 = time.clock( ) + 4200;
-								} else if ( character.fierceberserker != "" && time.clock( ) > attackCooldown6 && values.box >= 2 ) {
-									inputs.keyboard( character.fierceberserker );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown6 = time.clock( ) + 6300;
-								} else if ( character.frontsweep != "" && time.clock( ) > attackCooldown7 && values.box >= 2 ) {
-									string modifier = "control+";
-									modifier.append( values.side );
-									inputs.keywith( modifier.c_str( ) );
-									time.sleep( 100 );
-									inputs.keyboard( character.frontsweep );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown7 = time.clock( ) + 6300;
-								}
-							}
-						}
-					}
-					time.sleep( 100 );
-				} else {
-					keepAttacking = false;
-					time.sleep( 1000 );
-				}
-
-			} catch ( const std::exception& e ) {
-				console.log( "ERROR:", e.what( ) );
 			}
 
 		} else {
@@ -739,7 +742,7 @@ void run( ) {
 			thread( attackPaladinBox ).detach( );
 			thread( ammoThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
-			thread( autoattackTargetThread ).detach( );
+			thread( paladinTargetThread ).detach( );
 			thread( ammoThread ).detach( );
 		}
 	}
@@ -768,7 +771,6 @@ int main( int argc, char** argv ) {
 }
 
 // cambiar Point por un nuevo struct y 
-// detectar cantidad de vida segun pixeles
-// internos de la barra de vida
+// detectar cantidad de vida segun pixeles internos de la barra de vida
 // autoattack siempre al que tenga mas vida
 // exori min = minimo 2

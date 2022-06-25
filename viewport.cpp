@@ -106,19 +106,10 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
 
         Point p = Viewport::xy( point.x + 23, point.y + 35 );
 
-        cv::Rect rect( 
-            p.x * sqm + ( width / 2 ) - sqm / 2,
-            p.y * sqm + ( height / 2 )- sqm / 2 -1,
-            sqm, sqm 
-        );
-
-        if ( !targeting ) {
-            cv::rectangle( GW, rect, cv::Scalar( 0, 255, 255 ) );
-        } else {
+        if ( targeting ) {
             target = true;
             TARGET.x = p.x;
             TARGET.y = p.y;
-            cv::rectangle( GW, rect, cv::Scalar( 255, 0, 0 ) );
         }
 
         if ( p.x == 0 && p.y == 0 ) {
@@ -193,7 +184,7 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
         }
     }
 
-    //imwrite( "screenshot.png", GW );
+    //imwrite( "/home/siewdass/screenshot.png", GW );
 
     return make_tuple( box, arr, visibleMonsters, side, target, TARGET, oldTarget );
 }

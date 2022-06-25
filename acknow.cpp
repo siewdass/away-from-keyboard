@@ -37,6 +37,7 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
     vector < int > targeting;
     Pixel pixel;
     bool target;
+    int X, Y;
 
     try {
 
@@ -59,13 +60,13 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
                     if ( pixel.r == 254 & pixel.g == 0 & pixel.b == 0 || 
                          pixel.r == 254 & pixel.g == 63 & pixel.b == 63 ) {
                         
-                        targeting.clear( );
+                        //targeting.clear( );
 
                         for ( int i = 0; i <= 5; i++ ) {
                             pixel = Acknow::rgb( img, x + i, y );
                             if ( pixel.r == 254 & pixel.g == 0 & pixel.b == 0 || 
                                 pixel.r == 254 & pixel.g == 63 & pixel.b == 63 ) {
-                                targeting.push_back( 1 );
+                                //targeting.push_back( 1 );
                             }
                         }
 
@@ -73,11 +74,10 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
                             pixel = Acknow::rgb( img, x, y + i );
                             if ( pixel.r == 254 & pixel.g == 0 & pixel.b == 0 || 
                                 pixel.r == 254 & pixel.g == 63 & pixel.b == 63 ) {
-                                targeting.push_back( 1 );
+                                //targeting.push_back( 1 );
                             }
                         }
                     }
-
 
                     if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
 
@@ -128,52 +128,48 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
                         }
 
                         if ( top == count & bottom == count & left == 2 & right == 2 ) {
+
                             Point point;
                             point.x = x;
-                            point.y = y; 
-                            bool targeting = false;
+                            point.y = y;
 
-                            //targeting.clear( );
+                            target = false;
+                            targeting.clear( );
 
-
-                            //imwrite( "screenshot.png", img );
-
-                            int X = x - 7, Y = y + 45;
+                            X = x - 7, Y = y + 45;
 
                             for ( int i = 0; i <= 3; i++ ) {
                                 for ( int j = 0; j <= 42; j++ ) {
                                     pixel = Acknow::rgb( img, X + j, Y + i );
-
-                                    if ( pixel.r == rb & pixel.g == gb & pixel.b == bb ||
-                                        pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ) {
-                                        //pixel.r == 254 && pixel.g >= 57 && pixel.g <= 128 && pixel.b >= 57 && pixel.b <= 128 ) {
-                                        //targeting.push_back( 1 );
-                                        targeting = true;
-                                        //cv::Rect rect( X, Y, 42, 3 );
-                                        //cv::rectangle( img, rect, cv::Scalar( 0, 255, 255 ) );
-                                        //target.x = x;
-                                        //target.y = y;
-                                        break;
+                                    if ( pixel.r == 255 & pixel.g == 0 && pixel.b == 0 ||
+                                         pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ) {
+                                        targeting.push_back( 1 );
                                     }
                                 }
                             }
 
-                            if ( !targeting ) {
-                                X = x + 32, Y = y + 6;
+                            X = x + 32, Y = y + 6;
 
-                                for ( int i = 0; i <= 42; i++ ) {
-                                    for ( int j = 0; j <= 3; j++ ) {
-                                    if ( pixel.r == rb & pixel.g == gb & pixel.b == bb ||
-                                        pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ) {
-                                            // pixel.r == 254 && pixel.g >= 57 && pixel.g <= 128 && pixel.b >= 57 && pixel.b <= 128 ) {
-                                            targeting = true;
-                                            break;
-                                        }
+                            for ( int i = 0; i <= 42; i++ ) {
+                                for ( int j = 0; j <= 3; j++ ) {
+                                    pixel = Acknow::rgb( img, X + j, Y + i );
+                                    if ( pixel.r == 255 & pixel.g == 0 && pixel.b == 0 ||
+                                         pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ) {
+                                        targeting.push_back( 1 );
                                     }
                                 }
                             }
 
-							arr.push_back( make_tuple( point, targeting ) );
+                            std::cout << targeting.size( ) << std::endl;
+                            
+                            if ( targeting.size( ) > 5 ) {
+                                target = true;
+                                //cv::Rect rect( x, y, 42, 42 );
+                                //cv::rectangle( img, rect, cv::Scalar( 0, 255, 255 ) );
+                                //imwrite( "/home/siewdass/screenshot.png", img );
+                            }
+
+							arr.push_back( make_tuple( point, target ) );
                             x += count;
                         }
                     }
