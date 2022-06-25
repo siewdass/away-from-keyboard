@@ -342,10 +342,10 @@ void attackPaladinBox( ) {
 						if ( values.box >= 3 || keepAttacking ) {
 							keepAttacking = true;
 							if ( time.clock( ) > attackCooldown ) {
-								if ( character.sharpshooter != "" && time.clock( ) > attackCooldown1 && values.box >= 2  ) {
+								if ( character.sharpshooter != "" && time.clock( ) > attackCooldown1 && values.box >= 2 ) {
 									inputs.keyboard( character.sharpshooter );
-									attackCooldown = time.clock( ) + 300;
-									attackCooldown1 = time.clock( ) + 10600;
+									attackCooldown = time.clock( ) + 500;
+									attackCooldown1 = time.clock( ) + 15000;
 								} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.boxTarget && values.box == 1 ) {
 									inputs.keyboard( character.strongetherealspear );
 									attackCooldown = time.clock( ) + global;
