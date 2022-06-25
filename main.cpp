@@ -145,8 +145,7 @@ void alternatorThread( ) {
 void healThread( ) {
 
 	double global = 1050;
-	double potionCooldown = 0,
-		healCooldown = 0,
+	double healCooldown = 0,
 		healCooldown1 = 0,
 		healCooldown2 = 0,
 		healCooldown3 = 0,
@@ -162,16 +161,6 @@ void healThread( ) {
 			int mppercent = ( double ) values.mana / 267 * 100;
 
 			try {
-
-				if ( time.clock( ) > potionCooldown ) {
-					if ( character.healthpotion != "" && hppercent <= character.healthpotionpercent ) {
-						inputs.keyboard( character.healthpotion );
-						potionCooldown = time.clock( ) + global;
-					} else if ( character.manapotion != "" && mppercent <= character.manapotionpercent ) {
-						inputs.keyboard( character.manapotion );
-						potionCooldown = time.clock( ) + global;
-					}
-				}
 
 				if ( time.clock( ) > healCooldown && values.mana >= 5 ) {
 					if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
@@ -192,10 +181,48 @@ void healThread( ) {
 					} else if ( values.poison && character.curepoison != "" ) {
 						inputs.keyboard( character.curepoison );
 						healCooldown = time.clock( ) + global;
-					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent <= 95 ) {
+					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent <= 98 ) {
 						inputs.keyboard( character.recovery );
 						healCooldown = time.clock( ) + global;
 						recoveryCooldown = time.clock( ) + 63000;
+					}
+				}
+
+			} catch ( const std::exception& e ) {
+				console.log( "ERROR:", e.what( ) );
+			}
+
+			time.sleep( 300 );
+
+		} else {
+  		time.sleep( 2000 );
+		}
+	}
+}
+
+void potionsThread( ) {
+
+	double global = 1050;
+	double potionCooldown = 0;
+
+	time.sleep( 3000 );
+
+	while ( running ) {
+
+		if ( Pause ) {
+			
+			int hppercent = ( double ) values.health / 267 * 100;
+			int mppercent = ( double ) values.mana / 267 * 100;
+
+			try {
+
+				if ( time.clock( ) > potionCooldown ) {
+					if ( character.healthpotion != "" && hppercent <= character.healthpotionpercent ) {
+						inputs.keyboard( character.healthpotion );
+						potionCooldown = time.clock( ) + global;
+					} else if ( character.manapotion != "" && mppercent <= character.manapotionpercent ) {
+						inputs.keyboard( character.manapotion );
+						potionCooldown = time.clock( ) + global;
 					}
 				}
 
@@ -699,6 +726,7 @@ void run( ) {
 		thread( alarmThread ).detach( );
 		thread( toolsThread ).detach( );
 		thread( healThread ).detach( );
+		thread( potionsThread ).detach( );
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
 			thread( autoAttackThread ).detach( );

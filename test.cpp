@@ -155,7 +155,7 @@ void healThread( ) {
 
 	while ( running ) {
 
-		if ( Pause ) {/capitulo/los-simpson-11x21/
+		if ( Pause ) {
 			
 			int hppercent = ( double ) values.health / 267 * 100;
 			int mppercent = ( double ) values.mana / 267 * 100;
