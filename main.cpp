@@ -778,3 +778,5 @@ int main( int argc, char** argv ) {
 // detectar cantidad de vida segun pixeles internos de la barra de vida
 // autoattack siempre al que tenga mas vida
 // exori min = minimo 2
+// knight pegarle al que tiene mas vida
+// paladin pegarle a los de la cruz
