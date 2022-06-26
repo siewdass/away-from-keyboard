@@ -15,7 +15,7 @@ while ! [ $DONE == 1 ]; do
     fi
   else
     DONE=1
-    echo $X
+    echo DISPLAY $X
   fi
 done
 
@@ -24,6 +24,7 @@ sleep 0.2
 DONE=0
 xseticon -id $(xdotool search --name Tibia$X) /opt/afk/t$X.png
 #DISPLAY=:$X /opt/tibia/Tibia > /dev/null 2>&1
+DISPLAY=:$X xset s off
 DISPLAY=:$X vglrun -d :$X /opt/tibia/Tibia > /dev/null 2>&1
 
 while ! [ $DONE == 1 ]; do

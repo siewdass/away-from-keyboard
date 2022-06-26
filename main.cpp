@@ -780,3 +780,4 @@ int main( int argc, char** argv ) {
 // exori min = minimo 2
 // knight pegarle al que tiene mas vida
 // paladin pegarle a los de la cruz
+// quitar el screen saver
