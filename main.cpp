@@ -686,8 +686,8 @@ void alarmThread( ) {
 
 	time.sleep( 3000 );
 
-	string playerAlarm = "mpg123 /home/" + user + "/afk/alarma.mp3 > /dev/null 2>&1";
-	string capacityAlarm = "mpg123 /home/" + user + "/afk/capacity.mp3 > /dev/null 2>&1";
+	string playerAlarm = "mpg123 /opt/afk/player.mp3 > /dev/null 2>&1";
+	string capacityAlarm = "mpg123 /opt/afk/capacity.mp3 > /dev/null 2>&1";
 
 	while ( running ) {
 		
