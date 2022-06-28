@@ -16,4 +16,5 @@ struct Position {
 	string img;
 };
 
+
 #endif // TYPES_H

@@ -57,7 +57,8 @@ void updateThread( ) {
 				alarm,
 				weapon,
 				necklace,
-				ring
+				ring,
+				lowcapacity
 			] = status.update( script.positions );
 
 			values.box = box;
@@ -82,8 +83,9 @@ void updateThread( ) {
 			values.weapon = weapon;
 			values.necklace = necklace;
 			values.ring = ring;
+			values.lowcapacity = lowcapacity;
 
-			console.log( isTargeting, boxTarget );
+			//sconsole.log( isTargeting, boxTarget );
 
 			time.sleep( 200 );
 
@@ -684,26 +686,18 @@ void alarmThread( ) {
 
 	time.sleep( 3000 );
 
-	string mp3 = "mpg123 /home/" + user + "/afk/alarma.mp3 > /dev/null 2>&1";
+	string playerAlarm = "mpg123 /home/" + user + "/afk/alarma.mp3 > /dev/null 2>&1";
+	string capacityAlarm = "mpg123 /home/" + user + "/afk/capacity.mp3 > /dev/null 2>&1";
 
 	while ( running ) {
 		
 		if ( Pause ) {
 			if ( values.alarm ) {
-				
-				system( mp3.c_str( ) );
-
+				system( playerAlarm.c_str( ) );
 				time.sleep( 60000 );
-				if ( character.hunt == "target" ) {
-					inputs.keyboard( character.healing1 );
-					time.sleep( 1100 );
-					inputs.keyboard( character.healing1 );
-					time.sleep( 1100 );
-					inputs.keyboard( character.healing1 );
-					time.sleep( 1100 );
-					inputs.keyboard( character.healing1 );
-					time.sleep( 1100 );
-				}
+			} else if ( values.lowcapacity ) {
+				system( capacityAlarm.c_str( ) );
+				time.sleep( 60000 );
 			}
 			time.sleep( 2000 );
 		}
@@ -781,3 +775,14 @@ int main( int argc, char** argv ) {
 // knight pegarle al que tiene mas vida
 // paladin pegarle a los de la cruz
 // quitar el screen saver
+
+				/*if ( character.hunt == "target" ) {
+					inputs.keyboard( character.healing1 );
+					time.sleep( 1100 );
+					inputs.keyboard( character.healing1 );
+					time.sleep( 1100 );
+					inputs.keyboard( character.healing1 );
+					time.sleep( 1100 );
+					inputs.keyboard( character.healing1 );
+					time.sleep( 1100 );
+				}*/

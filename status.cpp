@@ -11,17 +11,41 @@ using namespace std;
 Screenshot screenshot;
 Converter converter;
 Acknow acknow;
-Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON, RING, AMULET;
+Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY;
+
+vector < Point > Flask;
+
 vector < Pixel > HealthPoints;
 vector < Pixel > ManaPoints;
 vector < Pixel > BenefitsAndDamages;
-vector < Point > Flask;
 vector < Pixel > battle;
 vector < Pixel > chat;
 vector < Pixel > lootchat;
-vector < Pixel > weapon, ring, amulet;
+vector < Pixel > weapon;
+vector < Pixel > ring;
+vector < Pixel > amulet;
+vector < Pixel > capacity;
 
-tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
+Pixels TEST; // ARRAY OF PIXELS
+
+tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
+
+    CAPACITY = screenshot.get( id, 919, 250, 32, 10 );
+    capacity = acknow.inspect( CAPACITY );
+
+    int cap = 0;
+    bool lowcap = false;
+
+    for ( Pixel pixel : capacity ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+        if ( r >= 162 && r <= 191 && g >= 141 && g <= 191 && b >= 133 && b <= 191 ) {
+            cap += 1;
+        }
+    }
+
+    if ( cap <= 30 ) {
+        lowcap = true;
+    }
 
     bool weaponEquipped = false;
 
@@ -163,7 +187,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    //imwrite( "screenshot.png", MAP );
+    //imwrite( "screenshot.png", CAPACITY );
 
     return make_tuple(
         health,
@@ -178,7 +202,8 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         alarm,
         weaponEquipped,
         amuletEquipped,
-        ringEquipped
+        ringEquipped,
+        lowcap
     );
 }
 

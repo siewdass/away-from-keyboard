@@ -25,6 +25,7 @@ public:
 	bool boxTarget;
 	bool alarm;
 	bool weapon, necklace, ring;
+	bool lowcapacity;
 };
 
 class Mode {

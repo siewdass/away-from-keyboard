@@ -57,28 +57,6 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
 
                     pixel = Acknow::rgb( img, x, y );
 
-                    if ( pixel.r == 254 & pixel.g == 0 & pixel.b == 0 || 
-                         pixel.r == 254 & pixel.g == 63 & pixel.b == 63 ) {
-                        
-                        //targeting.clear( );
-
-                        for ( int i = 0; i <= 5; i++ ) {
-                            pixel = Acknow::rgb( img, x + i, y );
-                            if ( pixel.r == 254 & pixel.g == 0 & pixel.b == 0 || 
-                                pixel.r == 254 & pixel.g == 63 & pixel.b == 63 ) {
-                                //targeting.push_back( 1 );
-                            }
-                        }
-
-                        for ( int i = 0; i <= 5; i++ ) {
-                            pixel = Acknow::rgb( img, x, y + i );
-                            if ( pixel.r == 254 & pixel.g == 0 & pixel.b == 0 || 
-                                pixel.r == 254 & pixel.g == 63 & pixel.b == 63 ) {
-                                //targeting.push_back( 1 );
-                            }
-                        }
-                    }
-
                     if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
 
                         // top
