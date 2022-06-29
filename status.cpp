@@ -26,11 +26,12 @@ vector < Pixel > ring;
 vector < Pixel > amulet;
 vector < Pixel > capacity;
 
+
 Pixels TEST; // ARRAY OF PIXELS
 
 tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
 
-    CAPACITY = screenshot.get( id, 919, 250, 32, 10 );
+    CAPACITY = screenshot.get( id, 919, 255, 11, 1 );
     capacity = acknow.inspect( CAPACITY );
 
     int cap = 0;
@@ -38,12 +39,14 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     for ( Pixel pixel : capacity ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
-        if ( r >= 162 && r <= 191 && g >= 141 && g <= 191 && b >= 133 && b <= 191 ) {
-            cap += 1;
+        if ( r <= 55 && g <= 55 && b <= 55 ) {
+            cap += 1;   
         }
     }
 
-    if ( cap <= 30 ) {
+    //console.log( cap );
+
+    if ( cap >= 11 ) {
         lowcap = true;
     }
 
@@ -187,7 +190,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    //imwrite( "screenshot.png", CAPACITY );
+    imwrite( "screenshot.png", CAPACITY );
 
     return make_tuple(
         health,

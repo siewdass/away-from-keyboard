@@ -27,6 +27,7 @@ Licence licence;
 string id;
 string user;
 string name;
+bool Stop = false;
 
 void updateThread( ) {
 
@@ -106,8 +107,9 @@ void alternatorThread( ) {
 		if ( Pause ) {
 
 			if ( mode.walking ) {
-
-				mode.attacking = actions.walker( values, script );
+				if ( values.x != 0 && values.y != 0 ) { // NO RECONOCE EL MAPA
+					mode.attacking = actions.walker( values, script );
+				}
 				if ( mode.attacking && values.visibleMonsters ) {
 					mode.walking = false;
 				}
@@ -123,7 +125,11 @@ void alternatorThread( ) {
 			} else if ( mode.attacking ) {		
 
 				mode.looting = actions.attacker( values );
-				if ( mode.looting ) {
+				if ( mode.looting && Stop == false ) {
+					mode.attacking = false;
+				} else if ( mode.looting && Stop == true ) {
+					Toggle( );
+					Stop = false;
 					mode.attacking = false;
 				}
 
@@ -686,17 +692,21 @@ void alarmThread( ) {
 
 	time.sleep( 3000 );
 
-	string playerAlarm = "mpg123 /opt/afk/player.mp3 > /dev/null 2>&1";
-	string capacityAlarm = "mpg123 /opt/afk/capacity.mp3 > /dev/null 2>&1";
+	string critical = "mpg123 /opt/afk/critical.mp3 > /dev/null 2>&1";
+	string safe = "mpg123 /opt/afk/safe.mp3 > /dev/null 2>&1";
 
 	while ( running ) {
 		
 		if ( Pause ) {
 			if ( values.alarm ) {
-				system( playerAlarm.c_str( ) );
+				Stop = true;
+				system( critical.c_str( ) );
 				time.sleep( 60000 );
 			} else if ( values.lowcapacity ) {
-				system( capacityAlarm.c_str( ) );
+				system( safe.c_str( ) );
+				time.sleep( 60000 );
+			} else if ( values.x == 0 && values.y == 0 ) {
+				system( critical.c_str( ) );
 				time.sleep( 60000 );
 			}
 			time.sleep( 2000 );
