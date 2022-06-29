@@ -88,6 +88,7 @@ public:
         
         return make_tuple( X, Y );
     }
+    void adjustMap( );
 };
 
 #endif // ACTIONS_H

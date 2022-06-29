@@ -26,8 +26,9 @@ vector < Pixel > ring;
 vector < Pixel > amulet;
 vector < Pixel > capacity;
 
-
 Pixels TEST; // ARRAY OF PIXELS
+
+bool AlarmCount = 0;
 
 tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
 
@@ -95,9 +96,13 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
     for ( Pixel pixel : battle ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
         if ( r == 0 && g == 0 && b == 0 ) {
-            alarm = true;
+            AlarmCount += 1;
             break;
         }
+    }
+
+    if ( AlarmCount >= 4 ) {
+        alarm = true;
     }
 
     CHAT = screenshot.get( id, 189, 575, 1, 42 );

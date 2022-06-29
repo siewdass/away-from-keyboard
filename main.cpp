@@ -27,6 +27,8 @@ Licence licence;
 string id;
 string user;
 string name;
+int unknow = 0;
+bool fix = true; 
 
 void updateThread( ) {
 
@@ -106,12 +108,15 @@ void alternatorThread( ) {
 		if ( Pause ) {
 
 			if ( mode.walking ) {
+
 				if ( values.x != 0 && values.y != 0 ) { // NO RECONOCE EL MAPA
 					mode.attacking = actions.walker( values, script );
 				}
+
 				if ( mode.attacking && values.visibleMonsters ) {
 					mode.walking = false;
 				}
+
 				if ( !mode.attacking && values.x == lastX && values.y == lastY && values.box >= 4 ) {
 					//console.log( "TTTTTTTTRRRRRRRRRRAAAAAAAAAPPPPPPPP" );
 					mode.attacking = true;
@@ -124,11 +129,7 @@ void alternatorThread( ) {
 			} else if ( mode.attacking ) {		
 
 				mode.looting = actions.attacker( values );
-				if ( mode.looting && Stop == false ) {
-					mode.attacking = false;
-				} else if ( mode.looting && Stop == true ) {
-					Toggle( );
-					Stop = false;
+				if ( mode.looting ) {
 					mode.attacking = false;
 				}
 
@@ -137,6 +138,11 @@ void alternatorThread( ) {
 				mode.walking = actions.looter( );
 				if ( mode.walking ) {
 					mode.looting = false;
+				}
+				
+				if ( Stop == true ) {
+					Toggle( );
+					Stop = false;
 				}
 
 			}
@@ -429,7 +435,7 @@ void attackPaladinBox( ) {
 								if ( character.sharpshooter != "" && time.clock( ) > attackCooldown1 && values.box >= 2 ) {
 									inputs.keyboard( character.sharpshooter );
 									//attackCooldown = time.clock( ) + 1000;
-									attackCooldown1 = time.clock( ) + 15000;
+									attackCooldown1 = time.clock( ) + 8400;
 								} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
 									inputs.keyboard( character.strongetherealspear );
 									attackCooldown = time.clock( ) + global;
@@ -702,14 +708,22 @@ void alarmThread( ) {
 				system( critical.c_str( ) );
 				time.sleep( 60000 );
 			} else if ( values.lowcapacity ) {
+				values.lowcapacity = false;
 				system( safe.c_str( ) );
 				time.sleep( 60000 );
 			} else if ( values.x == 0 && values.y == 0 ) {
-				system( critical.c_str( ) );
-				time.sleep( 60000 );
+				unknow += 1;
+				if ( unknow >= 5 ) {
+					unknow = 0;
+					system( critical.c_str( ) );
+					time.sleep( 60000 );
+				}
 			}
-			time.sleep( 2000 );
+		} else {
+			values.lowcapacity = false;
 		}
+
+		time.sleep( 2000 );
 		
 	}
 }
@@ -777,21 +791,11 @@ int main( int argc, char** argv ) {
 	return 0;
 }
 
-// cambiar Point por un nuevo struct y 
 // detectar cantidad de vida segun pixeles internos de la barra de vida
-// autoattack siempre al que tenga mas vida
 // exori min = minimo 2
 // knight pegarle al que tiene mas vida
 // paladin pegarle a los de la cruz
-// quitar el screen saver
-
-				/*if ( character.hunt == "target" ) {
-					inputs.keyboard( character.healing1 );
-					time.sleep( 1100 );
-					inputs.keyboard( character.healing1 );
-					time.sleep( 1100 );
-					inputs.keyboard( character.healing1 );
-					time.sleep( 1100 );
-					inputs.keyboard( character.healing1 );
-					time.sleep( 1100 );
-				}*/
+// botar flask en 1 solo lugar
+// acomodar mapa antes de iniciar en alternador
+// acomodar ataques de paladin
+// dos alarmas una para players y otra para chat
