@@ -9,6 +9,7 @@
 typedef void ( *Function )( );
 bool Pause = false;
 bool running = true;
+bool Stop = false;
 
 AppIndicator* appindicator;
 GtkWidget *menu;

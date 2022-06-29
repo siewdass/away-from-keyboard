@@ -27,7 +27,6 @@ Licence licence;
 string id;
 string user;
 string name;
-bool Stop = false;
 
 void updateThread( ) {
 
