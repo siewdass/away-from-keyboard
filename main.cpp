@@ -701,7 +701,7 @@ void autoAttackThread( ) {
 
 void alarmThread( ) {
 
-	time.sleep( 5000 );
+	time.sleep( 20000 );
 
 	string critical = "mpg123 /opt/afk/critical.mp3 > /dev/null 2>&1";
 	string safe = "mpg123 /opt/afk/safe.mp3 > /dev/null 2>&1";
