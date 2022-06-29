@@ -420,4 +420,5 @@ bool Actions::lootway( Values values, Script script, Point lootpoint ) {
 }
 
 bool Actions::adjustMap( ) {
+    return true;
 }
