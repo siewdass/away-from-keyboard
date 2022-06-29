@@ -138,6 +138,12 @@ void alternatorThread( ) {
 				mode.walking = actions.looter( );
 				if ( mode.walking ) {
 					mode.looting = false;
+
+					for ( int i = 0; i < values.flasks.size( ); i++ ) {
+						Point flask = values.flasks[ values.flasks.size( ) -1 ];
+						inputs.mouseDrag( 836 + flask.x, 290 + flask.y );
+					}
+
 				}
 				
 				if ( Stop == true ) {
@@ -301,10 +307,10 @@ void toolsThread( ) {
 					if ( time.clock( ) > haste && character.haste != "" && !values.haste ) {
 						inputs.keyboard( character.haste );
 						haste = time.clock( ) + 33000;
-					} else if ( time.clock( ) > f && values.flasks.size( ) > 0 ) {
+					/*} else if ( time.clock( ) > f && values.flasks.size( ) > 0 ) {
 						Point flask = values.flasks[ values.flasks.size( ) -1 ];
 						inputs.mouseDrag( 836 + flask.x, 290 + flask.y );
-						//console.log( "Throw flasks!" );
+						//console.log( "Throw flasks!" );*/
 					} else if ( character.food != "" && values.hungry ) {
 						inputs.keyboard( character.food );
 						inputs.keyboard( character.food );
@@ -718,14 +724,17 @@ void alarmThread( ) {
 					system( critical.c_str( ) );
 					time.sleep( 60000 );
 				}
+			} else if ( values.mana <= 40 ) {
+				system( critical.c_str( ) );
+				time.sleep( 60000 );
 			}
 		} else {
 			values.lowcapacity = false;
 		}
 
-		time.sleep( 2000 );
-		
 	}
+
+	time.sleep( 2000 );
 }
 
 void run( ) {
@@ -792,10 +801,9 @@ int main( int argc, char** argv ) {
 }
 
 // detectar cantidad de vida segun pixeles internos de la barra de vida
-// exori min = minimo 2
+// exori min minimo 2
 // knight pegarle al que tiene mas vida
 // paladin pegarle a los de la cruz
 // botar flask en 1 solo lugar
 // acomodar mapa antes de iniciar en alternador
-// acomodar ataques de paladin
-// dos alarmas una para players y otra para chat
+// acomodar autoatack paladin
