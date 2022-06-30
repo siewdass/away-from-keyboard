@@ -417,6 +417,7 @@ void attackPaladinBox( ) {
 
 	bool keepAttacking;
 	double global = 2100;
+	double autoAttackCooldown = 0;
 	double attackCooldown = 0,
 		attackCooldown1 = 0,
 		attackCooldown2 = 0,
@@ -433,37 +434,47 @@ void attackPaladinBox( ) {
 		if ( Pause ) {
 			try {
 				if ( mode.attacking ) {
+					if ( values.box >= 3 || keepAttacking ) {
+						keepAttacking = true;
+						// acomodo ataque y magias juntos
 
-					if ( values.mana > 10 ) {
-						if ( values.box >= 3 || keepAttacking ) {
-							keepAttacking = true;
-							if ( time.clock( ) > attackCooldown ) {
-								if ( character.sharpshooter != "" && time.clock( ) > attackCooldown1 && values.box >= 2 ) {
-									inputs.keyboard( character.sharpshooter );
-									//attackCooldown = time.clock( ) + 1000;
-									attackCooldown1 = time.clock( ) + 8400;
-								} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
-									inputs.keyboard( character.strongetherealspear );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown2 = time.clock( ) + 8400;
-								} else if ( character.etherealspear != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
-									inputs.keyboard( character.etherealspear );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown3 = time.clock( ) + 2100;
-								} else if ( character.divinecaldera != "" && time.clock( ) > attackCooldown4 && values.box >= 2 ) {
-									time.sleep( 500 );
-									inputs.keyboard( character.divinecaldera );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown4 = time.clock( ) + 4200;
-								} else if ( character.arearune != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
-									time.sleep( 500 );
-									inputs.keyboard( character.arearune );
-									//time.sleep( 100 );
-									//inputs.mouse( values.targetPosition.x, values.targetPosition.y, 0 );
-									//console.log( values.targetPosition.x, values.targetPosition.y );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown5 = time.clock( ) + 2100;
+						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
+							if ( values.box >= 1 ) {
+								for ( Point point : values.monsters ) {
+									if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
+										auto [ x, y ] = actions.gameWindow( point.x, point.y );
+										inputs.mouse( x, y, 3 );
+										autoAttackCooldown = time.clock( ) + 1000;
+										break;
+									}
 								}
+							}
+						} else if ( time.clock( ) > attackCooldown &&  values.mana > 10 ) {
+							if ( character.sharpshooter != "" && time.clock( ) > attackCooldown1 && values.box >= 2 ) {
+								inputs.keyboard( character.sharpshooter );
+								//attackCooldown = time.clock( ) + 1000;
+								attackCooldown1 = time.clock( ) + 8400;
+							} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
+								inputs.keyboard( character.strongetherealspear );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown2 = time.clock( ) + 8400;
+							} else if ( character.etherealspear != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
+								inputs.keyboard( character.etherealspear );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown3 = time.clock( ) + 2100;
+							} else if ( character.divinecaldera != "" && time.clock( ) > attackCooldown4 && values.box >= 2 ) {
+								//time.sleep( 500 );
+								inputs.keyboard( character.divinecaldera );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown4 = time.clock( ) + 4200;
+							} else if ( character.arearune != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
+								//time.sleep( 500 );
+								inputs.keyboard( character.arearune );
+								//time.sleep( 100 );
+								//inputs.mouse( values.targetPosition.x, values.targetPosition.y, 0 );
+								//console.log( values.targetPosition.x, values.targetPosition.y );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown5 = time.clock( ) + 2100;
 							}
 						}
 					}
@@ -724,11 +735,12 @@ void alarmThread( ) {
 					system( critical.c_str( ) );
 					time.sleep( 60000 );
 				}
-			} else if ( values.mana <= 40 ) {
+			}/* else if ( values.mana <= 40 ) {
 				system( critical.c_str( ) );
 				time.sleep( 60000 );
-			}
+			}*/
 		} else {
+			values.alarm = false;
 			values.lowcapacity = false;
 		}
 
@@ -768,7 +780,7 @@ void run( ) {
 			thread( knightTargetThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
-			thread( autoAttackThread ).detach( );
+			//thread( autoAttackThread ).detach( );
 			thread( attackPaladinBox ).detach( );
 			thread( ammoThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
@@ -806,4 +818,5 @@ int main( int argc, char** argv ) {
 // paladin pegarle a los de la cruz
 // botar flask en 1 solo lugar
 // acomodar mapa antes de iniciar en alternador
-// acomodar autoatack paladin
+// acomodar autoatack 
+// autoattack y box de paladin en 1 solo
