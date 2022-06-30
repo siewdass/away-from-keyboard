@@ -446,6 +446,7 @@ void attackPaladinBox( ) {
 										inputs.mouse( x, y, 3 );
 										autoAttackCooldown = time.clock( ) + 1000;
 										break;
+										time.sleep( 200 );
 									}
 								}
 							}
