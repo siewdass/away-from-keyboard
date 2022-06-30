@@ -445,7 +445,7 @@ void attackPaladinBox( ) {
 										auto [ x, y ] = actions.gameWindow( point.x, point.y );
 										inputs.mouse( x, y, 3 );
 										autoAttackCooldown = time.clock( ) + 1000;
-										time.sleep( 200 );
+										time.sleep( 300 );
 										break;
 									}
 								}
@@ -453,7 +453,7 @@ void attackPaladinBox( ) {
 						} else if ( time.clock( ) > attackCooldown &&  values.mana > 10 ) {
 							if ( character.sharpshooter != "" && time.clock( ) > attackCooldown1 && values.box >= 2 ) {
 								inputs.keyboard( character.sharpshooter );
-								//attackCooldown = time.clock( ) + 1000;
+								attackCooldown = time.clock( ) + 1000;
 								attackCooldown1 = time.clock( ) + 8400;
 							} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
 								inputs.keyboard( character.strongetherealspear );
@@ -464,12 +464,10 @@ void attackPaladinBox( ) {
 								attackCooldown = time.clock( ) + global;
 								attackCooldown3 = time.clock( ) + 2100;
 							} else if ( character.divinecaldera != "" && time.clock( ) > attackCooldown4 && values.box >= 2 ) {
-								//time.sleep( 500 );
 								inputs.keyboard( character.divinecaldera );
 								attackCooldown = time.clock( ) + global;
 								attackCooldown4 = time.clock( ) + 4200;
 							} else if ( character.arearune != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
-								//time.sleep( 500 );
 								inputs.keyboard( character.arearune );
 								//time.sleep( 100 );
 								//inputs.mouse( values.targetPosition.x, values.targetPosition.y, 0 );
