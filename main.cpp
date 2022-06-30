@@ -731,7 +731,7 @@ void alarmThread( ) {
 				time.sleep( 60000 );
 			} else if ( values.x == 0 && values.y == 0 ) {
 				unknow += 1;
-				if ( unknow >= 5 ) {
+				if ( unknow >= 20 ) {
 					unknow = 0;
 					system( critical.c_str( ) );
 					time.sleep( 60000 );
