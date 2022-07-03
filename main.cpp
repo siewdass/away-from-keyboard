@@ -653,6 +653,7 @@ void paladinTargetThread( ) {
 void autoAttackThread( ) {
 
 	bool keepAttacking;
+	int waitForTarget = 0;
 	double autoAttackCooldown = 0;
 
 	time.sleep( 3000 );
@@ -666,15 +667,18 @@ void autoAttackThread( ) {
 				if ( mode.attacking ) {
 					if ( values.box >= 3 || keepAttacking ) {
 						keepAttacking = true;
-						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
-							if ( values.box >= 1 ) {
-								for ( Point point : values.monsters ) {
-									if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
-										auto [ x, y ] = actions.gameWindow( point.x, point.y );
-										inputs.mouse( x, y, 3 );
-										autoAttackCooldown = time.clock( ) + 1000;
-										break;
-									}
+						if ( !values.isTargeting ) {
+							waitForTarget += 1;
+						} else {
+							waitForTarget = 0;
+						}
+						if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 5 ) {
+							for ( Point point : values.monsters ) {
+								if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
+									auto [ x, y ] = actions.gameWindow( point.x, point.y );
+									inputs.mouse( x, y, 3 );
+									autoAttackCooldown = time.clock( ) + 1000;
+									break;
 								}
 							}
 						}
@@ -715,14 +719,14 @@ void alarmThread( ) {
 				values.lowcapacity = false;
 				system( safe.c_str( ) );
 				time.sleep( 60000 );
-			} else if ( values.x == 0 && values.y == 0 ) {
+			}/* else if ( values.x == 0 && values.y == 0 ) {
 				unknow += 1;
 				if ( unknow >= 60 ) {
 					unknow = 0;
 					system( critical.c_str( ) );
 					time.sleep( 60000 );
 				}
-			}/* else if ( values.mana <= 40 ) {
+			} else if ( values.mana <= 40 ) {
 				system( critical.c_str( ) );
 				time.sleep( 60000 );
 			}*/

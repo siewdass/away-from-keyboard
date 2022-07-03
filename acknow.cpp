@@ -138,13 +138,12 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
                                 }
                             }
 
-                            std::cout << targeting.size( ) << std::endl;
+                            //std::cout << "target pixels:" << targeting.size( ) << std::endl;
                             
-                            if ( targeting.size( ) > 6 ) {
+                            if ( targeting.size( ) > 10 ) {
                                 target = true;
-                                //cv::Rect rect( x, y, 42, 42 );
+                                //cv::Rect rect( x - 9, y + 4, 46, 46 );
                                 //cv::rectangle( img, rect, cv::Scalar( 0, 255, 255 ) );
-                                //imwrite( "/home/siewdass/screenshot.png", img );
                             }
 
 							arr.push_back( make_tuple( point, target ) );
@@ -159,7 +158,9 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
     } catch ( exception &e ) {
     }
 
-    //imwrite( "screenshot.png", img );
+    //string url = "/home/siewdass/images/" + to_string( count ) + ".png";
+    //imwrite( url, img );
+    //count += 1;
 
     return make_tuple( target, arr );
 }
