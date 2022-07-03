@@ -443,7 +443,7 @@ void attackPaladinBox( ) {
 								inputs.keyboard( character.sharpshooter );
 								attackCooldown = time.clock( ) + 1000;
 								attackCooldown1 = time.clock( ) + 8400;
-							} else if ( character.	strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
+							} else if ( character.strongetherealspear != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
 								inputs.keyboard( character.strongetherealspear );
 								attackCooldown = time.clock( ) + global;
 								attackCooldown2 = time.clock( ) + 8400;
