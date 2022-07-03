@@ -140,7 +140,7 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
 
                             std::cout << targeting.size( ) << std::endl;
                             
-                            if ( targeting.size( ) > 4 ) {
+                            if ( targeting.size( ) > 8 ) {
                                 target = true;
                                 //cv::Rect rect( x, y, 42, 42 );
                                 //cv::rectangle( img, rect, cv::Scalar( 0, 255, 255 ) );
