@@ -724,7 +724,7 @@ void alarmThread( ) {
 				values.lowcapacity = false;
 				system( safe.c_str( ) );
 				time.sleep( 60000 );
-			}/* else if ( values.x == 0 && values.y == 0 ) {
+			} else if ( values.x == 0 && values.y == 0 ) {
 				unknow += 1;
 				if ( unknow >= 60 ) {
 					unknow = 0;
@@ -734,7 +734,7 @@ void alarmThread( ) {
 			} else if ( values.mana <= 40 ) {
 				system( critical.c_str( ) );
 				time.sleep( 60000 );
-			}*/
+			}
 		} else {
 			values.alarm = false;
 			values.lowcapacity = false;
