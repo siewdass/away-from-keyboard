@@ -87,10 +87,10 @@ void updateThread( ) {
 			values.ring = ring;
 			values.lowcapacity = lowcapacity;
 
-			/*auto [ XPOS, YPOS ] = inputs.mouseLocation( );
+			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
 			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { 
 				inputs.mouseMove( 742, 596 );
-			}*/
+			}
 
 			console.log( "isTargeting:", isTargeting );
 
@@ -158,7 +158,7 @@ void alternatorThread( ) {
 
 			}
 
-			time.sleep( 200 );
+			time.sleep( 300 );
 
 		} else {
 			time.sleep( 2000 );
@@ -312,10 +312,6 @@ void toolsThread( ) {
 					if ( time.clock( ) > haste && character.haste != "" && !values.haste ) {
 						inputs.keyboard( character.haste );
 						haste = time.clock( ) + 33000;
-					/*} else if ( time.clock( ) > f && values.flasks.size( ) > 0 ) {
-						Point flask = values.flasks[ values.flasks.size( ) -1 ];
-						inputs.mouseDrag( 836 + flask.x, 290 + flask.y );
-						//console.log( "Throw flasks!" );*/
 					} else if ( character.food != "" && values.hungry ) {
 						inputs.keyboard( character.food );
 						inputs.keyboard( character.food );
@@ -333,10 +329,11 @@ void toolsThread( ) {
 			} catch ( const std::exception& e ) {
 				console.log( "ERROR:", e.what( ) );
 			}
+
 			time.sleep( 2000 );
 
 		} else {
-  		time.sleep( 2000 );
+  		time.sleep( 4000 );
 		}
 	}
 }
@@ -677,7 +674,7 @@ void autoAttackThread( ) {
 						} else {
 							waitForTarget = 0;
 						}
-						if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 5 ) {
+						if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 4 ) {
 							for ( Point point : values.monsters ) {
 								if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
 									auto [ x, y ] = actions.gameWindow( point.x, point.y );
@@ -693,7 +690,7 @@ void autoAttackThread( ) {
 
 				} else {
 					keepAttacking = false;
-					time.sleep( 500 );
+					time.sleep( 2000 );
 				}
 
 			} catch ( const exception &err ) {
@@ -724,7 +721,7 @@ void alarmThread( ) {
 				values.lowcapacity = false;
 				system( safe.c_str( ) );
 				time.sleep( 60000 );
-			}/* else if ( values.x == 0 && values.y == 0 ) {
+			} else if ( values.x == 0 && values.y == 0 ) {
 				unknow += 1;
 				if ( unknow >= 60 ) {
 					unknow = 0;
@@ -734,15 +731,17 @@ void alarmThread( ) {
 			} else if ( values.mana <= 40 ) {
 				system( critical.c_str( ) );
 				time.sleep( 60000 );
-			}*/
+			}
+
+			time.sleep( 2000 );
+
 		} else {
 			values.alarm = false;
 			values.lowcapacity = false;
+
+			time.sleep( 4000 );
 		}
-
 	}
-
-	time.sleep( 2000 );
 }
 
 void run( ) {
