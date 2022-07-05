@@ -87,7 +87,12 @@ void updateThread( ) {
 			values.ring = ring;
 			values.lowcapacity = lowcapacity;
 
-			console.log( "isTargeting", isTargeting );
+			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
+			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { 
+				inputs.mouseMove( 742, 596 );
+			}
+
+			console.log( "isTargeting:", isTargeting );
 
 			time.sleep( 200 );
 

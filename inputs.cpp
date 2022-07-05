@@ -30,6 +30,12 @@ void Inputs::mouseDrag( int x, int y ) {
   xdo_mouse_up( xdo, CURRENTWINDOW, 1 );
 }
 
+tuple < int, int > Inputs::mouseLocation( ) {
+  int X, Y, SCREEN;
+  xdo_get_mouse_location( xdo, &X, &Y, &SCREEN );
+  return make_tuple( X, Y );
+}
+
 void Inputs::keyboard( std::string key ) {
   //std::cout << key << std::endl;
   xdo_send_keysequence_window_down( xdo, CURRENTWINDOW, key.c_str( ), 0 );
