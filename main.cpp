@@ -88,9 +88,7 @@ void updateThread( ) {
 			values.lowcapacity = lowcapacity;
 
 			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
-			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { 
-				inputs.mouseMove( 742, 596 );
-			}
+			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
 			console.log( "isTargeting:", isTargeting );
 
@@ -205,7 +203,7 @@ void healThread( ) {
 					} else if ( values.poison && character.curepoison != "" ) {
 						inputs.keyboard( character.curepoison );
 						healCooldown = time.clock( ) + global;
-					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent <= 98 ) {
+					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent < 100 ) {
 						inputs.keyboard( character.recovery );
 						healCooldown = time.clock( ) + global;
 						recoveryCooldown = time.clock( ) + 63000;
