@@ -28,7 +28,7 @@ vector < Pixel > capacity;
 
 Pixels TEST; // ARRAY OF PIXELS
 
-bool AlarmCount = 0;
+int AlarmCount = 0;
 
 tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
 
@@ -93,13 +93,15 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
     BATTLE = screenshot.get( id, 26, 30, 1, 1 );
     battle = acknow.inspect( BATTLE );
 
-    Pixel pixel = battle[ 0 ];
-    if ( pixel.r == 0 && pixel.g == 0 && pixel.b == 0 ) {
-        //AlarmCount += 1;
-        alarm = true;
+    for ( Pixel pixel : battle ) {
+        int r = pixel.r, g = pixel.g, b = pixel.b;
+        if ( r == 0 && g == 0 && b == 0 ) {   
+            //std::cout << r << " " << g << " " << b << std::endl;         
+            alarm = true;
+        }
     }
 
-    //if ( AlarmCount >= 4 ) { alarm = true; }
+    if ( AlarmCount >= 4 ) { AlarmCount = 0; alarm = true; }
 
     CHAT = screenshot.get( id, 189, 575, 1, 42 );
     chat = acknow.inspect( CHAT );
@@ -181,7 +183,6 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
     int x = 0, y = 0, z = 0;
 
     for ( int i = 0; i < positions.size( ); i++ ) {
-        //std::cout << "\nAAAAA\n" << map << "\nBBBBB\n" << positions[ i ].img << "\nCCCCC\n" << std::endl;
         if ( map == positions[ i ].img ) {
             x = positions[ i ].x;
             y = positions[ i ].y;
@@ -189,7 +190,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    //imwrite( "screenshot.png", ALARM );
+    imwrite( "screenshot.png", BATTLE );
 
     return make_tuple(
         health,
