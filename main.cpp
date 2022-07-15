@@ -417,7 +417,6 @@ void attackPaladinBox( ) {
 
 	bool keepAttacking;
 	double global = 2100;
-	double autoAttackCooldown = 0;
 	double attackCooldown = 0,
 		attackCooldown1 = 0,
 		attackCooldown2 = 0,
@@ -426,8 +425,6 @@ void attackPaladinBox( ) {
 		attackCooldown5 = 0,
 		attackCooldown6 = 0,
 		attackCooldown7 = 0;
-	bool firstAttack = false;
-	bool count = 0;
 
 	time.sleep( 3000 );
 
@@ -459,13 +456,12 @@ void attackPaladinBox( ) {
 								inputs.keyboard( character.arearune );
 								//time.sleep( 100 );
 								//inputs.mouse( values.targetPosition.x, values.targetPosition.y, 0 );
-								//console.log( values.targetPosition.x, values.targetPosition.y );
 								attackCooldown = time.clock( ) + global;
 								attackCooldown5 = time.clock( ) + 2100;
 							}
 						}
 					}
-					time.sleep( 200 );
+					time.sleep( 100 );
 				} else {
 					keepAttacking = false;
 					time.sleep( 1000 );
