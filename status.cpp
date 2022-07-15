@@ -190,7 +190,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    imwrite( "screenshot.png", BATTLE );
+    //imwrite( "screenshot.png", BATTLE );
 
     return make_tuple(
         health,
