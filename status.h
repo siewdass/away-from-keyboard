@@ -4,6 +4,7 @@
 class Status {
 public:
 	int id,
+		width,
 		health,
 		mana;
 	bool hungry,

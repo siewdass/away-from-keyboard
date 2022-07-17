@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "/opt/afk/test.sh",
+    "dpkg": "sudo dpkg -i afk.deb",
     "build": "g++ script.cpp status.cpp acknow.cpp viewport.cpp screenshot.cpp inputs.cpp utils.cpp actions.cpp character.cpp astar.cpp path.cpp licence.cpp converter.cpp global.cpp main.cpp -o afk -std=c++17 -lX11 -lxdo -ljsoncpp -lpthread `pkg-config --cflags --libs opencv gtk+-2.0 appindicator-0.1` -Wno-deprecated-declarations && cp afk /opt/afk/",
     "test": "g++ script.cpp status.cpp acknow.cpp viewport.cpp screenshot.cpp inputs.cpp utils.cpp actions.cpp character.cpp astar.cpp path.cpp licence.cpp converter.cpp global.cpp test.cpp -o test -std=c++17 -lX11 -lxdo -ljsoncpp -lpthread `pkg-config --cflags --libs opencv gtk+-2.0 appindicator-0.1` -Wno-deprecated-declarations && cp test /opt/afk/",
     "check": "python3 rgb.py > /dev/null 2>&1",
@@ -14,7 +16,7 @@
     "pull": "git pull",
     "commit": "git add . && git commit -m '-'",
     "push": "git push",
-    "package": "cp afk package/opt/afk/ && dpkg-deb -Z xz -b package afk.deb && rm package/opt/afk/afk"
+    "package": "cp afk package/opt/afk/ && cp test package/opt/afk/ && dpkg-deb -Z xz -b package afk.deb && rm package/opt/afk/afk && rm package/opt/afk/test"
   },
   "author": "",
   "license": "ISC"

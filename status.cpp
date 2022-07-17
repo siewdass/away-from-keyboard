@@ -32,6 +32,8 @@ int AlarmCount = 0;
 
 tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
 
+    //1012 642
+
     CAPACITY = screenshot.get( id, 919, 255, 11, 1 );
     capacity = acknow.inspect( CAPACITY );
 
@@ -125,7 +127,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    MP = screenshot.get( id, 539, 5, 267, 1 );
+    MP = screenshot.get( id, width-188-267, 5, 267, 1 );
     ManaPoints = acknow.inspect( MP );
     mana = 0;
 
@@ -190,7 +192,8 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    //imwrite( "screenshot.png", BATTLE );
+    //Mat TEST = screenshot.get( id, 0, 0, 700, 700 );
+    imwrite( "/home/siewdass/screenshot.png", MP );
 
     return make_tuple(
         health,

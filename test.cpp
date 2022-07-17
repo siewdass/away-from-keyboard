@@ -27,6 +27,8 @@ Licence licence;
 string id;
 string user;
 string name;
+int width;
+int height;
 
 void updateThread( ) {
 
@@ -67,6 +69,8 @@ void updateThread( ) {
 			values.necklace = necklace;
 			values.ring = ring;
 			values.lowcapacity = lowcapacity;
+
+			console.log( health, mana );
 
 			time.sleep( 200 );
 
@@ -177,11 +181,14 @@ void run( ) {
 
 	int id = client.get( );
 	status.id = id;
+	status.width = width;
 	viewport.id = id;
 
 	string file = "/home/" +user+ "/afk/" +name+ ".json";
 
 	console.log( file );
+	console.log( width );
+	console.log( height );
 
   bool exists = std::filesystem::exists( file.c_str( ) );
 
@@ -191,8 +198,8 @@ void run( ) {
 
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
-		//thread( healThread ).detach( );
-		//thread( potionsThread ).detach( );
+		thread( healThread ).detach( );
+		thread( potionsThread ).detach( );
 	}
 
 }
@@ -207,6 +214,8 @@ int main( int argc, char** argv ) {
 	id = argv[ 1 ];
 	user = argv[ 2 ];
 	name = argv[ 3 ];
+	width = atoi( argv[ 4 ] );
+	height = atoi( argv[ 5 ] );
 
 	for ( auto entry : licence.accepted ) {
 		if ( entry == id ) {
@@ -223,3 +232,4 @@ int main( int argc, char** argv ) {
 // internos de la barra de vida
 // autoattack siempre al que tenga mas vida
 // exori min = minimo 2
+// pasar hppercent a health y mppercent a mana
