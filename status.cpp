@@ -116,7 +116,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    HP = screenshot.get( id, 188, 5, 267, 1 );
+    HP = screenshot.get( id, 188, 5, width-188, 1 );
     HealthPoints = acknow.inspect( HP );
     health = 267;
 
@@ -127,7 +127,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    MP = screenshot.get( id, width-188-267, 5, 267, 1 );
+    MP = screenshot.get( id, 188, 5, width-188, 1 );
     ManaPoints = acknow.inspect( MP );
     mana = 0;
 
