@@ -92,12 +92,14 @@ void healThread( ) {
 
 	time.sleep( 3000 );
 
+	int percent = ( width / 2 ) - 188 - 40;
+
 	while ( running ) {
 
 		if ( Pause ) {
 			
-			int hppercent = ( double ) values.health / 267 * 100;
-			int mppercent = ( double ) values.mana / 267 * 100;
+			int hppercent = ( double ) values.health / percent * 100;
+			int mppercent = ( double ) values.mana / percent * 100;
 
 			try {
 
@@ -146,12 +148,14 @@ void potionsThread( ) {
 
 	time.sleep( 3000 );
 
+	int percent = ( width / 2 ) - 188 - 40;
+
 	while ( running ) {
 
 		if ( Pause ) {
 			
-			int hppercent = ( double ) values.health / 267 * 100;
-			int mppercent = ( double ) values.mana / 267 * 100;
+			int hppercent = ( double ) values.health / percent * 100;
+			int mppercent = ( double ) values.mana / percent * 100;
 
 			try {
 

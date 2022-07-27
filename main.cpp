@@ -29,6 +29,8 @@ string user;
 string name;
 int unknow = 0;
 bool fix = true; 
+int width;
+int height;
 
 void updateThread( ) {
 
@@ -175,12 +177,14 @@ void healThread( ) {
 
 	time.sleep( 3000 );
 
+	int percent = ( width / 2 ) - 188 - 40;
+
 	while ( running ) {
 
 		if ( Pause ) {
 			
-			int hppercent = ( double ) values.health / 267 * 100;
-			int mppercent = ( double ) values.mana / 267 * 100;
+			int hppercent = ( double ) values.health / percent * 100;
+			int mppercent = ( double ) values.mana / percent * 100;
 
 			try {
 
@@ -229,12 +233,14 @@ void potionsThread( ) {
 
 	time.sleep( 3000 );
 
+	int percent = ( width / 2 ) - 188 - 40;
+
 	while ( running ) {
 
 		if ( Pause ) {
 			
-			int hppercent = ( double ) values.health / 267 * 100;
-			int mppercent = ( double ) values.mana / 267 * 100;
+			int hppercent = ( double ) values.health / percent * 100;
+			int mppercent = ( double ) values.mana / percent * 100;
 
 			try {
 
@@ -742,11 +748,14 @@ void run( ) {
 
 	int id = client.get( );
 	status.id = id;
+	status.width = width;
 	viewport.id = id;
 
 	string file = "/home/" +user+ "/afk/" +name+ ".json";
 
 	console.log( file );
+	console.log( width );
+	console.log( height );
 
   bool exists = std::filesystem::exists( file.c_str( ) );
 
@@ -790,7 +799,9 @@ int main( int argc, char** argv ) {
 	id = argv[ 1 ];
 	user = argv[ 2 ];
 	name = argv[ 3 ];
-
+	width = atoi( argv[ 4 ] );
+	height = atoi( argv[ 5 ] );
+	
 	for ( auto entry : licence.accepted ) {
 		if ( entry == id ) {
 			Interface( argc, argv, run );

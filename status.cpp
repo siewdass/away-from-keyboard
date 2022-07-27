@@ -30,6 +30,7 @@ Pixels TEST; // ARRAY OF PIXELS
 
 int AlarmCount = 0;
 
+
 tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
 
     //1012 642
@@ -116,9 +117,11 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    HP = screenshot.get( id, 188, 5, 683, 1 );
+    int middle = ( width / 2 );
+
+    HP = screenshot.get( id, 188, 5, middle-188-40, 1 );
     HealthPoints = acknow.inspect( HP );
-    health = 267;
+    health = middle-188-40;
 
     for ( Pixel pixel : HealthPoints ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -127,7 +130,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    MP = screenshot.get( id, 683, 5, width-188, 1 );
+    MP = screenshot.get( id, middle+40, 5, width-middle-188+40, 1 );
     ManaPoints = acknow.inspect( MP );
     mana = 0;
 
@@ -193,7 +196,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
     }
 
     //Mat TEST = screenshot.get( id, 0, 0, 700, 700 );
-    imwrite( "/home/siewdass/screenshot.png", MP );
+    //imwrite( "/home/siewdass/screenshot.png", HP );
 
     return make_tuple(
         health,

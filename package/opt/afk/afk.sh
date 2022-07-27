@@ -18,8 +18,6 @@ while ! [ $DONE == 1 ]; do
 done
 
 NAME=$(DISPLAY=:$BOT xwininfo -root -children | grep Tibia | cut -d '"' -f 2 | sed s/"Tibia - "// | sed 's/ //g')
-WIDTH=$(xdpyinfo | grep dimensions | cut -d ' ' -f 7 | cut -d 'x' -f 1)
-HEIGHT=$(xdpyinfo | grep dimensions | cut -d ' ' -f 7 | cut -d 'x' -f 2)
 touch /tmp/afk$BOT
-DISPLAY=:$BOT /opt/afk/afk $(lsblk --nodeps -no serial /dev/sda) $USER $NAME $WIDTH $HEIGHT
+DISPLAY=:$BOT /opt/afk/afk $(lsblk --nodeps -no serial /dev/sda) $USER $NAME 1012 642
 rm /tmp/afk$BOT
