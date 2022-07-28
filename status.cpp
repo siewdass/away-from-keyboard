@@ -195,8 +195,8 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    //Mat TEST = screenshot.get( id, 0, 0, 700, 700 );
-    //imwrite( "/home/siewdass/screenshot.png", HP );
+
+    //imwrite( "/opt/afk/screenshot.png", MAP );
 
     return make_tuple(
         health,
