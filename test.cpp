@@ -122,7 +122,7 @@ void healThread( ) {
 					} else if ( values.poison && character.curepoison != "" ) {
 						inputs.keyboard( character.curepoison );
 						healCooldown = time.clock( ) + global;
-					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent < 100 ) {
+					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent < 99 ) {
 						inputs.keyboard( character.recovery );
 						healCooldown = time.clock( ) + global;
 						recoveryCooldown = time.clock( ) + 63000;
