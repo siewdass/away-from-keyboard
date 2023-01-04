@@ -1,3 +1,3 @@
-bash install.sh\
-bash build.sh\
-bash package.sh
+./install.sh\
+./build.sh\
+./package.sh
