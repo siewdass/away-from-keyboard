@@ -6,7 +6,8 @@ public:
 	int id,
 		width,
 		health,
-		mana;
+		mana,
+		max;
 	bool hungry,
 		paralyze,
 		poison,

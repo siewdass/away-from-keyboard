@@ -31,6 +31,7 @@ int unknow = 0;
 bool fix = true; 
 int width;
 int height;
+int percent;
 
 void updateThread( ) {
 
@@ -91,8 +92,6 @@ void updateThread( ) {
 
 			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
 			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
-
-			console.log( "isTargeting:", isTargeting );
 
 			time.sleep( 200 );
 
@@ -177,8 +176,6 @@ void healThread( ) {
 
 	time.sleep( 3000 );
 
-	int percent = ( width / 2 ) - 188 - 40;
-
 	while ( running ) {
 
 		if ( Pause ) {
@@ -232,8 +229,6 @@ void potionsThread( ) {
 	double potionCooldown = 0;
 
 	time.sleep( 3000 );
-
-	int percent = ( width / 2 ) - 188 - 40;
 
 	while ( running ) {
 
@@ -665,7 +660,6 @@ void autoAttackThread( ) {
 		if ( Pause ) {
 			
 			try {
-
 				if ( mode.attacking ) {
 					if ( values.box >= 3 || keepAttacking ) {
 						keepAttacking = true;
@@ -674,7 +668,9 @@ void autoAttackThread( ) {
 						} else {
 							waitForTarget = 0;
 						}
-						if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 4 ) {
+						//console.log( "OUT:", values.isTargeting );
+						if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 4 && !values.isTargeting ) {
+							console.log( "IN:", values.isTargeting );
 							for ( Point point : values.monsters ) {
 								if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
 									auto [ x, y ] = actions.gameWindow( point.x, point.y );
@@ -686,7 +682,7 @@ void autoAttackThread( ) {
 						}
 					}
 
-					time.sleep( 100 );
+					time.sleep( 200 );
 
 				} else {
 					keepAttacking = false;
@@ -746,30 +742,31 @@ void alarmThread( ) {
 
 void run( ) {
 
-	int id = client.get( );
+	auto [ id, width, height, user, name ] = client.get( );
+	percent = ( ( width / 2 ) - 188 ) - 32;
 	status.id = id;
 	status.width = width;
+	status.max = percent;
 	viewport.id = id;
+	inputs.id = id;
 
 	string file = "/home/" +user+ "/afk/" +name+ ".json";
 
-	console.log( file );
-	console.log( width );
-	console.log( height );
-
   bool exists = std::filesystem::exists( file.c_str( ) );
-
+	
 	if ( !exists ) { return; }
 
 	character.load( file.c_str( ) );
+	console.log( id, width, height, file );
+
 	script.load( "/opt/afk/maps/" + character.script );
 
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
-		thread( alarmThread ).detach( );
-		thread( toolsThread ).detach( );
 		thread( healThread ).detach( );
 		thread( potionsThread ).detach( );
+		thread( alarmThread ).detach( );
+		thread( toolsThread ).detach( );
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
 			thread( autoAttackThread ).detach( );
@@ -791,19 +788,15 @@ void run( ) {
 
 int main( int argc, char** argv ) {
 
+	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
+	serial.pop_back( );
+
 	system( "rm -f /tmp/licence.json" );
 	system( "wget -O /tmp/licence.json https://siewdass.github.io/licence.json > /dev/null 2>&1" );
-	
 	licence.load( "/tmp/licence.json" );
 
-	id = argv[ 1 ];
-	user = argv[ 2 ];
-	name = argv[ 3 ];
-	width = atoi( argv[ 4 ] );
-	height = atoi( argv[ 5 ] );
-	
 	for ( auto entry : licence.accepted ) {
-		if ( entry == id ) {
+		if ( entry == serial ) {
 			Interface( argc, argv, run );
 			break;
 		}

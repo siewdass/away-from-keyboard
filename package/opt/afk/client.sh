@@ -19,13 +19,14 @@ while ! [ $DONE == 1 ]; do
   fi
 done
 
-Xephyr -keybd ephyr,,,xkbmodel=pc105,xkblayout=latam,us,xkbrules=evdev,xkboption=grp:alts_toogle -br -ac -noreset -screen 1012x642 -title Tibia$X :$X > /dev/null 2>&1 &
+Xephyr -br -ac -noreset -screen 1012x642 -title Tibia$X :$X &
+#Xephyr -keybd ephyr,,,xkbmodel=pc105,xkblayout=latam,us,xkbrules=evdev,xkboption=grp:alts_toogle -br -ac -noreset -screen 1012x642 -title Tibia$X :$X &
 sleep 0.2
 DONE=0
 xseticon -id $(xdotool search --name Tibia$X) /opt/afk/t$X.png
-#DISPLAY=:$X /opt/tibia/Tibia > /dev/null 2>&1
-DISPLAY=:$X xset s off
-DISPLAY=:$X vglrun -d :$X /opt/tibia/Tibia > /dev/null 2>&1
+DISPLAY=:$X /opt/tibia/Tibia > /dev/null 2>&1
+#DISPLAY=:$X xset s off
+#DISPLAY=:$X vglrun -d :$X /opt/tibia/Tibia > /dev/null 2>&1
 
 while ! [ $DONE == 1 ]; do
   CLIENT=$(DISPLAY=:$X xwininfo -root -children | grep Tibia | cut -d ' ' -f 6)

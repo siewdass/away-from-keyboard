@@ -19,5 +19,5 @@ done
 
 #NAME=$(DISPLAY=:$BOT xwininfo -root -children | grep Tibia | cut -d '"' -f 2 | sed s/"Tibia - "// | sed 's/ //g')
 touch /tmp/afk$BOT
-DISPLAY=:$BOT
+DISPLAY=:$BOT /opt/afk/afk
 rm /tmp/afk$BOT

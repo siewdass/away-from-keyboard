@@ -37,29 +37,33 @@ public:
 
 class Client {
 	public:
-		int get( ) {
+		tuple < int, int, int, string, string > get( ) {
+			int id, width, height;
+			string user, name;
+			try {
+				id = stoi( process( "DISPLAY=:1 xdotool search --onlyvisible --class tibia" ) );
+				width = stoi( process( "DISPLAY=:1 xdotool search --onlyvisible --class tibia getwindowgeometry | grep Geometry | cut -d ' ' -f 4 | cut -d 'x' -f 1" ) );
+				height = stoi( process( "DISPLAY=:1 xdotool search --onlyvisible --class tibia getwindowgeometry | grep Geometry | cut -d ' ' -f 4 | cut -d 'x' -f 2" ) );
+				user = process( "whoami" );
+				user.pop_back( );
+				name = process( "DISPLAY=:1 xdotool search --onlyvisible --class tibia getwindowname | cut -d ' ' -f 3" );
+				name.pop_back( );
+			} catch ( exception & error ) {
+			}
+			return make_tuple( id, width, height, user, name);
+		}
+		string process( string cmd ) {
 			const int MAX_BUFFER = 2048;
-			
-			string cmd = "xdotool search --onlyvisible --class tibia";
-			
 			char buffer[ MAX_BUFFER ];
 			FILE *stream = popen( cmd.c_str( ) , "r" );
-			if ( stream ){
-			while ( !feof( stream ) ) {
-					if ( fgets( buffer, MAX_BUFFER, stream ) != NULL) {
-					}
+			if ( stream ) {
+				while ( !feof( stream ) ) {
+					if ( fgets( buffer, MAX_BUFFER, stream ) != NULL) { }
+				}
+				pclose( stream );
 			}
-			pclose( stream );
-			}
-
-			string s1{ buffer };
-
-			try {
-				int d = stoi( s1 );
-				return d;
-			} catch ( exception & error ) {
-				return 0;
-			}
+			string v{ buffer };
+			return v;
 		}
 };
 

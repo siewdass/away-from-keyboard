@@ -8,6 +8,7 @@ using namespace std;
 
 class Inputs {
 public:
+   int id;
    void mouse( int, int, int );
    void mouseMove( int, int );
    void mouseDrag( int, int );
