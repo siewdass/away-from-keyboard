@@ -17,7 +17,7 @@ while ! [ $DONE == 1 ]; do
   fi
 done
 
-NAME=$(DISPLAY=:$BOT xwininfo -root -children | grep Tibia | cut -d '"' -f 2 | sed s/"Tibia - "// | sed 's/ //g')
+#NAME=$(DISPLAY=:$BOT xwininfo -root -children | grep Tibia | cut -d '"' -f 2 | sed s/"Tibia - "// | sed 's/ //g')
 touch /tmp/afk$BOT
-DISPLAY=:$BOT /opt/afk/afk $(lsblk --nodeps -no serial /dev/sda) $USER $NAME 1012 642
+DISPLAY=:$BOT
 rm /tmp/afk$BOT
