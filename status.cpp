@@ -48,7 +48,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    if ( cap >= 11 ) {
+    if ( cap >= 10 ) {
         lowcap = true;
     }
 

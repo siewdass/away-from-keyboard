@@ -93,6 +93,7 @@ void updateThread( ) {
 			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
 			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
+			console.log( "isTargeting:", isTargeting );
 			time.sleep( 200 );
 
 		} else {
@@ -668,14 +669,13 @@ void autoAttackThread( ) {
 						} else {
 							waitForTarget = 0;
 						}
-						//console.log( "OUT:", values.isTargeting );
-						if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 4 && !values.isTargeting ) {
-							console.log( "IN:", values.isTargeting );
+						if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 4 ) {
 							for ( Point point : values.monsters ) {
 								if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
 									auto [ x, y ] = actions.gameWindow( point.x, point.y );
 									inputs.mouse( x, y, 3 );
 									autoAttackCooldown = time.clock( ) + 1000;
+									inputs.mouseMove( 742, 596 );
 									break;
 								}
 							}
