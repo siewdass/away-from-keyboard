@@ -664,31 +664,22 @@ void autoAttackThread( ) {
 			
 			try {
 				if ( mode.attacking ) {
-					if ( values.box >= 3 || keepAttacking ) {
-						keepAttacking = true;
-						if ( !values.isTargeting ) {
-							waitForTarget += 1;
-						} else {
-							waitForTarget = 0;
-						}
-						if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 4 ) {
-							for ( Point point : values.monsters ) {
-								if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
-									auto [ x, y ] = actions.gameWindow( point.x, point.y );
-									inputs.mouse( x, y, 3 );
-									autoAttackCooldown = time.clock( ) + 1000;
-									inputs.mouseMove( 742, 596 );
-									break;
-								}
+					if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && !values.isTargeting ) {
+						for ( Point point : values.monsters ) {
+							if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
+								auto [ x, y ] = actions.gameWindow( point.x, point.y );
+								inputs.mouse( x, y, 3 );
+								autoAttackCooldown = time.clock( ) + 1000;
+								inputs.mouseMove( 742, 596 );
+								break;
 							}
 						}
 					}
-
+					
 					time.sleep( 200 );
 
 				} else {
-					keepAttacking = false;
-					time.sleep( 2000 );
+					time.sleep( 1000 );
 				}
 
 			} catch ( const exception &err ) {
