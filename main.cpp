@@ -93,7 +93,7 @@ void updateThread( ) {
 			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
 			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
-			console.log( "isTargeting:", isTargeting );
+			//console.log( "isTargeting:", isTargeting );
 			time.sleep( 200 );
 
 		} else {
@@ -295,11 +295,10 @@ void ammoThread( ) {
 
 void toolsThread( ) {
 
-	double eat = 0,
-		amulet,
-		ring = 0,
-		f = 0,
-		haste = 0;
+	double necklaceCooldown = 0,
+		ringCooldown = 0,
+		foodCooldown = 0,
+		hasteCooldown = 0;
 
 	time.sleep( 4000 );
 
@@ -309,21 +308,24 @@ void toolsThread( ) {
 
 			try {
 				if ( mode.walking ) {
-					if ( time.clock( ) > haste && character.haste != "" && !values.haste ) {
+					if ( time.clock( ) > hasteCooldown && character.haste != "" && !values.haste ) {
 						inputs.keyboard( character.haste );
-						haste = time.clock( ) + 33000;
-					} else if ( character.food != "" && values.hungry ) {
+						hasteCooldown = time.clock( ) + 33000;
+					} else if ( time.clock( ) > foodCooldown && character.food != "" && values.hungry ) {
 						inputs.keyboard( character.food );
 						inputs.keyboard( character.food );
 						inputs.keyboard( character.food );
-					} else if ( character.ring != "" && values.ring == false ) {
+						foodCooldown = time.clock( ) + 180000;
+					} else if ( time.clock( ) > ringCooldown && character.ring != "" && values.ring == false ) {
 						inputs.keyboard( character.ring );
 						inputs.keyboard( character.ring );
 						inputs.keyboard( character.ring );
-					} else if ( character.necklace != "" && values.necklace == false ) {
+						ringCooldown = time.clock( ) + 240000;
+					} else if ( time.clock( ) > necklaceCooldown && character.necklace != "" && values.necklace == false ) {
 						inputs.keyboard( character.necklace );
 						inputs.keyboard( character.necklace );
 						inputs.keyboard( character.necklace );
+						necklaceCooldown = time.clock( ) + 240000;
 					}
 				}
 			} catch ( const std::exception& e ) {

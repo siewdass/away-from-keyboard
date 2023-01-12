@@ -48,7 +48,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    if ( cap >= 10 ) {
+    if ( cap >= 11 ) {
         lowcap = true;
     }
 
@@ -195,8 +195,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-
-    //imwrite( "/opt/afk/screenshot.png", MAP );
+    //imwrite( "/opt/afk/screenshot.png", CAPACITY );
 
     return make_tuple(
         health,
