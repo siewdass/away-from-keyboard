@@ -316,16 +316,14 @@ void toolsThread( ) {
 						inputs.keyboard( character.food );
 						inputs.keyboard( character.food );
 						foodCooldown = time.clock( ) + 180000;
-					} else if ( time.clock( ) > ringCooldown && character.ring != "" && values.ring == false ) {
+					} else if ( character.ring != "" && values.ring == false ) {
 						inputs.keyboard( character.ring );
 						inputs.keyboard( character.ring );
 						inputs.keyboard( character.ring );
-						ringCooldown = time.clock( ) + 240000;
-					} else if ( time.clock( ) > necklaceCooldown && character.necklace != "" && values.necklace == false ) {
+					} else if ( character.necklace != "" && values.necklace == false ) {
 						inputs.keyboard( character.necklace );
 						inputs.keyboard( character.necklace );
 						inputs.keyboard( character.necklace );
-						necklaceCooldown = time.clock( ) + 240000;
 					}
 				}
 			} catch ( const std::exception& e ) {
@@ -664,7 +662,12 @@ void autoAttackThread( ) {
 			
 			try {
 				if ( mode.attacking ) {
-					if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && !values.isTargeting ) {
+					if ( !values.isTargeting ) {
+						waitForTarget += 1;
+					} else {
+						waitForTarget = 0;
+					}
+					if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 2 ) {
 						for ( Point point : values.monsters ) {
 							if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
 								auto [ x, y ] = actions.gameWindow( point.x, point.y );
