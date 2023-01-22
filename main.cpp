@@ -667,7 +667,7 @@ void autoAttackThread( ) {
 					} else {
 						waitForTarget = 0;
 					}
-					if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 2 ) {
+					if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 4 ) {
 						for ( Point point : values.monsters ) {
 							if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
 								auto [ x, y ] = actions.gameWindow( point.x, point.y );
