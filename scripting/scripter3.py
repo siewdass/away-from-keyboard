@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from pynput.keyboard import Listener, KeyCode
+from pynput.keyboard import Listener, KeyCode, Key
 from pynput.mouse import Button as Click, Controller as Mouse
 from time import time, sleep
 import screenshot
@@ -21,8 +21,8 @@ script = 'tmp.json'
 mouse = Mouse( )
 
 elapsed = 0
-keys = [ KeyCode.from_char( c ) for c in 'wasd' ]
 
+keys = [ KeyCode.from_char( c ) for c in '8426' ]
 with open( 'tmp.json' ) as f:
 	config = json.load( f )
 	x = config[ 'start' ][ 'x' ]

@@ -93,7 +93,7 @@ void updateThread( ) {
 			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
 			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
-			//console.log( "isTargeting:", isTargeting );
+			console.log( "x:", x, " y:", y );
 			time.sleep( 200 );
 
 		} else {
@@ -667,7 +667,7 @@ void autoAttackThread( ) {
 					} else {
 						waitForTarget = 0;
 					}
-					if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 4 ) {
+					if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 6 ) {
 						for ( Point point : values.monsters ) {
 							if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
 								auto [ x, y ] = actions.gameWindow( point.x, point.y );
@@ -738,6 +738,22 @@ void alarmThread( ) {
 
 void run( ) {
 
+	string number;
+
+	if ( std::filesystem::exists( "/tmp/afk4" ) ) {
+		number = "4";
+	} else if ( std::filesystem::exists( "/tmp/afk3" ) ) {
+		number = "3";
+	} else if ( std::filesystem::exists( "/tmp/afk2" ) ) {
+		number = "2";
+	} else if ( std::filesystem::exists( "/tmp/afk1" ) ) {
+		number = "1";
+	}
+	
+	console.log( "DISPLAY=:"+ number +" xdotool search --onlyvisible --class tibia" );
+	
+	client.number = number;
+	
 	auto [ id, width, height, user, name ] = client.get( );
 	percent = ( ( width / 2 ) - 188 ) - 32;
 	status.id = id;
@@ -783,6 +799,8 @@ void run( ) {
 }
 
 int main( int argc, char** argv ) {
+
+	//console.log( argv[ 1 ] );
 
 	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
 	serial.pop_back( );

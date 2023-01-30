@@ -36,17 +36,19 @@ public:
 };
 
 class Client {
+
 	public:
+		string number;
 		tuple < int, int, int, string, string > get( ) {
 			int id, width, height;
 			string user, name;
 			try {
-				id = stoi( process( "DISPLAY=:1 xdotool search --onlyvisible --class tibia" ) );
-				width = stoi( process( "DISPLAY=:1 xdotool search --onlyvisible --class tibia getwindowgeometry | grep Geometry | cut -d ' ' -f 4 | cut -d 'x' -f 1" ) );
-				height = stoi( process( "DISPLAY=:1 xdotool search --onlyvisible --class tibia getwindowgeometry | grep Geometry | cut -d ' ' -f 4 | cut -d 'x' -f 2" ) );
+				id = stoi( process( "DISPLAY=:"+ number +" xdotool search --onlyvisible --class tibia" ) );
+				width = stoi( process( "DISPLAY=:"+ number +" xdotool search --onlyvisible --class tibia getwindowgeometry | grep Geometry | cut -d ' ' -f 4 | cut -d 'x' -f 1" ) );
+				height = stoi( process( "DISPLAY=:"+ number +" xdotool search --onlyvisible --class tibia getwindowgeometry | grep Geometry | cut -d ' ' -f 4 | cut -d 'x' -f 2" ) );
 				user = process( "whoami" );
 				user.pop_back( );
-				name = process( "DISPLAY=:1 xdotool search --onlyvisible --class tibia getwindowname | cut -d ' ' -f 3" );
+				name = process( "DISPLAY=:"+ number +" xdotool search --onlyvisible --class tibia getwindowname | cut -d ' ' -f 3" );
 				name.pop_back( );
 			} catch ( exception & error ) {
 			}
