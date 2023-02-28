@@ -25,15 +25,17 @@ sleep 0.2
 DONE=0
 xseticon -id $(xdotool search --name Tibia$X) /opt/afk/t$X.png
 DISPLAY=:$X /opt/tibia/Tibia > /dev/null 2>&1
+sleep 0.2
 #DISPLAY=:$X xset s off
 #DISPLAY=:$X vglrun -d :$X /opt/tibia/Tibia > /dev/null 2>&1
 
 while ! [ $DONE == 1 ]; do
-  CLIENT=$(DISPLAY=:$X xwininfo -root -children | grep Tibia | cut -d ' ' -f 6)
+  CLIENT=$(DISPLAY=:$X xwininfo -root -children | grep Tibia | cut -d ' ' -f 6 | cut -d$'\n' -f1)
+
   if [ $CLIENT ]; then
     DONE=1
   fi
-  sleep 0.3
+  sleep 1
 done
 
 DISPLAY=:$X xdotool windowmove $CLIENT 0 0

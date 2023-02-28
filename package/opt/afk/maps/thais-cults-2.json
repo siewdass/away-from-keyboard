@@ -96,20 +96,38 @@
   ],
   "waypoints": [
     {
-      "x": 20,
-      "y": 48,
+      "x": 17,
+      "y": 49,
       "z": 0,
       "action": "attack"
     },
     {
-      "x": 40,
-      "y": 32,
+      "x": 36,
+      "y": 39,
       "z": 0,
       "action": "attack"
     },
     {
-      "x": 26,
-      "y": 8,
+      "x": 37,
+      "y": 20,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 37,
+      "y": 20,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 33,
+      "y": 14,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 28,
+      "y": 9,
       "z": 0,
       "action": "attack"
     },
@@ -120,46 +138,88 @@
       "action": "attack"
     },
     {
+      "x": 8,
+      "y": 34,
+      "z": 0,
+      "action": "walk"
+    },
+    {
       "x": 10,
       "y": 32,
       "z": 0,
       "action": "walk"
     },
     {
-      "x": 18,
+      "x": 10,
+      "y": 32,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 14,
+      "y": 31,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 19,
       "y": 31,
       "z": 0,
       "action": "attack"
     },
     {
-      "x": 9,
-      "y": 68,
-      "z": 0,
-      "action": "attack"
-    },
-    {
-      "x": 21,
-      "y": 76,
-      "z": 0,
-      "action": "attack"
-    },
-    {
-      "x": 44,
-      "y": 78,
-      "z": 0,
-      "action": "attack"
-    },
-    {
-      "x": 51,
-      "y": 54,
-      "z": 0,
-      "action": "attack"
-    },
-    {
-      "x": 21,
+      "x": 15,
       "y": 60,
       "z": 0,
       "action": "walk"
+    },
+    {
+      "x": 15,
+      "y": 60,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 22,
+      "y": 62,
+      "z": 0,
+      "action": "attack"
+    },
+    {
+      "x": 42,
+      "y": 58,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 46,
+      "y": 57,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 50,
+      "y": 55,
+      "z": 0,
+      "action": "attack"
+    },
+    {
+      "x": 46,
+      "y": 78,
+      "z": 0,
+      "action": "walk"
+    },
+    {
+      "x": 42,
+      "y": 79,
+      "z": 0,
+      "action": "attack"
+    },
+    {
+      "x": 16,
+      "y": 78,
+      "z": 0,
+      "action": "attack"
     }
   ],
   "positions": [
