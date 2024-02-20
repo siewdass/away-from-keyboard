@@ -20,6 +20,7 @@ set( SOURCES
      ${CMAKE_SOURCE_DIR}/licence.cpp
      ${CMAKE_SOURCE_DIR}/converter.cpp
      ${CMAKE_SOURCE_DIR}/global.cpp
+     ${CMAKE_SOURCE_DIR}/map.cpp
      ${CMAKE_SOURCE_DIR}/main.cpp
 )
 

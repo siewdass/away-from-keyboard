@@ -12,6 +12,7 @@
 
 #include <thread>
 
+//
 Client client;
 Values values;
 Status status;
@@ -24,6 +25,7 @@ Script script;
 Inputs inputs;
 Character character;
 Licence licence;
+Map map;
 
 string id;
 string user;

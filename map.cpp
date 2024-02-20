@@ -4,9 +4,9 @@ Map::Map( ) {
 	Mat img;
 	for ( int i = 0; i <= 15; i++ ) {  
 		img = imread( "maps/" + to_string( i ) + "-map.png" );
-		maps.push_back( img );
+		Map::maps.push_back( img );
 		img = imread( "maps/" + to_string( i ) + "-path.png" );
-		paths.push_back( img );
+		Map::paths.push_back( img );
 	}
 }
 
@@ -23,28 +23,28 @@ Point3i Map::locate( Point3i point, Mat minimap ) {
 
 		x = point.x;
 		while ( xmax && point.x < x + grow ) {
-			if ( walkable( point ) && compare( z, minimap, point ) ) return point;
+			if ( Map::walkable( point ) && Map::compare( z, minimap, point ) ) return point;
 			point.x++;
 			if ( point.x > z.rows - 1 ) xmax = false;
 		}
 
 		y = point.y;
 		while ( ymax && point.y < y + grow ) {
-			if ( walkable( point ) && compare( z, minimap, point ) ) return point;
+			if ( Map::walkable( point ) && Map::compare( z, minimap, point ) ) return point;
 			point.y++;
 			if ( point.y > z.cols - 1 ) ymax = false;
 		}
 
 		x = point.x;
 		while ( xmin && point.x > x - grow ) {
-			if ( walkable( point ) && compare( z, minimap, point ) ) return point; 
+			if ( Map::walkable( point ) && Map::compare( z, minimap, point ) ) return point; 
 			point.x--;
 			if ( point.x < 0 ) xmin = false;
 		}
 
 		y = point.y;
 		while ( ymin && point.y > y - grow ) {
-			if ( walkable( point ) && compare( z, minimap, point ) ) return point;
+			if ( Map::walkable( point ) && Map::compare( z, minimap, point ) ) return point;
 			point.y--;
 			if ( point.y < 0 ) ymin = false;
 		}
@@ -54,7 +54,7 @@ Point3i Map::locate( Point3i point, Mat minimap ) {
 
 
 bool Map::compare( Mat z, Mat minimap, Point3i point ) {
-	Mat part = Mat( z, Rect( point.x - width / 2, point.y - height / 2, width, height ) );
+	Mat part = Mat( z, Rect( point.x - Map::width / 2, point.y - Map::height / 2, Map::width, Map::height ) );
 
 	int threshold = 0;
 	// reuse vars
@@ -70,6 +70,6 @@ bool Map::compare( Mat z, Mat minimap, Point3i point ) {
 }
 
 bool Map::walkable( Point3i point ) {
-	Vec3b pixel = paths[ point.z ].at < Vec3b > ( point.y, point.x );
+	Vec3b pixel = Map::paths[ point.z ].at < Vec3b > ( point.y, point.x );
 	return pixel == Vec3b( 255, 0, 255 ) ? false : true;
 }
