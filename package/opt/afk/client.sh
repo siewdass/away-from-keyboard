@@ -25,7 +25,7 @@ sleep 0.2
 DONE=0
 xseticon -id $(xdotool search --name Tibia$X) /opt/afk/t$X.png
 DISPLAY=:$X /opt/tibia/Tibia > /dev/null 2>&1
-sleep 0.2
+sleep 1
 #DISPLAY=:$X xset s off
 #DISPLAY=:$X vglrun -d :$X /opt/tibia/Tibia > /dev/null 2>&1
 
