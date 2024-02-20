@@ -1,3 +1,4 @@
+#include "map.h"
 #include "inputs.h"
 #include "status.h"
 #include "viewport.h"
@@ -764,14 +765,14 @@ void run( ) {
 
 	string file = "/home/" +user+ "/afk/" +name+ ".json";
 
-  bool exists = std::filesystem::exists( file.c_str( ) );
+	bool exists = std::filesystem::exists( file.c_str( ) );
 	
 	if ( !exists ) { return; }
 
 	character.load( file.c_str( ) );
 	console.log( id, width, height, file );
 
-	script.load( "/opt/afk/maps/" + character.script );
+	//script.load( "/opt/afk/maps/" + character.script );
 
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
@@ -779,7 +780,7 @@ void run( ) {
 		thread( potionsThread ).detach( );
 		thread( alarmThread ).detach( );
 		thread( toolsThread ).detach( );
-		if ( character.vocation == "knight" && character.hunt == "box" ) {
+		/*if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
 			thread( autoAttackThread ).detach( );
 			thread( attackKnightBox ).detach( );
@@ -793,14 +794,12 @@ void run( ) {
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
 			thread( paladinTargetThread ).detach( );
 			thread( ammoThread ).detach( );
-		}
+		}*/
 	}
 
 }
 
 int main( int argc, char** argv ) {
-
-	//console.log( argv[ 1 ] );
 
 	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
 	serial.pop_back( );
@@ -816,8 +815,13 @@ int main( int argc, char** argv ) {
 		}
 	}
 
+	console.log(  "Licence " + serial + " not added." );
+
 	return 0;
 }
+
+// corregir cuando el cliente abre, un while loop hasta que detecte la ventana y que se asegure de que este en X y Y 
+// uasr el opencv que viene en el SO
 
 // detectar cantidad de vida segun pixeles internos de la barra de vida
 // exori min minimo 2
