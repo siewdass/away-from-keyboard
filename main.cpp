@@ -808,6 +808,7 @@ int main( int argc, char** argv ) {
 // #pragma once in all .h
 // crear una clase para knight otra para rp y asi
 // converter se va
+// delete script
 
 // detectar cantidad de vida segun pixeles internos de la barra de vida
 // exori min minimo 2
