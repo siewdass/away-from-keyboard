@@ -13,6 +13,6 @@ public:
 		poison,
 		isTargeting,
 		haste;
-	tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool, bool > update( vector < Position > );
+	tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, bool, bool, bool > update( );
 	bool valuableLoot( );
 };

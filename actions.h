@@ -5,11 +5,12 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include "shared.h"
-#include "script.h"
+#include "character.h"
 #include "utils.h"
 #include "inputs.h"
 #include "path.h"
 #include "global.h"
+
 using namespace cv;
 using namespace std;
 
@@ -47,9 +48,9 @@ public:
     Point from, to;
 
     bool looter( );
-    bool walker( Values, Script );
-    bool runaway( Values, Script );
-    bool lootway( Values, Script, Point);
+    bool walker( Values, vector < Waypoint >, vector < vector < vector < int > > > );
+    bool runaway( Values, vector < Waypoint >, vector < vector < vector < int > > > );
+    bool lootway( Values, vector < vector < vector < int > > >, Point);
     tuple < bool, string, string, string, string, int, int, int > potions( int, int );
     tuple < bool, string, string, string, string, int, int, int > supporter( Values );
     bool attacker( Values );

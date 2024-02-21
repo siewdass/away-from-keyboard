@@ -96,7 +96,7 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
 
     bool oldTarget;
 
-    Mat GW = screenshot.get( id, 189, 40, 615, 451 );
+    Mat GW = screenshot.get( id, 189, 40, 615, 451, false );
 
     auto [ old, GameWindow ] = acknow.detect( GW );
 

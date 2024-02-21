@@ -66,6 +66,14 @@ void Character::load( const char* file ) {
 	rope = config.readString( "Rope" );
 	hunt = config.readString( "Hunt" );
 	leave = config.readString( "Leave" );
-	script = config.readString( "Script" );
+	
+	for ( Json waypoint: config.readArray( "Waypoints" ) ) {
+		Waypoint wp;
+		wp.x = waypoint.readInteger( "x" );
+		wp.y = waypoint.readInteger( "y" );
+		wp.z = waypoint.readInteger( "z" );
+		wp.action = waypoint.readString( "action" );
+		waypoints.push_back( wp );
+	}
 
 }

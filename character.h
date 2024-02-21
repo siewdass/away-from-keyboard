@@ -9,7 +9,6 @@ using namespace std;
 
 class Character {
 public:
-
 	string vocation = "";
 	string bloodrage = "";
 	string challenge = "";
@@ -22,15 +21,15 @@ public:
 	string brutalstrike = "";
 	string whirlwindthrow = "";
 	string sharpshooter = "";
-  string divinedazzle = "";
-  string divinecaldera = "";
-  string arearune = "";
-  string strongetherealspear = "";
-  string etherealspear = "";
-  string divinemissile = "";
-  string curecurse = "";
-  string quiver = "";
-  string throwing = "";
+	string divinedazzle = "";
+	string divinecaldera = "";
+	string arearune = "";
+	string strongetherealspear = "";
+	string etherealspear = "";
+	string divinemissile = "";
+	string curecurse = "";
+	string quiver = "";
+	string throwing = "";
 	string healing1 = "";
 	int healing1percent = 0;
 	string healing2 = "";
@@ -55,7 +54,7 @@ public:
 	string rope = "";
 	string hunt = "";
 	string leave = "";
-	string script = "";
+	vector < Waypoint > waypoints;
 	void load( const char* );
 };
 

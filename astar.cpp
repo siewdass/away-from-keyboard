@@ -18,8 +18,9 @@ namespace pf
 	m_size(0),
 	m_nrOfDirections(4)
 	{
-		m_directions = { { -1, 0 }, { 1, 0 }, { 0, 1 }, { 0, -1 },
-						 { -1, -1 }, { 1, 1 }, { -1, 1 }, { 1, -1 } };
+		m_directions = { { -1,  0 }, {  1,  0 }, {  0,  1 },
+					     {  0, -1 },             { -1, -1 },
+						 {  1,  1 }, { -1,  1 }, {  1, -1 } };
 	}
 
 	Array < cv::Point > Astar::findPath( cv::Point sP, cv::Point tP ) {

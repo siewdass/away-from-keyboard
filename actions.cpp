@@ -168,7 +168,7 @@ bool Actions::looter( ) {
     return true;
 }
 
-bool Actions::walker( Values values, Script script ) {
+bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vector < vector < int > > > map ) {
 
     if ( values.minimap == old ) {
         count += 1;
@@ -180,62 +180,62 @@ bool Actions::walker( Values values, Script script ) {
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
 
-            if ( values.x == script.waypoints[ position ].x &&
-                 values.y == script.waypoints[ position ].y && 
-                 script.waypoints[ position ].action == "attack" ) {
+            if ( values.x == waypoints[ position ].x &&
+                 values.y == waypoints[ position ].y && 
+                 waypoints[ position ].action == "attack" ) {
                 console.log( "action" );
                 position += 1;
                 return true;
-            } else if ( ( values.x == script.waypoints[ position ].x -1 || 
-                          values.x == script.waypoints[ position ].x +1 ) && 
-                        ( values.y == script.waypoints[ position ].y -1 || 
-                          values.y == script.waypoints[ position ].y +1 ||
-                          values.y == script.waypoints[ position ].y ) && 
-                          script.waypoints[ position ].action == "attack" ) {
+            } else if ( ( values.x == waypoints[ position ].x -1 || 
+                          values.x == waypoints[ position ].x +1 ) && 
+                        ( values.y == waypoints[ position ].y -1 || 
+                          values.y == waypoints[ position ].y +1 ||
+                          values.y == waypoints[ position ].y ) && 
+                          waypoints[ position ].action == "attack" ) {
                 console.log( "action wrong x" );
                 position += 1;
                 return true;
-            } else if ( ( values.y == script.waypoints[ position ].y -1 || 
-                          values.y == script.waypoints[ position ].y +1 ) && 
-                        ( values.x == script.waypoints[ position ].x -1 || 
-                          values.x == script.waypoints[ position ].x +1 ||
-                          values.x == script.waypoints[ position ].x ) && 
-                          script.waypoints[ position ].action == "attack" ) {
+            } else if ( ( values.y == waypoints[ position ].y -1 || 
+                          values.y == waypoints[ position ].y +1 ) && 
+                        ( values.x == waypoints[ position ].x -1 || 
+                          values.x == waypoints[ position ].x +1 ||
+                          values.x == waypoints[ position ].x ) && 
+                          waypoints[ position ].action == "attack" ) {
                 console.log( "action wrong y" );
                 position += 1;
                 return true;
-            }  else if ( values.x == script.waypoints[ position ].x &&
-                 values.y == script.waypoints[ position ].y && 
-                 script.waypoints[ position ].action == "walk" ) {
+            }  else if ( values.x == waypoints[ position ].x &&
+                 values.y == waypoints[ position ].y && 
+                 waypoints[ position ].action == "walk" ) {
                 console.log( "walk" );
                 position += 1;
-            } else if ( ( values.x == script.waypoints[ position ].x -1 || 
-                          values.x == script.waypoints[ position ].x +1 ) && 
-                        ( values.y == script.waypoints[ position ].y -1 || 
-                          values.y == script.waypoints[ position ].y +1 ||
-                          values.y == script.waypoints[ position ].y ) && 
-                          script.waypoints[ position ].action == "walk" ) {
+            } else if ( ( values.x == waypoints[ position ].x -1 || 
+                          values.x == waypoints[ position ].x +1 ) && 
+                        ( values.y == waypoints[ position ].y -1 || 
+                          values.y == waypoints[ position ].y +1 ||
+                          values.y == waypoints[ position ].y ) && 
+                          waypoints[ position ].action == "walk" ) {
                 console.log( "walk wrong x" );
                 position += 1;
-            } else if ( ( values.y == script.waypoints[ position ].y -1 || 
-                          values.y == script.waypoints[ position ].y +1 ) && 
-                        ( values.x == script.waypoints[ position ].x -1 || 
-                          values.x == script.waypoints[ position ].x +1 ||
-                          values.x == script.waypoints[ position ].x ) && 
-                          script.waypoints[ position ].action == "walk" ) {
+            } else if ( ( values.y == waypoints[ position ].y -1 || 
+                          values.y == waypoints[ position ].y +1 ) && 
+                        ( values.x == waypoints[ position ].x -1 || 
+                          values.x == waypoints[ position ].x +1 ||
+                          values.x == waypoints[ position ].x ) && 
+                          waypoints[ position ].action == "walk" ) {
                 console.log( "walk wrong y" );
                 position += 1;
-            } if ( position == script.waypoints.size( ) ) {
+            } if ( position == waypoints.size( ) ) {
                 console.log( "reset positions" );
                 position = 0;
             }
 
             from.x = values.x;
             from.y = values.y;
-            to.x = script.waypoints[ position ].x;
-            to.y = script.waypoints[ position ].y;
+            to.x = waypoints[ position ].x;
+            to.y = waypoints[ position ].y;
 
-            auto paths = path.find( script.map[ z ], from, to );
+            auto paths = path.find( map[ z ], from, to );
 
             /*string print;
             for ( var p : paths ) {
@@ -263,7 +263,7 @@ bool Actions::walker( Values values, Script script ) {
                 //inputs.keyboard( "Escape" );
                 //time.sleep( 100 );
                 inputs.mouse( left + ( pixel * X ), top + ( pixel * Y ), 1 );
-                //console.log( left + ( pixel * X ), top + ( pixel * Y ), 1 );
+                console.log( left + ( pixel * X ), top + ( pixel * Y ), 1 );
                 walkCoolDown =  time.clock( ) + 1000;
                 return false;
             }
@@ -272,7 +272,7 @@ bool Actions::walker( Values values, Script script ) {
     return false;
 }
 
-bool Actions::runaway( Values values, Script script ) {
+bool Actions::runaway( Values values, vector < Waypoint > waypoints, vector < vector < vector < int > > > map ) {
    
     if ( values.minimap == old ) {
         count += 1;
@@ -282,8 +282,8 @@ bool Actions::runaway( Values values, Script script ) {
     } if ( count >= 2 ) {
         count = 0;
         if ( time.clock( ) > walkCoolDown ) {
-            if ( values.x == script.waypoints[ runPosition ].x &&
-                 values.y == script.waypoints[ runPosition ].y ) {
+            if ( values.x == waypoints[ runPosition ].x &&
+                 values.y == waypoints[ runPosition ].y ) {
                 console.log( "run" );
                 if ( runPosition == 0 ) {
                     runPosition = 1;
@@ -292,11 +292,11 @@ bool Actions::runaway( Values values, Script script ) {
                 } else if ( runPosition == position - 2 ) {
                     runPosition += 1;
                 }
-            } else if ( ( values.x == script.waypoints[ runPosition ].x -1 || 
-                          values.x == script.waypoints[ runPosition ].x +1 ) && 
-                        ( values.y == script.waypoints[ runPosition ].y -1 || 
-                          values.y == script.waypoints[ runPosition ].y +1 ||
-                          values.y == script.waypoints[ runPosition ].y )  ) {
+            } else if ( ( values.x == waypoints[ runPosition ].x -1 || 
+                          values.x == waypoints[ runPosition ].x +1 ) && 
+                        ( values.y == waypoints[ runPosition ].y -1 || 
+                          values.y == waypoints[ runPosition ].y +1 ||
+                          values.y == waypoints[ runPosition ].y )  ) {
                 console.log( "run wrong x" );
                 if ( runPosition == 0 ) {
                     runPosition = 1;
@@ -305,11 +305,11 @@ bool Actions::runaway( Values values, Script script ) {
                 } else if ( runPosition == position - 2 ) {
                     runPosition += 1;
                 }
-            } else if ( ( values.y == script.waypoints[ runPosition ].y -1 || 
-                          values.y == script.waypoints[ runPosition ].y +1 ) && 
-                        ( values.x == script.waypoints[ runPosition ].x -1 || 
-                          values.x == script.waypoints[ runPosition ].x +1 ||
-                          values.x == script.waypoints[ runPosition ].x ) ) {
+            } else if ( ( values.y == waypoints[ runPosition ].y -1 || 
+                          values.y == waypoints[ runPosition ].y +1 ) && 
+                        ( values.x == waypoints[ runPosition ].x -1 || 
+                          values.x == waypoints[ runPosition ].x +1 ||
+                          values.x == waypoints[ runPosition ].x ) ) {
                 console.log( "run wrong y" );
                 if ( runPosition == 0 ) {
                     runPosition = 1;
@@ -325,11 +325,11 @@ bool Actions::runaway( Values values, Script script ) {
             }
             from.x = values.x;
             from.y = values.y;
-            to.x = script.waypoints[ runPosition ].x;
-            to.y = script.waypoints[ runPosition ].y;
+            to.x = waypoints[ runPosition ].x;
+            to.y = waypoints[ runPosition ].y;
             console.log( "walk" );
 
-            auto paths = path.find( script.map[ z ], from, to );
+            auto paths = path.find( map[ z ], from, to );
             if ( paths.size( ) > 0 ) {
 
                 if ( paths.size( ) >= 1 ) {
@@ -358,7 +358,7 @@ bool Actions::runaway( Values values, Script script ) {
     return false;
 }
 
-bool Actions::lootway( Values values, Script script, Point lootpoint ) {
+bool Actions::lootway( Values values, vector < vector < vector < int > > > map, Point lootpoint ) {
     console.log( "ejecutado" );
     if ( values.minimap == old ) {
         count += 1;
@@ -380,7 +380,7 @@ bool Actions::lootway( Values values, Script script, Point lootpoint ) {
             to.x = lootpoint.x;
             to.y = lootpoint.y;
             try {
-            auto paths = path.find( script.map[ z ], from, to );
+            auto paths = path.find( map[ z ], from, to );
             console.log( position, runPosition );
 
             if ( paths.size( ) > 0 ) {

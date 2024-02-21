@@ -30,12 +30,11 @@ Pixels TEST; // ARRAY OF PIXELS
 
 int AlarmCount = 0;
 
-
-tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( vector < Position > positions ) {
+tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( ) {
 
     //1012 642
 
-    CAPACITY = screenshot.get( id, 919, 255, 11, 1 );
+    CAPACITY = screenshot.get( id, 919, 255, 11, 1, false );
     capacity = acknow.inspect( CAPACITY );
 
     int cap = 0;
@@ -54,7 +53,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     bool weaponEquipped = false;
 
-    WEAPON = screenshot.get( id, 861, 186, 1, 1 );
+    WEAPON = screenshot.get( id, 861, 186, 1, 1, false );
     weapon = acknow.inspect( WEAPON );
 
     for ( Pixel pixel : weapon ) {
@@ -67,7 +66,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     bool amuletEquipped = true;
 
-    AMULET = screenshot.get( id, 862, 158, 1, 1 );
+    AMULET = screenshot.get( id, 862, 158, 1, 1, false );
     amulet = acknow.inspect( AMULET );
 
     for ( Pixel pixel : amulet ) {
@@ -80,7 +79,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     bool ringEquipped = true;
 
-    RING = screenshot.get( id, 861, 220, 1, 1 );
+    RING = screenshot.get( id, 861, 220, 1, 1, false );
     ring = acknow.inspect( RING );
 
     for ( Pixel pixel : ring ) {
@@ -93,7 +92,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     bool alarm = false;
 
-    BATTLE = screenshot.get( id, 26, 30, 1, 1 );
+    BATTLE = screenshot.get( id, 26, 30, 1, 1, false );
     battle = acknow.inspect( BATTLE );
 
     for ( Pixel pixel : battle ) {
@@ -106,7 +105,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     if ( AlarmCount >= 4 ) { AlarmCount = 0; alarm = true; }
 
-    CHAT = screenshot.get( id, 189, 575, 1, 42 );
+    CHAT = screenshot.get( id, 189, 575, 1, 42, false );
     chat = acknow.inspect( CHAT );
 
     for ( Pixel pixel : chat ) {
@@ -119,7 +118,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     int middle = ( width / 2 );
 
-    HP = screenshot.get( id, 188, 5, middle-188-40, 1 );
+    HP = screenshot.get( id, 188, 5, middle-188-40, 1, false );
     HealthPoints = acknow.inspect( HP );
     health = middle-188-40;
 
@@ -130,7 +129,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    MP = screenshot.get( id, middle+40, 5, width-middle-188+40, 1 );
+    MP = screenshot.get( id, middle+40, 5, width-middle-188+40, 1, false );
     ManaPoints = acknow.inspect( MP );
     mana = 0;
 
@@ -143,7 +142,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    BD = screenshot.get( id, 480, 4, 53, 27 );
+    BD = screenshot.get( id, 480, 4, 53, 27, false );
     BenefitsAndDamages = acknow.inspect( BD );
     hungry = false;
     paralyze = false;
@@ -165,7 +164,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }
 
-    FK = screenshot.get( id, 836, 304, 176, 296 );
+    FK = screenshot.get( id, 836, 304, 176, 296, false );
     Flask = acknow.flask( FK );
     
     /*isTargeting = false;
@@ -181,19 +180,17 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         }
     }*/
 
-    Mat MAP = screenshot.get( id, 845, 5, 106, 109 );
+    Mat MAP = screenshot.get( id, 845, 5, 106, 109, false );
 
     string map = converter.matToBase64( MAP );
 
-    int x = 0, y = 0, z = 0;
-
-    for ( int i = 0; i < positions.size( ); i++ ) {
+    /*for ( int i = 0; i < positions.size( ); i++ ) {
         if ( map == positions[ i ].img ) {
             x = positions[ i ].x;
             y = positions[ i ].y;
             z = positions[ i ].z;
         }
-    }
+    }*/
 
     //imwrite( "/opt/afk/screenshot.png", CAPACITY );
 
@@ -204,7 +201,6 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
         paralyze,
         poison,
         haste,
-        x, y, z,
         map,
         Flask,
         alarm,
@@ -219,7 +215,7 @@ tuple < int, int, bool, bool, bool, bool, int, int, int, string, vector < Point 
 
     bool valuableLoot = false;
 
-	LOOTCHAT = screenshot.get( id, 509, 575, 305, 42 );
+	LOOTCHAT = screenshot.get( id, 509, 575, 305, 42, false );
     lootchat = acknow.inspect( LOOTCHAT );
 
     for ( Pixel pixel : lootchat ) {

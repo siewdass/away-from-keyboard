@@ -1,31 +1,31 @@
-#include "map.h"
 #include "inputs.h"
 #include "status.h"
 #include "viewport.h"
 #include "actions.h"
 #include "path.h"
-#include "script.h"
 #include "utils.h"
 #include "character.h"
 #include "licence.h"
+#include "location.h"
 #include "gui.h"
+#include "screenshot.h"
 
 #include <thread>
 
-//
 Client client;
-Values values;
+Character character;
+Values values; // change to Player
+
 Status status;
 Viewport viewport;
 Time time;
 Actions actions;
 Mode mode;
 Path path;
-Script script;
 Inputs inputs;
-Character character;
+
 Licence licence;
-Map map;
+Location location;
 
 string id;
 string user;
@@ -42,32 +42,9 @@ void updateThread( ) {
 
 		if ( Pause ) {
 
-			auto [
-				box,
-				monsters,
-				visibleMonsters,
-				side,
-				isTargeting,
-				targetPosition,
-				boxTarget
-			] = viewport.check( );
-			
-			auto [
-				health,
-				mana,
-				hungry,
-				paralyze,
-				poison,
-				haste,
-				x, y, z,
-				minimap,
-				flasks,
-				alarm,
-				weapon,
-				necklace,
-				ring,
-				lowcapacity
-			] = status.update( script.positions );
+			auto [ box, monsters, visibleMonsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( );
+			auto [ health, mana, hungry, paralyze, poison, haste, minimap, flasks, alarm, weapon, necklace, ring, lowcapacity ] = status.update( );
+			auto [ x, y, z ] = location.update( values.x, values.y );
 
 			values.box = box;
 			values.monsters = monsters;
@@ -96,7 +73,7 @@ void updateThread( ) {
 			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
 			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
-			console.log( "x:", x, " y:", y );
+			console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:",  to_string( ( mana / 278 ) * 100 ) + "%" );
 			time.sleep( 200 );
 
 		} else {
@@ -118,7 +95,7 @@ void alternatorThread( ) {
 			if ( mode.walking ) {
 
 				if ( values.x != 0 && values.y != 0 ) { // NO RECONOCE EL MAPA
-					mode.attacking = actions.walker( values, script );
+					mode.attacking = actions.walker( values, character.waypoints, location.paths );
 				}
 
 				if ( mode.attacking && values.visibleMonsters ) {
@@ -496,7 +473,7 @@ void knightTargetThread( ) {
 				if ( mode.walking ) {
 
 					if ( values.monsters.size( ) == 0 ) {
-						actions.walker( values, script );
+						actions.walker( values, character.waypoints, location.paths );
 					} else {
 						mode.attacking = true;
 						mode.walking = false;
@@ -566,7 +543,7 @@ void paladinTargetThread( ) {
 
 				if ( mode.walking ) {
 					if ( values.monsters.size( ) == 0 ) {
-						mode.attacking = actions.walker( values, script );
+						mode.attacking = actions.walker( values, character.waypoints, location.paths );
 						if ( mode.attacking ) {
 							mode.walking = false;
 						}
@@ -753,7 +730,7 @@ void run( ) {
 		number = "1";
 	}
 	
-	console.log( "DISPLAY=:"+ number +" xdotool search --onlyvisible --class tibia" );
+	//console.log( "DISPLAY=:"+ number +" xdotool search --onlyvisible --class tibia" );
 	
 	client.number = number;
 	
@@ -764,6 +741,7 @@ void run( ) {
 	status.max = percent;
 	viewport.id = id;
 	inputs.id = id;
+	location.id = id;
 
 	string file = "/home/" +user+ "/afk/" +name+ ".json";
 
@@ -773,16 +751,16 @@ void run( ) {
 
 	character.load( file.c_str( ) );
 	console.log( id, width, height, file );
-
-	//script.load( "/opt/afk/maps/" + character.script );
+	values.x = character.waypoints[ 0 ].x;
+	values.y = character.waypoints[ 0 ].y;
 
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
-		thread( healThread ).detach( );
+		/*thread( healThread ).detach( );
 		thread( potionsThread ).detach( );
 		thread( alarmThread ).detach( );
 		thread( toolsThread ).detach( );
-		/*if ( character.vocation == "knight" && character.hunt == "box" ) {
+		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
 			thread( autoAttackThread ).detach( );
 			thread( attackKnightBox ).detach( );
@@ -817,13 +795,19 @@ int main( int argc, char** argv ) {
 		}
 	}
 
-	console.log(  "Licence " + serial + " not added." );
+	console.log( serial );
 
 	return 0;
 }
 
 // corregir cuando el cliente abre, un while loop hasta que detecte la ventana y que se asegure de que este en X y Y 
-// uasr el opencv que viene en el SO
+// usar el opencv que viene en el SO
+// HAY QUE CORREGIR EL MAPA DONDE DA CLICK TIENE QUE SER PEQUENO
+// cambiar Values a Player
+// create only one instance of screenshot and send it
+// #pragma once in all .h
+// crear una clase para knight otra para rp y asi
+// converter se va
 
 // detectar cantidad de vida segun pixeles internos de la barra de vida
 // exori min minimo 2

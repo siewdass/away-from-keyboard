@@ -6,17 +6,18 @@
 int a = XInitThreads( );
 
 Display *display = XOpenDisplay( NULL );
-Mat BGRA, BGR;
 
-Mat Screenshot::get( int tibia, int x, int y, int width, int height ) {
+Mat Screenshot::get( int tibia, int x, int y, int width, int height, bool minimap ) {
 
     XImage* img = XGetImage( display, tibia, x, y, width, height, AllPlanes, ZPixmap );
 
-    BGRA = Mat( height, width, CV_8UC4, img->data );
+    tmp = Mat( height, width, CV_8UC4, img->data );
 
-	cvtColor( BGRA, BGR, CV_BGRA2BGR );
+    if ( minimap ) resize( tmp, tmp, Size( width / 4, height / 4 ) );
+
+	cvtColor( tmp, tmp, COLOR_BGRA2BGR );
 
     XDestroyImage( img );
 
-	return BGR;
+	return tmp;
 }

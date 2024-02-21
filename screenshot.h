@@ -9,7 +9,9 @@
 using namespace cv;
 
 class Screenshot {
-    public:
-        Mat get( int tibia, int x, int y, int width, int height );
+public:
+    Mat tmp;
+    Mat get( int tibia, int x, int y, int width, int height, bool minimap );
 };
+
 #endif // SCREENSHOT_H

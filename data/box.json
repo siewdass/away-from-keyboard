@@ -44,5 +44,14 @@
   "Rope": "",
   "Hunt": "target",
   "Leave": "capacity",
-  "Script": "bl.json"
+  "Start": { "x": 723, "y": 1257, "z": 8 },
+  "Waypoints": [
+    { "x": 0, "y": 0, "z": 0, "action": "walk", "optional": null },
+    { "x": 0, "y": 0, "z": 0, "action": "attack", "optional": "down" },
+    { "x": 0, "y": 0, "z": 0, "action": "rope", "optional": null },
+    { "x": 0, "y": 0, "z": 0, "action": "shovel", "optional": "up" },
+    { "x": 0, "y": 0, "z": 0, "action": "click", "optional": "right" },
+    { "x": 0, "y": 0, "z": 0, "action": "key", "optional": "left" },
+    { "x": 0, "y": 0, "z": 0, "action": "talk", "optional": "hi deposit all yes" }
+  ]
 }
