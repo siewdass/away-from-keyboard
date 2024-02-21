@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import cv2
 
-img = cv2.imread( '8-map.png' )
+img = cv2.imread( 'floor.png' )
 
 cv2.namedWindow('test',cv2.WINDOW_NORMAL)
 cv2.imshow("test",img) 

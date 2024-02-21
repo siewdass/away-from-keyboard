@@ -63,7 +63,6 @@ tuple < int, int, int > Location::update( int x, int y ) {
 
 	point = Location::find( point, zImg );
 
-
 	return make_tuple( point.x, point.y, point.z );
 }
 

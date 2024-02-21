@@ -71,7 +71,7 @@ void updateThread( ) {
 			values.lowcapacity = lowcapacity;
 
 			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
-			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
+			//if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
 			console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:",  to_string( ( mana / 278 ) * 100 ) + "%" );
 			time.sleep( 200 );
@@ -756,6 +756,7 @@ void run( ) {
 
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
+		thread( alternatorThread ).detach( );
 		/*thread( healThread ).detach( );
 		thread( potionsThread ).detach( );
 		thread( alarmThread ).detach( );
@@ -807,7 +808,7 @@ int main( int argc, char** argv ) {
 // create only one instance of screenshot and send it
 // #pragma once in all .h
 // crear una clase para knight otra para rp y asi
-// converter se va
+// converter y path se van
 // delete script
 
 // detectar cantidad de vida segun pixeles internos de la barra de vida

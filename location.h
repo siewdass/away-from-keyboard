@@ -17,7 +17,6 @@ public:
 	Mat part;
 	Point3i old;
 	vector < Mat > maps;
-	//vector < Mat > xdxd;
 	vector < vector < vector < int > > > paths;
 	int width = 26, height = 27;
 	Point3i find( Point3i, Mat );

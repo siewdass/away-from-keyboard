@@ -1,4 +1,6 @@
 #include "actions.h"
+#include <iostream>
+
 
 tuple < int, int > Actions::gameWindow( int x, int y ) {
     int sqm = 41;
@@ -235,35 +237,37 @@ bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vec
             to.x = waypoints[ position ].x;
             to.y = waypoints[ position ].y;
 
-            auto paths = path.find( map[ z ], from, to );
-
-            /*string print;
-            for ( var p : paths ) {
-                print += "(" + to_string( p.x );
-                print += "," + to_string( p.y ) + ")";
-            }*/
-            //console.log( print );
+            
+            vector < vector < int > > matrix;
+            for ( int i = from.x - 50; i < from.x + 50; i++ ) {
+                vector < int > row;
+                for ( int j = from.y - 50; i < from.y + 50; j++ ) {
+                    row.push_back( map[ values.z ][ i ][ j ] );
+                }
+                matrix.push_back( row );
+            }	
+    
+            auto paths = path.find( matrix, from, to );
 
             if ( paths.size( ) > 0 ) {
 
-                if ( paths.size( ) >= 57 ) {
-                    x = paths[ 56 ].x;
-                    y = paths[ 56 ].y;
+                if ( paths.size( ) >= 13 ) {
+                    x = paths[ 10 ].x;
+                    y = paths[ 10 ].y;
                 } else {
                     x = paths[ paths.size( ) -1 ].x;
                     y = paths[ paths.size( ) -1 ].y;
                 }
 
-                //console.log( paths.size( ) -1 );
-                console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
-
                 int X = x - values.x; 
                 int Y = y - values.y; 
 
-                //inputs.keyboard( "Escape" );
-                //time.sleep( 100 );
+                console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
+
+                inputs.keyboard( "Escape" );
+                time.sleep( 100 );
                 inputs.mouse( left + ( pixel * X ), top + ( pixel * Y ), 1 );
-                console.log( left + ( pixel * X ), top + ( pixel * Y ), 1 );
+
                 walkCoolDown =  time.clock( ) + 1000;
                 return false;
             }
