@@ -1,79 +1,80 @@
 #include "location.h"
 #include "screenshot.h"
-#include "utils.h"
+
 #include <string>
 #include <fstream>
 
 Screenshot s;
-Mat zImg;
+Mat img;
 Point3i point;
-//vector < Mat > xdxd;
 
-Location::Location( ) {
+void Location::load( ) {
 	for ( int i = 0; i <= 15; i++ ) {
-		zImg = imread( "maps/" + to_string( i ) + "-map.png" );
-		maps.push_back( zImg );
-		zImg = imread( "maps/" + to_string( i ) + "-path.png" );
-		//xdxd.push_back( zImg );
-		
-		//imwrite( to_string( i ) + ".png", zImg );
+		img = imread( "maps/" + to_string( i ) + "-map.png" );
+		maps.push_back( img );
+		img = imread( "maps/" + to_string( i ) + "-path.png" );
+
 		vector < vector < int > > tmp;
-		for (int y = 0; y < zImg.rows; y++) {
+		for (int x = 0; x < img.rows; x++) {
 			vector < int > row;
-			for ( int x = 0; x < zImg.cols; x++) {
-				Vec3b pixel = zImg.at<Vec3b>(y, x);
-				row.push_back( zImg.at<Vec3b>(y, x) == Vec3b( 255, 0, 255 ) ? 0 : 1 );
+			for ( int y = 0; y < img.cols; y++ ) {
+				row.push_back( img.at < Vec3b > ( x, y ) == Vec3b( 255, 0, 255 ) ? 0 : 1 );
 			}
-			tmp.push_back(row);
+			tmp.push_back( row );
 		}
 		paths.push_back( tmp );
 
 		/*if ( i == 8 ) {
-		ofstream outFile("output_matrix.txt");
-
-		for (const auto& row : tmp) {
-			for (const auto& value : row) {
-				outFile << value << " ";
+			ofstream outFile("output_matrix.txt");
+			for (const auto& row : tmp) {
+				for (const auto& value : row) {
+					outFile << value << " ";
+				}
+				outFile << endl;
 			}
-			outFile << endl;
-		}
-		outFile.close();
+			outFile.close();
 		}*/
-
 	}
 }
 
 tuple < int, int, int > Location::update( int x, int y ) {
-
 	point.x = x;
 	point.y = y;
 	point.z = 0;
 
-	zImg = s.get( id, 1001, 54, 1, 61, false );
+	img = s.get( id, 1001, 54, 1, 61, false );
 
-	for ( int i = 0; i < zImg.rows; i+=4 ) {
-		if ( zImg.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) {
+	for ( int i = 0; i < img.rows; i+=4 ) {
+		if ( img.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) {
 			break;
 		}
 		point.z++;
 	}
 
-	zImg = s.get( id, 845, 5, 104, 108, true );
-	//imwrite( "minimap.png", zImg );
+	img = s.get( id, 898 - 16, 59 - 16, 34, 34, false );
+	imwrite( "minimap.png", img );
 
-	point = Location::find( point, zImg );
+	point = Location::find( point, img );
 
 	return make_tuple( point.x, point.y, point.z );
 }
 
+bool xx= true;
 Point3i Location::find( Point3i point, Mat minimap ) {
 	z = maps[ point.z ];
 	
 	old.x = point.x;
 	old.y = point.y;
 	old.z = point.z;
-	
-	if ( compare( z, minimap, point ) ) return point;
+
+	if ( xx ) {
+		part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
+		imwrite( "xyz.png", part );
+		xx = false;
+	}
+
+
+	if ( compare( point, minimap ) ) return point;
 
 	int x = 0, y = 0, grow = 0;
 	bool xmin = true, xmax = true, ymin = true, ymax = true;
@@ -85,28 +86,28 @@ Point3i Location::find( Point3i point, Mat minimap ) {
 
 		x = point.x;
 		while ( xmax && point.x < x + grow ) {
-			if ( walkable( point ) && compare( z, minimap, point ) ) return point;
+			if ( walkable( point ) && compare( point, minimap ) ) return point;
 			point.x++;
 			if ( point.x > z.rows - 1 ) xmax = false;
 		}
 
 		y = point.y;
 		while ( ymax && point.y < y + grow ) {
-			if ( walkable( point ) && compare( z, minimap, point ) ) return point;
+			if ( walkable( point ) && compare( point, minimap ) ) return point;
 			point.y++;
 			if ( point.y > z.cols - 1 ) ymax = false;
 		}
 
 		x = point.x;
 		while ( xmin && point.x > x - grow ) {
-			if ( walkable( point ) && compare( z, minimap, point ) ) return point;
+			if ( walkable( point ) && compare( point, minimap ) ) return point;
 			point.x--;
 			if ( point.x < 0 ) xmin = false;
 		}
 
 		y = point.y;
 		while ( ymin && point.y > y - grow ) {
-			if ( walkable( point ) && compare( z, minimap, point ) ) return point;
+			if ( walkable( point ) && compare( point, minimap ) ) return point;
 			point.y--;
 			if ( point.y < 0 ) ymin = false;
 		}
@@ -114,20 +115,21 @@ Point3i Location::find( Point3i point, Mat minimap ) {
 	return old;
 }
 
-bool Location::compare( Mat z, Mat minimap, Point3i point ) {
-	part = Mat( z, Rect( point.x - width / 2 + 1, point.y - height / 2 - 1, width, height ) );
+bool Location::compare( Point3i point, Mat minimap ) {
+	part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
 
-	//imwrite( "321.png", part );
+	imwrite( "321.png", part );
 	threshold = 0;
 
 	for ( int x = 0; x < minimap.rows - 1; x++ ) {
 		for ( int y = 0; y < minimap.cols - 1; y++ ) {
+			if ( minimap.at < Vec3b > ( x, y ) == Vec3b( 255, 255, 255 ) ) continue; // CANT
 			if ( threshold > 10 ) return false;
 			if ( minimap.at < Vec3b > ( x, y ) != part.at < Vec3b > ( x, y ) ) threshold++;
 		}
 	}
 
-	return threshold > 10 ? false : true;
+	return true;
 }
 
 bool Location::walkable( Point3i point ) {

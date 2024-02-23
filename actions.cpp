@@ -1,7 +1,6 @@
 #include "actions.h"
 #include <iostream>
 
-
 tuple < int, int > Actions::gameWindow( int x, int y ) {
     int sqm = 41;
     int width = sqm * 15, height = sqm * 11;
@@ -170,7 +169,7 @@ bool Actions::looter( ) {
     return true;
 }
 
-bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vector < vector < int > > > map ) {
+bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vector < vector < int > > > paths ) {
 
     if ( values.minimap == old ) {
         count += 1;
@@ -237,35 +236,31 @@ bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vec
             to.x = waypoints[ position ].x;
             to.y = waypoints[ position ].y;
 
-            
-            vector < vector < int > > matrix;
-            for ( int i = from.x - 50; i < from.x + 50; i++ ) {
+            /*vector < vector < int > > matrix;
+            for ( int i = ( values.x - 100 ); i > ( values.x + 100 ); i++ ) {
                 vector < int > row;
-                for ( int j = from.y - 50; i < from.y + 50; j++ ) {
-                    row.push_back( map[ values.z ][ i ][ j ] );
+                for ( int j = ( values.y - 100 ); j < ( values.y + 100 ); j++ ) {
+                    row.push_back( paths[ values.z ][ i ][ j ] );
                 }
                 matrix.push_back( row );
-            }	
-    
-            auto paths = path.find( matrix, from, to );
+            }
 
-            if ( paths.size( ) > 0 ) {
+            for ( vector < int > row : matrix ) { for ( int e : row ) { std::cout << e << " "; } std::cout << endl; }*/
 
-                if ( paths.size( ) >= 13 ) {
-                    x = paths[ 10 ].x;
-                    y = paths[ 10 ].y;
-                } else {
-                    x = paths[ paths.size( ) -1 ].x;
-                    y = paths[ paths.size( ) -1 ].y;
-                }
+            auto way = path.find( paths[ values.z ], from, to );
+
+            if ( way.size( ) > 0 ) {
+                x = way[ way.size( ) >= 56 ? 56 : way.size( ) - 1 ].x;
+                y = way[ way.size( ) >= 56 ? 56 : way.size( ) - 1 ].y;//56
 
                 int X = x - values.x; 
                 int Y = y - values.y; 
 
                 console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
+                console.log( left + ( pixel * X ), top + ( pixel * Y ) );
 
-                inputs.keyboard( "Escape" );
-                time.sleep( 100 );
+                //inputs.keyboard( "Escape" );
+                //time.sleep( 100 );
                 inputs.mouse( left + ( pixel * X ), top + ( pixel * Y ), 1 );
 
                 walkCoolDown =  time.clock( ) + 1000;

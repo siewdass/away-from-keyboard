@@ -75,12 +75,11 @@ namespace pf
 				}
 			}
 		}
-
+		
 		return buildPath();
 	}
 
-	Array < cv::Point > Astar::buildPath() const
-	{
+	Array < cv::Point > Astar::buildPath() const {
 		Array < Vec2i > path;
 		Array < cv::Point > _path_;
 		auto currentPos = m_targetPos;
@@ -104,23 +103,19 @@ namespace pf
 
 		return _path_;
 	}
-
+	
 	void Astar::loadMap( Array < Array < int > > map ) {
 
 		int height = map.size( ), width = map[ 0 ].size( );
-		Array < int > m;
 
-		for ( auto h : map ) {
-			for ( auto w : h ) {
-				m.push_back( w );
-			}
-		}
+		m_grid.clear( );
+
+		for ( auto h : map ) for ( auto w : h ) m_grid.push_back( w );
 
 		m_dimensions.x = width;
 		m_dimensions.y = height;
 		m_size = m_dimensions.x * m_dimensions.y;
 
-		m_grid = m;
 	}
 
 	void Astar::setDiagonalMovement(bool enable)

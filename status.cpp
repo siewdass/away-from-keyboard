@@ -1,5 +1,4 @@
 #include "status.h"
-#include "utils.h"
 #include "screenshot.h"
 #include "acknow.h"
 #include "converter.h"

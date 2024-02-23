@@ -21,6 +21,7 @@ set( SOURCES
      ${CMAKE_SOURCE_DIR}/converter.cpp
      ${CMAKE_SOURCE_DIR}/global.cpp
      ${CMAKE_SOURCE_DIR}/location.cpp
+     #${CMAKE_SOURCE_DIR}/gui.cpp
      ${CMAKE_SOURCE_DIR}/main.cpp
 )
 

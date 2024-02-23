@@ -1,5 +1,4 @@
 #include "acknow.h"
-#include "utils.h"
 #include "screenshot.h"
 
 class Viewport {

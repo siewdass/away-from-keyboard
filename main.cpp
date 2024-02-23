@@ -7,10 +7,14 @@
 #include "character.h"
 #include "licence.h"
 #include "location.h"
-#include "gui.h"
-#include "screenshot.h"
 
+#include "screenshot.h"
 #include <thread>
+
+string CHARACTER;
+string WAYPOINTS;
+
+#include "gui.h"
 
 Client client;
 Character character;
@@ -512,7 +516,7 @@ void knightTargetThread( ) {
 				console.log( "ERROR:", err.what( ) );
 			}
 
-			time.sleep( 500 );
+			time.sleep( 200 );
 		} else {
 			time.sleep( 2000 );
 		}
@@ -730,8 +734,8 @@ void run( ) {
 		number = "1";
 	}
 	
-	//console.log( "DISPLAY=:"+ number +" xdotool search --onlyvisible --class tibia" );
-	
+	thread([]() { location.load( ); }).detach();
+
 	client.number = number;
 	
 	auto [ id, width, height, user, name ] = client.get( );
@@ -747,6 +751,7 @@ void run( ) {
 
 	bool exists = std::filesystem::exists( file.c_str( ) );
 	
+
 	if ( !exists ) { return; }
 
 	character.load( file.c_str( ) );
@@ -756,7 +761,6 @@ void run( ) {
 
 	if ( id != 0 ) {
 		thread( updateThread ).detach( );
-		thread( alternatorThread ).detach( );
 		/*thread( healThread ).detach( );
 		thread( potionsThread ).detach( );
 		thread( alarmThread ).detach( );
@@ -808,8 +812,9 @@ int main( int argc, char** argv ) {
 // create only one instance of screenshot and send it
 // #pragma once in all .h
 // crear una clase para knight otra para rp y asi
-// converter y path se van
+// converter se va
 // delete script
+// astar pasa a ser pathfinder
 
 // detectar cantidad de vida segun pixeles internos de la barra de vida
 // exori min minimo 2

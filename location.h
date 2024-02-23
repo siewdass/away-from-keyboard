@@ -21,9 +21,10 @@ public:
 	int width = 26, height = 27;
 	Point3i find( Point3i, Mat );
 	tuple < int, int, int > update( int, int );
-	bool compare( Mat, Mat, Point3i );
+	bool compare( Point3i, Mat );
 	bool walkable( Point3i );
-	Location( );
+	void load( );
+	Location( ) {}
 };
 
 #endif // LOCATION_H

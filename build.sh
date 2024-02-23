@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-if [ -f "build" ]; then
+if [ ! -f "build" ]; then
 	mkdir build
 fi
 cd build
 cmake ..
-make
+make -j4
