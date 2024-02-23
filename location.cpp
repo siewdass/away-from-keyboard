@@ -38,27 +38,19 @@ tuple < int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int x, in
 		point.z++;
 	}
 
-	imwrite( "minimap.png", Minimap );
+	//imwrite( "minimap.png", Minimap );
 
 	point = Location::find( point, Minimap );
 
 	return make_tuple( point.x, point.y, point.z );
 }
 
-bool xx= true;
 Point3i Location::find( Point3i point, Mat minimap ) {
 	z = maps[ point.z ];
 	
 	old.x = point.x;
 	old.y = point.y;
 	old.z = point.z;
-
-	if ( xx ) {
-		part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
-		imwrite( "xyz.png", part );
-		xx = false;
-	}
-
 
 	if ( compare( point, minimap ) ) return point;
 
@@ -104,7 +96,7 @@ Point3i Location::find( Point3i point, Mat minimap ) {
 bool Location::compare( Point3i point, Mat minimap ) {
 	part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
 
-	imwrite( "321.png", part );
+	//imwrite( "321.png", part );
 	threshold = 0;
 
 	for ( int x = 0; x < minimap.rows - 1; x++ ) {

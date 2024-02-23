@@ -36,13 +36,12 @@ Path path;
 Actions actions;
 Inputs inputs;
 
-int height = 642, width = 1012, middle = ( 1012 / 2 );
-
+int height = 642, width = 1012, middle = ( 1012 / 2 ), percent = ( ( width / 2 ) - 188 ) - 32, unknow = 0;
+Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY, GameWindow, FloorIndex, Minimap;
 void updateThread( ) {
 
 	Screenshot screenshot( TIBIA );
-	Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY, GameWindow, FloorIndex, Minimap;
-
+	
 	while ( running ) {
 		CAPACITY = screenshot.get( 919, 255, 11, 1 );
 		WEAPON = screenshot.get( 861, 186, 1, 1 );
@@ -62,6 +61,8 @@ void updateThread( ) {
 		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, weapon, necklace, ring, lowcapacity ] = stats.update( CAPACITY, WEAPON, AMULET, RING, BATTLE, CHAT, HP, MP, BD, FK );
 		auto [ x, y, z ] = location.update( FloorIndex, Minimap, values.x, values.y );
 
+		values.diffx = values.x == x;
+		values.diffy = values.y == y;
 		values.box = box;
 		values.monsters = monsters;
 		values.visibleMonsters = visibleMonsters;
@@ -88,72 +89,67 @@ void updateThread( ) {
 		auto [ XPOS, YPOS ] = inputs.mouseLocation( );
 		if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
-		console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:", to_string( ( mana / 278 ) * 100 ) + "%" );
+		//console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:", to_string( ( mana / 278 ) * 100 ) + "%" );
 
-		time.sleep( 200 );
+		time.sleep( 300 );
 	}
 }
-/*
+
 void alternatorThread( ) {
 
 	int lastX = 0, lastY = 0;
+
 	time.sleep( 2000 );
 
 	while ( running ) {
-		
-		if ( Pause ) {
 
+		if ( mode.walking ) {
+
+			if ( values.diffx && values.diffy ) {
+				mode.attacking = actions.walker( values, character.waypoints, location.paths );
+			}
+
+			if ( mode.attacking && values.visibleMonsters ) {
+				mode.walking = false;
+			}
+
+			if ( !mode.attacking && values.x == lastX && values.y == lastY && values.box >= 4 ) {
+				//console.log( "TTTTTTTTRRRRRRRRRRAAAAAAAAAPPPPPPPP" );
+				mode.attacking = true;
+				mode.walking = false;
+			} else {
+				lastX = values.x;
+				lastY = values.y;
+			}
+
+		} else if ( mode.attacking ) {		
+
+			mode.looting = actions.attacker( values );
+			if ( mode.looting ) {
+				mode.attacking = false;
+			}
+
+		} else if ( mode.looting ) {
+
+			mode.walking = actions.looter( );
 			if ( mode.walking ) {
+				mode.looting = false;
 
-				if ( values.x != 0 && values.y != 0 ) { // NO RECONOCE EL MAPA
-					mode.attacking = actions.walker( values, character.waypoints, location.paths );
-				}
-
-				if ( mode.attacking && values.visibleMonsters ) {
-					mode.walking = false;
-				}
-
-				if ( !mode.attacking && values.x == lastX && values.y == lastY && values.box >= 4 ) {
-					//console.log( "TTTTTTTTRRRRRRRRRRAAAAAAAAAPPPPPPPP" );
-					mode.attacking = true;
-					mode.walking = false;
-				} else {
-					lastX = values.x;
-					lastY = values.y;
-				}
-
-			} else if ( mode.attacking ) {		
-
-				mode.looting = actions.attacker( values );
-				if ( mode.looting ) {
-					mode.attacking = false;
-				}
-
-			} else if ( mode.looting ) {
-
-				mode.walking = actions.looter( );
-				if ( mode.walking ) {
-					mode.looting = false;
-
-					for ( int i = 0; i < values.flasks.size( ); i++ ) {
-						Point flask = values.flasks[ values.flasks.size( ) -1 ];
-						inputs.mouseDrag( 836 + flask.x, 290 + flask.y );
-					}
-
-				}
-				
-				if ( Stop == true ) {
-					Toggle( );
-					Stop = false;
+				for ( int i = 0; i < values.flasks.size( ); i++ ) {
+					Point flask = values.flasks[ values.flasks.size( ) -1 ];
+					inputs.mouseDrag( 836 + flask.x, 290 + flask.y );
 				}
 
 			}
+			
+			if ( Stop == true ) {
+				Toggle( );
+				Stop = false;
+			}
 
-			time.sleep( 300 );
-
-		} else {
-			time.sleep( 2000 );
 		}
+
+		time.sleep( 300 );
 	}
 }
 
@@ -170,48 +166,42 @@ void healThread( ) {
 
 	while ( running ) {
 
-		if ( Pause ) {
-			
-			int hppercent = ( double ) values.health / percent * 100;
-			int mppercent = ( double ) values.mana / percent * 100;
+		int hppercent = ( double ) values.health / percent * 100;
+		int mppercent = ( double ) values.mana / percent * 100;
 
-			try {
+		try {
 
-				if ( time.clock( ) > healCooldown && values.mana >= 5 ) {
-					if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
-						inputs.keyboard( character.healing3 );
-						healCooldown = time.clock( ) + global;
-						healCooldown3 = time.clock( ) + global;
-					} else if ( time.clock( ) > healCooldown2 && character.healing2 != "" && hppercent <= character.healing2percent ) {
-						inputs.keyboard( character.healing2 );
-						healCooldown = time.clock( ) + global;
-						healCooldown2 = time.clock( ) + global;
-					} else if ( time.clock( ) > healCooldown1 && character.healing1 != "" && hppercent <= character.healing1percent ) {
-						inputs.keyboard( character.healing1 );
-						healCooldown = time.clock( ) + global;
-						healCooldown1 = time.clock( ) + global;
-					} else if ( values.paralyze && character.paralyze != "" ) {
-						inputs.keyboard( character.paralyze );
-						healCooldown = time.clock( ) + global;
-					} else if ( values.poison && character.curepoison != "" ) {
-						inputs.keyboard( character.curepoison );
-						healCooldown = time.clock( ) + global;
-					} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent < 100 ) {
-						inputs.keyboard( character.recovery );
-						healCooldown = time.clock( ) + global;
-						recoveryCooldown = time.clock( ) + 63000;
-					}
+			if ( time.clock( ) > healCooldown && values.mana >= 5 ) {
+				if ( time.clock( ) > healCooldown3 && character.healing3 != "" && hppercent <= character.healing3percent ) {
+					inputs.keyboard( character.healing3 );
+					healCooldown = time.clock( ) + global;
+					healCooldown3 = time.clock( ) + global;
+				} else if ( time.clock( ) > healCooldown2 && character.healing2 != "" && hppercent <= character.healing2percent ) {
+					inputs.keyboard( character.healing2 );
+					healCooldown = time.clock( ) + global;
+					healCooldown2 = time.clock( ) + global;
+				} else if ( time.clock( ) > healCooldown1 && character.healing1 != "" && hppercent <= character.healing1percent ) {
+					inputs.keyboard( character.healing1 );
+					healCooldown = time.clock( ) + global;
+					healCooldown1 = time.clock( ) + global;
+				} else if ( values.paralyze && character.paralyze != "" ) {
+					inputs.keyboard( character.paralyze );
+					healCooldown = time.clock( ) + global;
+				} else if ( values.poison && character.curepoison != "" ) {
+					inputs.keyboard( character.curepoison );
+					healCooldown = time.clock( ) + global;
+				} else if ( time.clock( ) > recoveryCooldown && character.recovery != "" && hppercent < 100 ) {
+					inputs.keyboard( character.recovery );
+					healCooldown = time.clock( ) + global;
+					recoveryCooldown = time.clock( ) + 63000;
 				}
-
-			} catch ( const std::exception& e ) {
-				console.log( "ERROR:", e.what( ) );
 			}
 
-			time.sleep( 300 );
-
-		} else {
-  		time.sleep( 2000 );
+		} catch ( const std::exception& e ) {
+			console.log( "ERROR:", e.what( ) );
 		}
+
+		time.sleep( 300 );
 	}
 }
 
@@ -223,33 +213,27 @@ void potionsThread( ) {
 	time.sleep( 3000 );
 
 	while ( running ) {
+		
+		int hppercent = ( double ) values.health / percent * 100;
+		int mppercent = ( double ) values.mana / percent * 100;
 
-		if ( Pause ) {
-			
-			int hppercent = ( double ) values.health / percent * 100;
-			int mppercent = ( double ) values.mana / percent * 100;
+		try {
 
-			try {
-
-				if ( time.clock( ) > potionCooldown ) {
-					if ( character.healthpotion != "" && hppercent <= character.healthpotionpercent ) {
-						inputs.keyboard( character.healthpotion );
-						potionCooldown = time.clock( ) + global;
-					} else if ( character.manapotion != "" && mppercent <= character.manapotionpercent ) {
-						inputs.keyboard( character.manapotion );
-						potionCooldown = time.clock( ) + global;
-					}
+			if ( time.clock( ) > potionCooldown ) {
+				if ( character.healthpotion != "" && hppercent <= character.healthpotionpercent ) {
+					inputs.keyboard( character.healthpotion );
+					potionCooldown = time.clock( ) + global;
+				} else if ( character.manapotion != "" && mppercent <= character.manapotionpercent ) {
+					inputs.keyboard( character.manapotion );
+					potionCooldown = time.clock( ) + global;
 				}
-
-			} catch ( const std::exception& e ) {
-				console.log( "ERROR:", e.what( ) );
 			}
 
-			time.sleep( 300 );
-
-		} else {
-  		time.sleep( 2000 );
+		} catch ( const std::exception& e ) {
+			console.log( "ERROR:", e.what( ) );
 		}
+
+		time.sleep( 300 );
 	}
 }
 
@@ -294,38 +278,31 @@ void toolsThread( ) {
 	time.sleep( 4000 );
 
 	while ( running ) {
-		
-		if ( Pause ) {
-
-			try {
-				if ( mode.walking ) {
-					if ( time.clock( ) > hasteCooldown && character.haste != "" && !values.haste ) {
-						inputs.keyboard( character.haste );
-						hasteCooldown = time.clock( ) + 33000;
-					} else if ( time.clock( ) > foodCooldown && character.food != "" && values.hungry ) {
-						inputs.keyboard( character.food );
-						inputs.keyboard( character.food );
-						inputs.keyboard( character.food );
-						foodCooldown = time.clock( ) + 180000;
-					} else if ( character.ring != "" && values.ring == false ) {
-						inputs.keyboard( character.ring );
-						inputs.keyboard( character.ring );
-						inputs.keyboard( character.ring );
-					} else if ( character.necklace != "" && values.necklace == false ) {
-						inputs.keyboard( character.necklace );
-						inputs.keyboard( character.necklace );
-						inputs.keyboard( character.necklace );
-					}
+		try {
+			if ( mode.walking ) {
+				if ( time.clock( ) > hasteCooldown && character.haste != "" && !values.haste ) {
+					inputs.keyboard( character.haste );
+					hasteCooldown = time.clock( ) + 33000;
+				} else if ( time.clock( ) > foodCooldown && character.food != "" && values.hungry ) {
+					inputs.keyboard( character.food );
+					inputs.keyboard( character.food );
+					inputs.keyboard( character.food );
+					foodCooldown = time.clock( ) + 180000;
+				} else if ( character.ring != "" && values.ring == false ) {
+					inputs.keyboard( character.ring );
+					inputs.keyboard( character.ring );
+					inputs.keyboard( character.ring );
+				} else if ( character.necklace != "" && values.necklace == false ) {
+					inputs.keyboard( character.necklace );
+					inputs.keyboard( character.necklace );
+					inputs.keyboard( character.necklace );
 				}
-			} catch ( const std::exception& e ) {
-				console.log( "ERROR:", e.what( ) );
 			}
-
-			time.sleep( 2000 );
-
-		} else {
-  		time.sleep( 4000 );
+		} catch ( const std::exception& e ) {
+			console.log( "ERROR:", e.what( ) );
 		}
+
+		time.sleep( 2000 );
 	}
 }
 
@@ -345,63 +322,58 @@ void attackKnightBox( ) {
 	time.sleep( 3000 );
 
 	while ( running ) {
-		
-		if ( Pause ) {
-			try {
-				if ( mode.attacking ) {
 
-					if ( values.mana > 10 ) {
-						if ( values.box >= 3 || keepAttacking ) {
-							keepAttacking = true;
-							if ( time.clock( ) > attackCooldown ) {
-								if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
-									inputs.keyboard( character.annihilation );
-									attackCooldown = time.clock( ) + global*2;
-									attackCooldown1 = time.clock( ) + 31500;
-								} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
-									inputs.keyboard( character.brutalstrike );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown2 = time.clock( ) + 6300;
-								} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
-									inputs.keyboard( character.whirlwindthrow );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown3 = time.clock( ) + 6300;
-								} else if ( character.groundshaker != "" && time.clock( ) > attackCooldown4 && values.box <= 3 && values.monsters.size( ) >= 5 ) {
-									inputs.keyboard( character.groundshaker );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown4 = time.clock( ) + 8400;
-								} else if ( character.berserker != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
-									inputs.keyboard( character.berserker );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown5 = time.clock( ) + 4200;
-								} else if ( character.fierceberserker != "" && time.clock( ) > attackCooldown6 && values.box >= 2 ) {
-									inputs.keyboard( character.fierceberserker );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown6 = time.clock( ) + 6300;
-								} else if ( character.frontsweep != "" && time.clock( ) > attackCooldown7 && values.box >= 2 ) {
-									string modifier = "control+";
-									modifier.append( values.side );
-									inputs.keywith( modifier.c_str( ) );
-									time.sleep( 100 );
-									inputs.keyboard( character.frontsweep );
-									attackCooldown = time.clock( ) + global;
-									attackCooldown7 = time.clock( ) + 6300;
-								}
+		try {
+			if ( mode.attacking ) {
+
+				if ( values.mana > 10 ) {
+					if ( values.box >= 3 || keepAttacking ) {
+						keepAttacking = true;
+						if ( time.clock( ) > attackCooldown ) {
+							if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
+								inputs.keyboard( character.annihilation );
+								attackCooldown = time.clock( ) + global*2;
+								attackCooldown1 = time.clock( ) + 31500;
+							} else if ( character.brutalstrike != "" && time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
+								inputs.keyboard( character.brutalstrike );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown2 = time.clock( ) + 6300;
+							} else if ( character.whirlwindthrow != "" && time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
+								inputs.keyboard( character.whirlwindthrow );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown3 = time.clock( ) + 6300;
+							} else if ( character.groundshaker != "" && time.clock( ) > attackCooldown4 && values.box <= 3 && values.monsters.size( ) >= 5 ) {
+								inputs.keyboard( character.groundshaker );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown4 = time.clock( ) + 8400;
+							} else if ( character.berserker != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
+								inputs.keyboard( character.berserker );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown5 = time.clock( ) + 4200;
+							} else if ( character.fierceberserker != "" && time.clock( ) > attackCooldown6 && values.box >= 2 ) {
+								inputs.keyboard( character.fierceberserker );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown6 = time.clock( ) + 6300;
+							} else if ( character.frontsweep != "" && time.clock( ) > attackCooldown7 && values.box >= 2 ) {
+								string modifier = "control+";
+								modifier.append( values.side );
+								inputs.keywith( modifier.c_str( ) );
+								time.sleep( 100 );
+								inputs.keyboard( character.frontsweep );
+								attackCooldown = time.clock( ) + global;
+								attackCooldown7 = time.clock( ) + 6300;
 							}
 						}
 					}
-					time.sleep( 100 );
-				} else {
-					keepAttacking = false;
-					time.sleep( 1000 );
 				}
-
-			} catch ( const std::exception& e ) {
-				console.log( "ERROR:", e.what( ) );
+				time.sleep( 100 );
+			} else {
+				keepAttacking = false;
+				time.sleep( 1000 );
 			}
 
-		} else {
-  		time.sleep( 2000 );
+		} catch ( const std::exception& e ) {
+			console.log( "ERROR:", e.what( ) );
 		}
 	}
 }
@@ -579,7 +551,7 @@ void paladinTargetThread( ) {
 				} else if ( mode.looting ) {
 
 					if ( !values.isTargeting ) {
-						 valuableLoot = status.valuableLoot( );
+						 valuableLoot = stats.valuableLoot( LOOTCHAT );
 						 console.log( valuableLoot );
 						if ( valuableLoot ) {
 						if ( character.vocation == "knight" ) {
@@ -640,40 +612,33 @@ void autoAttackThread( ) {
 	time.sleep( 3000 );
 
 	while ( running ) {
-		
-		if ( Pause ) {
-			
-			try {
-				if ( mode.attacking ) {
-					if ( !values.isTargeting ) {
-						waitForTarget += 1;
-					} else {
-						waitForTarget = 0;
-					}
-					if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 6 ) {
-						for ( Point point : values.monsters ) {
-							if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
-								auto [ x, y ] = actions.gameWindow( point.x, point.y );
-								inputs.mouse( x, y, 3 );
-								autoAttackCooldown = time.clock( ) + 1000;
-								inputs.mouseMove( 742, 596 );
-								break;
-							}
+		try {
+			if ( mode.attacking ) {
+				if ( !values.isTargeting ) {
+					waitForTarget += 1;
+				} else {
+					waitForTarget = 0;
+				}
+				if ( time.clock( ) > autoAttackCooldown && values.box >= 1 && waitForTarget >= 6 ) {
+					for ( Point point : values.monsters ) {
+						if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
+							auto [ x, y ] = actions.gameWindow( point.x, point.y );
+							inputs.mouse( x, y, 3 );
+							autoAttackCooldown = time.clock( ) + 1000;
+							inputs.mouseMove( 742, 596 );
+							break;
 						}
 					}
-					
-					time.sleep( 200 );
-
-				} else {
-					time.sleep( 1000 );
 				}
+				
+				time.sleep( 200 );
 
-			} catch ( const exception &err ) {
-				console.log( "ERROR:", err.what( ) );
+			} else {
+				time.sleep( 1000 );
 			}
 
-		} else {
-  		time.sleep( 2000 );
+		} catch ( const exception &err ) {
+			console.log( "ERROR:", err.what( ) );
 		}
 	}
 }
@@ -686,46 +651,38 @@ void alarmThread( ) {
 	string safe = "mpg123 /opt/afk/safe.mp3 > /dev/null 2>&1";
 
 	while ( running ) {
-		
-		if ( Pause ) {
-			if ( values.alarm ) {
-				Stop = true;
-				system( critical.c_str( ) );
-				time.sleep( 60000 );
-			} else if ( values.lowcapacity ) {
-				values.lowcapacity = false;
-				system( safe.c_str( ) );
-				time.sleep( 60000 );
-			} else if ( values.x == 0 && values.y == 0 ) {
-				unknow += 1;
-				if ( unknow >= 50 ) {
-					unknow = 0;
-					system( critical.c_str( ) );
-					time.sleep( 60000 );
-				}
-			} else if ( values.mana <= 40 ) {
+		if ( values.alarm ) {
+			Stop = true;
+			system( critical.c_str( ) );
+			time.sleep( 60000 );
+		} else if ( values.lowcapacity ) {
+			values.lowcapacity = false;
+			system( safe.c_str( ) );
+			time.sleep( 60000 );
+		} else if ( values.x == 0 && values.y == 0 ) {
+			unknow += 1;
+			if ( unknow >= 50 ) {
+				unknow = 0;
 				system( critical.c_str( ) );
 				time.sleep( 60000 );
 			}
-
-			time.sleep( 2000 );
-
-		} else {
-			values.alarm = false;
-			values.lowcapacity = false;
-
-			time.sleep( 4000 );
+		} else if ( values.mana <= 40 ) {
+			system( critical.c_str( ) );
+			time.sleep( 60000 );
 		}
+
+		time.sleep( 2000 );
 	}
 }
-*/
+
 void execute( ) {
 	character.load( CHARACTER.c_str( ), WAYPOINTS.c_str( ) );
 	values.x = character.waypoints[ 0 ].x;
 	values.y = character.waypoints[ 0 ].y;
 	inputs.load( TIBIA.c_str( ) );
+
 	thread( updateThread ).detach( );
-	/*thread( healThread ).detach( );
+	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );
 	thread( alarmThread ).detach( );
 	thread( toolsThread ).detach( );
@@ -743,7 +700,7 @@ void execute( ) {
 	} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
 		thread( paladinTargetThread ).detach( );
 		thread( ammoThread ).detach( );
-	}*/
+	}
 }
 
 int main( int argc, char** argv ) {

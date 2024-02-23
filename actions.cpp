@@ -250,17 +250,17 @@ bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vec
             auto way = path.find( paths[ values.z ], from, to );
 
             if ( way.size( ) > 0 ) {
-                x = way[ way.size( ) >= 56 ? 56 : way.size( ) - 1 ].x;
-                y = way[ way.size( ) >= 56 ? 56 : way.size( ) - 1 ].y;//56
+                x = way[ way.size( ) >= 57 ? 56 : way.size( ) - 1 ].x;
+                y = way[ way.size( ) >= 57 ? 56 : way.size( ) - 1 ].y;
 
                 int X = x - values.x; 
                 int Y = y - values.y; 
 
                 console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
-                console.log( left + ( pixel * X ), top + ( pixel * Y ) );
+                //console.log( left + ( pixel * X ), top + ( pixel * Y ) );
 
-                //inputs.keyboard( "Escape" );
-                //time.sleep( 100 );
+                inputs.keyboard( "Escape" );
+                time.sleep( 100 );
                 inputs.mouse( left + ( pixel * X ), top + ( pixel * Y ), 1 );
 
                 walkCoolDown =  time.clock( ) + 1000;
