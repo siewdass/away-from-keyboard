@@ -8,15 +8,20 @@ extern "C" {
 #include <stdlib.h>
 #include <unistd.h>
 
+xdo_t * xdo;
 
-xdo_t * xdo = xdo_new( NULL );
+void Inputs::load( const char* value ) {
+  xdo = xdo_new( value );
+}
+
+Inputs::~Inputs( ) {
+  xdo_free( xdo ); 
+}
 
 void Inputs::mouse( int x, int y, int button ) {
   xdo_move_mouse( xdo, x, y, CURRENTWINDOW );
   xdo_mouse_down( xdo, CURRENTWINDOW, button );
   xdo_mouse_up( xdo, CURRENTWINDOW, button );
-  //usleep( 500 );
-  //xdo_move_mouse( xdo, 50, 500, CURRENTWINDOW );
 }
 
 void Inputs::mouseMove( int x, int y ) {
@@ -37,7 +42,6 @@ tuple < int, int > Inputs::mouseLocation( ) {
 }
 
 void Inputs::keyboard( std::string key ) {
-  //std::cout << key << std::endl;
   xdo_send_keysequence_window_down( xdo, CURRENTWINDOW, key.c_str( ), 0 );
   xdo_send_keysequence_window_up( xdo, CURRENTWINDOW, key.c_str( ), 0 );
 }

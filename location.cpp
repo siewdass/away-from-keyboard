@@ -10,9 +10,9 @@ Point3i point;
 
 void Location::load( ) {
 	for ( int i = 0; i <= 15; i++ ) {
-		img = imread( "maps/" + to_string( i ) + "-map.png" );
+		img = imread( "/opt/afk/maps/" + to_string( i ) + "-map.png" );
 		maps.push_back( img );
-		img = imread( "maps/" + to_string( i ) + "-path.png" );
+		img = imread( "/opt/afk/maps/" + to_string( i ) + "-path.png" );
 
 		vector < vector < int > > tmp;
 		for (int x = 0; x < img.rows; x++) {
@@ -23,38 +23,24 @@ void Location::load( ) {
 			tmp.push_back( row );
 		}
 		paths.push_back( tmp );
-
-		/*if ( i == 8 ) {
-			ofstream outFile("output_matrix.txt");
-			for (const auto& row : tmp) {
-				for (const auto& value : row) {
-					outFile << value << " ";
-				}
-				outFile << endl;
-			}
-			outFile.close();
-		}*/
 	}
 }
 
-tuple < int, int, int > Location::update( int x, int y ) {
+tuple < int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int x, int y ) {
 	point.x = x;
 	point.y = y;
 	point.z = 0;
 
-	img = s.get( id, 1001, 54, 1, 61, false );
-
-	for ( int i = 0; i < img.rows; i+=4 ) {
-		if ( img.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) {
+	for ( int i = 0; i < FloorIndex.rows; i+=4 ) {
+		if ( FloorIndex.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) {
 			break;
 		}
 		point.z++;
 	}
 
-	img = s.get( id, 898 - 16, 59 - 16, 34, 34, false );
-	imwrite( "minimap.png", img );
+	imwrite( "minimap.png", Minimap );
 
-	point = Location::find( point, img );
+	point = Location::find( point, Minimap );
 
 	return make_tuple( point.x, point.y, point.z );
 }

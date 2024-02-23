@@ -1,16 +1,11 @@
-#include "status.h"
-#include "screenshot.h"
 #include "acknow.h"
-#include "converter.h"
+
+#include "stats.h"
 #include <vector>
-#include <iostream>
 
 using namespace std;
 
-Screenshot screenshot;
-Converter converter;
-Acknow acknow;
-Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY;
+Acknow acknows;
 
 vector < Point > Flask;
 
@@ -25,16 +20,12 @@ vector < Pixel > ring;
 vector < Pixel > amulet;
 vector < Pixel > capacity;
 
-Pixels TEST; // ARRAY OF PIXELS
-
 int AlarmCount = 0;
 
-tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, bool, bool, bool > Status::update( ) {
+tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bool, bool > Stats::update( Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK ) {
 
     //1012 642
-
-    CAPACITY = screenshot.get( id, 919, 255, 11, 1, false );
-    capacity = acknow.inspect( CAPACITY );
+    capacity = acknows.inspect( CAPACITY );
 
     int cap = 0;
     bool lowcap = false;
@@ -52,8 +43,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
 
     bool weaponEquipped = false;
 
-    WEAPON = screenshot.get( id, 861, 186, 1, 1, false );
-    weapon = acknow.inspect( WEAPON );
+    weapon = acknows.inspect( WEAPON );
 
     for ( Pixel pixel : weapon ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -65,8 +55,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
 
     bool amuletEquipped = true;
 
-    AMULET = screenshot.get( id, 862, 158, 1, 1, false );
-    amulet = acknow.inspect( AMULET );
+    amulet = acknows.inspect( AMULET );
 
     for ( Pixel pixel : amulet ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -78,8 +67,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
 
     bool ringEquipped = true;
 
-    RING = screenshot.get( id, 861, 220, 1, 1, false );
-    ring = acknow.inspect( RING );
+    ring = acknows.inspect( RING );
 
     for ( Pixel pixel : ring ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -91,8 +79,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
 
     bool alarm = false;
 
-    BATTLE = screenshot.get( id, 26, 30, 1, 1, false );
-    battle = acknow.inspect( BATTLE );
+    battle = acknows.inspect( BATTLE );
 
     for ( Pixel pixel : battle ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -104,8 +91,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
 
     if ( AlarmCount >= 4 ) { AlarmCount = 0; alarm = true; }
 
-    CHAT = screenshot.get( id, 189, 575, 1, 42, false );
-    chat = acknow.inspect( CHAT );
+    chat = acknows.inspect( CHAT );
 
     for ( Pixel pixel : chat ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -115,10 +101,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
         }
     }
 
-    int middle = ( width / 2 );
-
-    HP = screenshot.get( id, 188, 5, middle-188-40, 1, false );
-    HealthPoints = acknow.inspect( HP );
+    HealthPoints = acknows.inspect( HP );
     health = middle-188-40;
 
     for ( Pixel pixel : HealthPoints ) {
@@ -128,8 +111,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
         }
     }
 
-    MP = screenshot.get( id, middle+40, 5, width-middle-188+40, 1, false );
-    ManaPoints = acknow.inspect( MP );
+    ManaPoints = acknows.inspect( MP );
     mana = 0;
 
     for ( Pixel pixel : ManaPoints ) {
@@ -141,8 +123,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
         }
     }
 
-    BD = screenshot.get( id, 480, 4, 53, 27, false );
-    BenefitsAndDamages = acknow.inspect( BD );
+    BenefitsAndDamages = acknows.inspect( BD );
     hungry = false;
     paralyze = false;
     poison = false;
@@ -163,8 +144,7 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
         }
     }
 
-    FK = screenshot.get( id, 836, 304, 176, 296, false );
-    Flask = acknow.flask( FK );
+    Flask = acknows.flask( FK );
     
     /*isTargeting = false;
 
@@ -179,20 +159,6 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
         }
     }*/
 
-    Mat MAP = screenshot.get( id, 845, 5, 106, 109, false );
-
-    string map = converter.matToBase64( MAP );
-
-    /*for ( int i = 0; i < positions.size( ); i++ ) {
-        if ( map == positions[ i ].img ) {
-            x = positions[ i ].x;
-            y = positions[ i ].y;
-            z = positions[ i ].z;
-        }
-    }*/
-
-    //imwrite( "/opt/afk/screenshot.png", CAPACITY );
-
     return make_tuple(
         health,
         mana,
@@ -200,7 +166,6 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
         paralyze,
         poison,
         haste,
-        map,
         Flask,
         alarm,
         weaponEquipped,
@@ -210,12 +175,11 @@ tuple < int, int, bool, bool, bool, bool, string, vector < Point >, bool, bool, 
     );
 }
 
- bool Status::valuableLoot( ) {
+bool Stats::valuableLoot( Mat LOOTCHAT ) {
 
     bool valuableLoot = false;
 
-	LOOTCHAT = screenshot.get( id, 509, 575, 305, 42, false );
-    lootchat = acknow.inspect( LOOTCHAT );
+    lootchat = acknows.inspect( LOOTCHAT );
 
     for ( Pixel pixel : lootchat ) {
         int r = pixel.r, g = pixel.g, b = pixel.b;

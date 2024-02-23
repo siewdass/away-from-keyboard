@@ -1,6 +1,7 @@
+#include "acknow.h"
 #include "viewport.h"
 
-#include <vector>
+Acknow acknowv;
 
 using namespace std;
 
@@ -86,19 +87,19 @@ Point Viewport::xy( int x, int y ) {
     return Point( X, Y );
 }
 
-tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check( ) {
-    bool target = false;
-    vector < Point > arr;
+tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check( Mat GW ) {
     int box = 0;
+    vector < Point > arr;
+    bool visibleMonsters;
+    string side;
+    bool target;
+    Point TARGET;
+    bool oldTarget;
 
     int width = sqm * 15;
     int height = sqm * 11;
-
-    bool oldTarget;
-
-    Mat GW = screenshot.get( id, 189, 40, 615, 451, false );
-
-    auto [ old, GameWindow ] = acknow.detect( GW );
+    
+    auto [ old, GameWindow ] = acknowv.detect( GW );
 
     oldTarget = old;
 
@@ -122,9 +123,7 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
         }  
     }
 
-    bool visibleMonsters = arr.size( ) > 0 ? true : false;
-
-    string side;
+    visibleMonsters = arr.size( ) > 0 ? true : false;
 
     bool topLeft = false,
          topCenter = false,   
@@ -184,7 +183,9 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
         }
     }
 
-    //imwrite( "/home/siewdass/screenshot.png", GW );
+    //imwrite( "screenshot.png", GW );
 
     return make_tuple( box, arr, visibleMonsters, side, target, TARGET, oldTarget );
 }
+
+   

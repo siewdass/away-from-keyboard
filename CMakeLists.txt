@@ -6,8 +6,8 @@ project( afk )
 #set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" )
 set(CMAKE_CXX_STANDARD 17)
 set( SOURCES
-     #${CMAKE_SOURCE_DIR}/script.cpp
-     ${CMAKE_SOURCE_DIR}/status.cpp
+     #${CMAKE_SOURCE_DIR}/utility.cpp
+     ${CMAKE_SOURCE_DIR}/stats.cpp
      ${CMAKE_SOURCE_DIR}/acknow.cpp
      ${CMAKE_SOURCE_DIR}/viewport.cpp
      ${CMAKE_SOURCE_DIR}/screenshot.cpp
@@ -18,10 +18,8 @@ set( SOURCES
      ${CMAKE_SOURCE_DIR}/astar.cpp
      ${CMAKE_SOURCE_DIR}/path.cpp
      ${CMAKE_SOURCE_DIR}/licence.cpp
-     ${CMAKE_SOURCE_DIR}/converter.cpp
      ${CMAKE_SOURCE_DIR}/global.cpp
      ${CMAKE_SOURCE_DIR}/location.cpp
-     #${CMAKE_SOURCE_DIR}/gui.cpp
      ${CMAKE_SOURCE_DIR}/main.cpp
 )
 

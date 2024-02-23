@@ -55,7 +55,7 @@ public:
 	string hunt = "";
 	string leave = "";
 	vector < Waypoint > waypoints;
-	void load( const char* );
+	void load( const char*, const char* );
 };
 
 #endif // CHARACTER_H

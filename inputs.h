@@ -8,7 +8,7 @@ using namespace std;
 
 class Inputs {
 public:
-   int id;
+   void load( const char* );
    void mouse( int, int, int );
    void mouseMove( int, int );
    void mouseDrag( int, int );
@@ -17,6 +17,7 @@ public:
    void keywith( const char* );
    void shiftDown( );
    void shiftUp( );
+   ~Inputs( );
 };
 
 #endif // INPUTS_H

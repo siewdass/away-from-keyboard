@@ -6,12 +6,17 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
+#include <string>
+
 using namespace cv;
+using namespace std;
 
 class Screenshot {
 public:
-    Mat tmp;
-    Mat get( int tibia, int x, int y, int width, int height, bool minimap );
+	Screenshot( ) {}
+	Screenshot( string );
+	~Screenshot( );
+	Mat get( int, int, int, int );
 };
 
-#endif // SCREENSHOT_H
+#endif

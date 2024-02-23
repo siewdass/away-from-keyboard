@@ -20,7 +20,7 @@ public:
 	vector < vector < vector < int > > > paths;
 	int width = 26, height = 27;
 	Point3i find( Point3i, Mat );
-	tuple < int, int, int > update( int, int );
+	tuple < int, int, int > update( Mat, Mat, int, int );
 	bool compare( Point3i, Mat );
 	bool walkable( Point3i );
 	void load( );

@@ -8,14 +8,12 @@
 #include <filesystem>
 #include "global.h"
 
-typedef void ( *Function )( );
 bool Pause = false;
-bool running = true;
 bool Stop = false;
+int which = 1;
 
 AppIndicator* appindicator;
 GtkWidget *menu, *play, *stop,*restart,*vocation,*waypoints,*clientid,*quit,*dialog;
-Function func;
 gint res;
 
 void open_character( GtkWidget* widget, gpointer data ) {
@@ -38,32 +36,22 @@ void open_waypoints( GtkWidget* widget, gpointer data ) {
   gtk_widget_destroy( dialog );
 }
 
-void choiceClient( GtkWidget *widget, gpointer data ) {
-  const int MAX_BUFFER = 2048;
-  char buffer[ MAX_BUFFER ];
-  FILE *stream = popen( "./window" , "r" );
-  if ( stream ) {
-    while ( !feof( stream ) ) {
-      if ( fgets( buffer, MAX_BUFFER, stream ) != NULL) { }
-    }
-    pclose( stream );
+void open_tibia( GtkWidget *widget, gpointer data ) {
+  if ( !filesystem::exists( string("/tmp/.X11-unix/X" + to_string( which ) ).c_str( ) ) ) { 
+    system( string( "/opt/afk/client.sh " + to_string( which ) ).c_str( ) );
   }
-  string v{ buffer };
-  v.pop_back( );
-  TIBIA = v;
 }
 
 void Quit( ) {
+  system( string("rm /tmp/afk" + to_string( which )).c_str( ) );
   gtk_main_quit( );
 }
 
 void Toggle( ) {
-  if ( !Pause ) {
-    Pause = true;
-    gtk_menu_item_set_label( GTK_MENU_ITEM( play ), "Stop" );
-  } else {
-    Pause = false;
-    gtk_menu_item_set_label( GTK_MENU_ITEM( play ), "Play" );
+  if ( CHARACTER != "" && WAYPOINTS != "" ) {
+    running = !running;
+    gtk_menu_item_set_label( GTK_MENU_ITEM( play ), running ? "Stop" : "Play" );
+    if ( running == true ) run();
   }
 }
 
@@ -71,28 +59,22 @@ void Restart( ) {
   position = 0;
 }
 
-void Interface( int argc, char** argv, Function callback ) {
+void Interface( int argc, char** argv ) {
 
   gtk_init( &argc, &argv );
-  int n = 0;
 
-  bool Bot1 = std::filesystem::exists( "/tmp/afk1" );
-  bool Bot2 = std::filesystem::exists( "/tmp/afk2" );
-  bool Bot3 = std::filesystem::exists( "/tmp/afk3" );
-  bool Bot4 = std::filesystem::exists( "/tmp/afk4" );
-
-  const char* ico = "";
-
-  if ( Bot4 ) {
-    ico = "/opt/afk/t4.png";
-  } else if ( Bot3 ) {
-    ico = "/opt/afk/t3.png";
-  } else if ( Bot2 ) {
-    ico = "/opt/afk/t2.png";
-  } else {
-    ico = "/opt/afk/t1.png";
+  if ( filesystem::exists( "/tmp/afk3" ) ) {
+    which = 4;
+  } else if ( filesystem::exists( "/tmp/afk2" ) ) {
+    which = 3;
+  } else if ( filesystem::exists( "/tmp/afk1" ) ) {
+    which = 2;
   }
 
+  TIBIA = string( ":" + to_string( which ) );
+  system( string( "touch /tmp/afk" + to_string( which ) ).c_str( ) );
+  const char* ico = string("/opt/afk/t" + to_string( which ) + ".png").c_str( );
+  
   appindicator = app_indicator_new( "AFK", ico, APP_INDICATOR_CATEGORY_APPLICATION_STATUS );
 
   menu = gtk_menu_new( );
@@ -106,7 +88,7 @@ void Interface( int argc, char** argv, Function callback ) {
 
   g_signal_connect( play, "activate", G_CALLBACK( Toggle ), appindicator );
   g_signal_connect( restart, "activate", G_CALLBACK( Restart ), appindicator );
-  g_signal_connect( clientid, "activate", G_CALLBACK( choiceClient ), appindicator );
+  g_signal_connect( clientid, "activate", G_CALLBACK( open_tibia ), appindicator );
   g_signal_connect( vocation, "activate", G_CALLBACK( open_character ), appindicator );
   g_signal_connect( waypoints, "activate", G_CALLBACK( open_waypoints ), appindicator );
 	g_signal_connect( quit, "activate", G_CALLBACK( Quit ), appindicator );
@@ -123,8 +105,6 @@ void Interface( int argc, char** argv, Function callback ) {
   app_indicator_set_status( appindicator, APP_INDICATOR_STATUS_ACTIVE );
   app_indicator_set_attention_icon( appindicator, "dialog-warning" );
   app_indicator_set_menu( appindicator, GTK_MENU( menu ) );
-
-  //callback( );
 
   gtk_main( );
 }

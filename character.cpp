@@ -1,10 +1,13 @@
 #include "character.h"
 #include "utils.h"
 
-void Character::load( const char* file ) {
+void Character::load( const char* c, const char* w ) {
 
 	Json config;
-	config.open( file );
+	config.open( c );
+
+	Json configw;
+	configw.open( w );
 
 	vocation = config.readString( "Vocation" ).c_str( );
 
@@ -67,7 +70,7 @@ void Character::load( const char* file ) {
 	hunt = config.readString( "Hunt" );
 	leave = config.readString( "Leave" );
 	
-	for ( Json waypoint: config.readArray( "Waypoints" ) ) {
+	for ( Json waypoint: configw.readArray( "Waypoints" ) ) {
 		Waypoint wp;
 		wp.x = waypoint.readInteger( "x" );
 		wp.y = waypoint.readInteger( "y" );
@@ -77,3 +80,4 @@ void Character::load( const char* file ) {
 	}
 
 }
+

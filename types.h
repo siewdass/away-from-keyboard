@@ -16,5 +16,9 @@ struct Position {
 	string img;
 };
 
+struct Pixel {
+	int r, g, b;
+};
+
 
 #endif // TYPES_H

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=AFK
 Comment=TIBIA MMORPG
-Exec=/opt/afk/afk.sh
+Exec=/opt/afk/afk
 Icon=/opt/afk/t1.png
 Terminal=false
 Type=Application

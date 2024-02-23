@@ -1,93 +1,99 @@
-#include "inputs.h"
-#include "status.h"
+#include "screenshot.h"
+#include "utils.h"
+#include "types.h"
+#include "shared.h"
+#include "stats.h"
 #include "viewport.h"
+#include "location.h"
+#include "character.h"
 #include "actions.h"
 #include "path.h"
 #include "utils.h"
-#include "character.h"
 #include "licence.h"
-#include "location.h"
 
-#include "screenshot.h"
-#include <thread>
 
-string CHARACTER;
-string WAYPOINTS;
-striing TIBIA;
+string CHARACTER = "";
+string WAYPOINTS = "";
+string TIBIA = "";
+bool running = false;
+function < void ( ) > run;
 
+#include "inputs.h"
 #include "gui.h"
 
-Client client;
-Character character;
-Values values; // change to Player
-
-Status status;
+Stats stats;
 Viewport viewport;
+Values values;
+Location location;
+Character character;
+Licence licence;
+Client client;
+
 Time time;
-Actions actions;
 Mode mode;
 Path path;
+
+Actions actions;
 Inputs inputs;
 
-Licence licence;
-Location location;
-
-string id;
-string user;
-string name;
-int unknow = 0;
-bool fix = true; 
-int width;
-int height;
-int percent;
+int height = 642, width = 1012, middle = ( 1012 / 2 );
 
 void updateThread( ) {
 
-	while ( true ) {
+	Screenshot screenshot( TIBIA );
+	Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY, GameWindow, FloorIndex, Minimap;
 
-		if ( Pause ) {
+	while ( running ) {
+		CAPACITY = screenshot.get( 919, 255, 11, 1 );
+		WEAPON = screenshot.get( 861, 186, 1, 1 );
+		AMULET = screenshot.get(  862, 158, 1, 1 );
+		RING = screenshot.get( 861, 220, 1, 1 );
+		BATTLE = screenshot.get( 26, 30, 1, 1 );
+		CHAT = screenshot.get( 189, 575, 1, 42 );
+		HP = screenshot.get( 188, 5, middle-188-40, 1 );
+		MP = screenshot.get( middle+40, 5, width-middle-188+40, 1 );
+		BD = screenshot.get( 480, 4, 53, 27);
+		FK = screenshot.get( 836, 304, 176, 296 );
+		GameWindow = screenshot.get( 189, 40, 615, 451 );
+		FloorIndex = screenshot.get( 1001, 54, 1, 61 );
+		Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
 
-			auto [ box, monsters, visibleMonsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( );
-			auto [ health, mana, hungry, paralyze, poison, haste, minimap, flasks, alarm, weapon, necklace, ring, lowcapacity ] = status.update( );
-			auto [ x, y, z ] = location.update( values.x, values.y );
+		auto [ box, monsters, visibleMonsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( GameWindow );
+		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, weapon, necklace, ring, lowcapacity ] = stats.update( CAPACITY, WEAPON, AMULET, RING, BATTLE, CHAT, HP, MP, BD, FK );
+		auto [ x, y, z ] = location.update( FloorIndex, Minimap, values.x, values.y );
 
-			values.box = box;
-			values.monsters = monsters;
-			values.visibleMonsters = visibleMonsters;
-			values.side = side;
-			values.isTargeting = isTargeting;
-			values.targetPosition = targetPosition;
-			values.health = health;
-			values.mana = mana;
-			values.hungry = hungry;
-			values.paralyze = paralyze;
-			values.poison = poison;
-			values.haste = haste;
-			values.minimap = minimap;
-			values.flasks = flasks;
-			values.x = x;
-			values.y = y;
-			values.z = z;
-			values.boxTarget = boxTarget;
-			values.alarm = alarm;
-			values.weapon = weapon;
-			values.necklace = necklace;
-			values.ring = ring;
-			values.lowcapacity = lowcapacity;
+		values.box = box;
+		values.monsters = monsters;
+		values.visibleMonsters = visibleMonsters;
+		values.side = side;
+		values.isTargeting = isTargeting;
+		values.targetPosition = targetPosition;
+		values.boxTarget = boxTarget;
+		values.health = health;
+		values.mana = mana;
+		values.hungry = hungry;
+		values.paralyze = paralyze;
+		values.poison = poison;
+		values.haste = haste;
+		values.flasks = flasks;
+		values.x = x;
+		values.y = y;
+		values.z = z;
+		values.alarm = alarm;
+		values.weapon = weapon;
+		values.necklace = necklace;
+		values.ring = ring;
+		values.lowcapacity = lowcapacity;
 
-			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
-			//if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
+		auto [ XPOS, YPOS ] = inputs.mouseLocation( );
+		if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
-			console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:",  to_string( ( mana / 278 ) * 100 ) + "%" );
-			time.sleep( 200 );
+		console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:", to_string( ( mana / 278 ) * 100 ) + "%" );
 
-		} else {
-			time.sleep( 2000 );
-		}
-
+		time.sleep( 200 );
 	}
 }
-
+/*
 void alternatorThread( ) {
 
 	int lastX = 0, lastY = 0;
@@ -592,14 +598,6 @@ void paladinTargetThread( ) {
 							inputs.mouse( X, Y, 1 );
 							time.sleep( 3000 );
 							mode.walking = actions.looter( );
-							/*auto [ XX, YY ] = actions.gameWindow( 0, 0 );
-							inputs.shiftDown( );
-							inputs.mouse( XX, YY, 3 );
-							inputs.shiftUp( );
-							inputs.shiftDown( );
-							inputs.mouse( X, Y, 3 );
-							inputs.shiftUp( );
-							time.sleep( 3000 );*/
 							mode.looting = false;
 							mode.attacking = false;
 						}
@@ -720,72 +718,39 @@ void alarmThread( ) {
 		}
 	}
 }
-
-void run( ) {
-
-	string number;
-
-	if ( std::filesystem::exists( "/tmp/afk4" ) ) {
-		number = "4";
-	} else if ( std::filesystem::exists( "/tmp/afk3" ) ) {
-		number = "3";
-	} else if ( std::filesystem::exists( "/tmp/afk2" ) ) {
-		number = "2";
-	} else if ( std::filesystem::exists( "/tmp/afk1" ) ) {
-		number = "1";
-	}
-	
-	thread([]() { location.load( ); }).detach();
-
-	client.number = number;
-	
-	auto [ id, width, height, user, name ] = client.get( );
-	percent = ( ( width / 2 ) - 188 ) - 32;
-	status.id = id;
-	status.width = width;
-	status.max = percent;
-	viewport.id = id;
-	inputs.id = id;
-	location.id = id;
-
-	string file = "/home/" +user+ "/afk/" +name+ ".json";
-
-	bool exists = std::filesystem::exists( file.c_str( ) );
-	
-
-	if ( !exists ) { return; }
-
-	character.load( file.c_str( ) );
-	console.log( id, width, height, file );
+*/
+void execute( ) {
+	character.load( CHARACTER.c_str( ), WAYPOINTS.c_str( ) );
 	values.x = character.waypoints[ 0 ].x;
 	values.y = character.waypoints[ 0 ].y;
-
-	if ( id != 0 ) {
-		thread( updateThread ).detach( );
-		/*thread( healThread ).detach( );
-		thread( potionsThread ).detach( );
-		thread( alarmThread ).detach( );
-		thread( toolsThread ).detach( );
-		if ( character.vocation == "knight" && character.hunt == "box" ) {
-			thread( alternatorThread ).detach( );
-			thread( autoAttackThread ).detach( );
-			thread( attackKnightBox ).detach( );
-		} else if ( character.vocation == "knight" && character.hunt == "target" ) {
-			thread( knightTargetThread ).detach( );
-		} else if ( character.vocation == "paladin" && character.hunt == "box" ) {
-			thread( alternatorThread ).detach( );
-			thread( autoAttackThread ).detach( );
-			thread( attackPaladinBox ).detach( );
-			thread( ammoThread ).detach( );
-		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
-			thread( paladinTargetThread ).detach( );
-			thread( ammoThread ).detach( );
-		}*/
-	}
-
+	inputs.load( TIBIA.c_str( ) );
+	thread( updateThread ).detach( );
+	/*thread( healThread ).detach( );
+	thread( potionsThread ).detach( );
+	thread( alarmThread ).detach( );
+	thread( toolsThread ).detach( );
+	if ( character.vocation == "knight" && character.hunt == "box" ) {
+		thread( alternatorThread ).detach( );
+		thread( autoAttackThread ).detach( );
+		thread( attackKnightBox ).detach( );
+	} else if ( character.vocation == "knight" && character.hunt == "target" ) {
+		thread( knightTargetThread ).detach( );
+	} else if ( character.vocation == "paladin" && character.hunt == "box" ) {
+		thread( alternatorThread ).detach( );
+		thread( autoAttackThread ).detach( );
+		thread( attackPaladinBox ).detach( );
+		thread( ammoThread ).detach( );
+	} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
+		thread( paladinTargetThread ).detach( );
+		thread( ammoThread ).detach( );
+	}*/
 }
 
 int main( int argc, char** argv ) {
+
+	thread( [&]( ) { location.load( ); }).detach( );
+
+	run = execute;
 
 	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
 	serial.pop_back( );
@@ -796,7 +761,7 @@ int main( int argc, char** argv ) {
 
 	for ( auto entry : licence.accepted ) {
 		if ( entry == serial ) {
-			Interface( argc, argv, run );
+			Interface( argc, argv );
 			break;
 		}
 	}

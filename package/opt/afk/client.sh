@@ -30,12 +30,12 @@ sleep 1
 #DISPLAY=:$X vglrun -d :$X /opt/tibia/Tibia > /dev/null 2>&1
 
 while ! [ $DONE == 1 ]; do
-  CLIENT=$(DISPLAY=:$X xwininfo -root -children | grep Tibia | cut -d ' ' -f 6 | cut -d$'\n' -f1)
+  CLIENT=$(DISPLAY=:$X.0 xdotool getwindowfocus)
 
   if [ $CLIENT ]; then
     DONE=1
   fi
-  sleep 1
+  sleep .1
 done
 
 DISPLAY=:$X xdotool windowmove $CLIENT 0 0

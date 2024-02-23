@@ -3,21 +3,23 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-int a = XInitThreads( );
+int init =  XInitThreads( );
+Display *display;
+Window root;
 
-Display *display = XOpenDisplay( NULL );
+Screenshot::Screenshot( string value ) {
+	display = XOpenDisplay( value.c_str( ) );
+	root = DefaultRootWindow( display );
+}
 
-Mat Screenshot::get( int tibia, int x, int y, int width, int height, bool minimap ) {
+Screenshot::~Screenshot( ) {
+	XCloseDisplay( display );
+}
 
-    XImage* img = XGetImage( display, tibia, x, y, width, height, AllPlanes, ZPixmap );
-
-    tmp = Mat( height, width, CV_8UC4, img->data );
-
-    if ( minimap ) resize( tmp, tmp, Size( width / 4, height / 4 ) );
-
+Mat Screenshot::get( int x, int y, int width, int height ) {
+	XImage* img = XGetImage( display, root, x, y, width, height, AllPlanes, ZPixmap );
+	Mat tmp = Mat( height, width, CV_8UC4, img->data );
 	cvtColor( tmp, tmp, COLOR_BGRA2BGR );
-
-    XDestroyImage( img );
-
+	XDestroyImage( img );
 	return tmp;
 }
