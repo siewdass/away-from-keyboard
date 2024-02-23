@@ -13,6 +13,7 @@
 
 string CHARACTER;
 string WAYPOINTS;
+striing TIBIA;
 
 #include "gui.h"
 

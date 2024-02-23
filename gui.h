@@ -50,7 +50,7 @@ void choiceClient( GtkWidget *widget, gpointer data ) {
   }
   string v{ buffer };
   v.pop_back( );
-  console.log(v);
+  TIBIA = v;
 }
 
 void Quit( ) {
