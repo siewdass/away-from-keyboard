@@ -18,7 +18,7 @@ gint res;
 
 gboolean update_label(gpointer data) {
   GtkWidget *label_child = gtk_bin_get_child(GTK_BIN(xyz));
-  gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d Y: %d Z: %d", values.x, values.y, values.z));
+  gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d | Y: %d | Z: %d", values.x, values.y, values.z));
   return TRUE;
 }
 
@@ -89,7 +89,7 @@ void Interface( int argc, char** argv ) {
   clientid = gtk_menu_item_new_with_label( "Client" );
   vocation = gtk_menu_item_new_with_label( "Character" );
   waypoints = gtk_menu_item_new_with_label( "Waypoints" );
-  xyz = gtk_menu_item_new_with_label( "X: 0 Y: 0 Z: 0" );
+  xyz = gtk_menu_item_new_with_label( "X: 0 | Y: 0 | Z: 0" );
   quit = gtk_menu_item_new_with_label( "Quit" );
   // submenu
 
