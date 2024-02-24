@@ -13,8 +13,22 @@ bool Stop = false;
 int which = 1;
 
 AppIndicator* appindicator;
-GtkWidget *menu, *play, *stop,*restart,*vocation,*waypoints,*clientid,*quit,*dialog;
+GtkWidget *menu, *play, *stop,*restart,*vocation,*waypoints,*clientid,*quit,*dialog, *xyz;
 gint res;
+
+gboolean update_label(gpointer data) {
+    // Generate a random number and update the label text
+    int random_number = rand() % 100;  // Change 100 to the desired range
+
+    // Get the label child of the menu item
+    GtkWidget *label_child = gtk_bin_get_child(GTK_BIN(xyz));
+
+    // Update the label text
+    gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d | Y: %d | Z: %d", values.x, values.y, values.z));
+
+    // Returning TRUE ensures that the timeout function will be called again
+    return TRUE;
+}
 
 void open_character( GtkWidget* widget, gpointer data ) {
   dialog = gtk_file_chooser_dialog_new( "Choose Character json file.", NULL, GTK_FILE_CHOOSER_ACTION_OPEN, "_Cancel", GTK_RESPONSE_CANCEL, "_Open", GTK_RESPONSE_ACCEPT, NULL );
@@ -80,9 +94,10 @@ void Interface( int argc, char** argv ) {
   menu = gtk_menu_new( );
   play = gtk_menu_item_new_with_label( "Play" );
   restart = gtk_menu_item_new_with_label( "Restart" );
+  clientid = gtk_menu_item_new_with_label( "Client" );
   vocation = gtk_menu_item_new_with_label( "Character" );
   waypoints = gtk_menu_item_new_with_label( "Waypoints" );
-  clientid = gtk_menu_item_new_with_label( "Client" );
+  xyz = gtk_menu_item_new_with_label( "X: 0 | Y: 0 | Z: 0" );
   quit = gtk_menu_item_new_with_label( "Quit" );
   // submenu
 
@@ -98,6 +113,7 @@ void Interface( int argc, char** argv ) {
   gtk_menu_shell_append( GTK_MENU_SHELL( menu ), clientid );
   gtk_menu_shell_append( GTK_MENU_SHELL( menu ), vocation );
   gtk_menu_shell_append( GTK_MENU_SHELL( menu ), waypoints );
+  gtk_menu_shell_append( GTK_MENU_SHELL( menu ), xyz );
   gtk_menu_shell_append( GTK_MENU_SHELL( menu ), quit );
   gtk_widget_show_all( menu );
   //gtk_widget_hide( stop );
@@ -105,6 +121,8 @@ void Interface( int argc, char** argv ) {
   app_indicator_set_status( appindicator, APP_INDICATOR_STATUS_ACTIVE );
   app_indicator_set_attention_icon( appindicator, "dialog-warning" );
   app_indicator_set_menu( appindicator, GTK_MENU( menu ) );
+
+  g_timeout_add_seconds(1, update_label, NULL);
 
   gtk_main( );
 }

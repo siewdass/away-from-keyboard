@@ -17,13 +17,14 @@ string WAYPOINTS = "";
 string TIBIA = "";
 bool running = false;
 function < void ( ) > run;
+Values values;
 
 #include "inputs.h"
 #include "gui.h"
 
 Stats stats;
 Viewport viewport;
-Values values;
+
 Location location;
 Character character;
 Licence licence;
