@@ -13,21 +13,13 @@ bool Stop = false;
 int which = 1;
 
 AppIndicator* appindicator;
-GtkWidget *menu, *play, *stop,*restart,*vocation,*waypoints,*clientid,*quit,*dialog, *xyz;
+GtkWidget *menu, *play, *stop, *restart, *vocation, *waypoints, *clientid, *quit, *dialog, *xyz;
 gint res;
 
 gboolean update_label(gpointer data) {
-    // Generate a random number and update the label text
-    int random_number = rand() % 100;  // Change 100 to the desired range
-
-    // Get the label child of the menu item
-    GtkWidget *label_child = gtk_bin_get_child(GTK_BIN(xyz));
-
-    // Update the label text
-    gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d | Y: %d | Z: %d", values.x, values.y, values.z));
-
-    // Returning TRUE ensures that the timeout function will be called again
-    return TRUE;
+  GtkWidget *label_child = gtk_bin_get_child(GTK_BIN(xyz));
+  gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d Y: %d Z: %d", values.x, values.y, values.z));
+  return TRUE;
 }
 
 void open_character( GtkWidget* widget, gpointer data ) {
@@ -97,7 +89,7 @@ void Interface( int argc, char** argv ) {
   clientid = gtk_menu_item_new_with_label( "Client" );
   vocation = gtk_menu_item_new_with_label( "Character" );
   waypoints = gtk_menu_item_new_with_label( "Waypoints" );
-  xyz = gtk_menu_item_new_with_label( "X: 0 | Y: 0 | Z: 0" );
+  xyz = gtk_menu_item_new_with_label( "X: 0 Y: 0 Z: 0" );
   quit = gtk_menu_item_new_with_label( "Quit" );
   // submenu
 
