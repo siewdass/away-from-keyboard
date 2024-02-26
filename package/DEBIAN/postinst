@@ -3,7 +3,6 @@ set -e
 echo Copying files..
 chmod -R 777 /opt/afk
 chmod +x /opt/afk/afk
-chmod +x /opt/afk/afk.sh
 chmod +x /opt/afk/client.sh
 chmod +x /usr/local/bin/xseticon
 echo DONE

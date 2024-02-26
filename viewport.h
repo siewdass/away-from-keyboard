@@ -14,7 +14,7 @@ public:
 	int id;
 	int sqm = 41; 
 	Point xy( int, int );
-	tuple < int, vector < Point >, bool, string, bool, Point, bool > check( Mat );
+	tuple < int, vector < Point >, string, bool, Point, bool > check( Mat );
 };
 
 #endif

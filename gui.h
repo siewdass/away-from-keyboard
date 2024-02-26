@@ -16,7 +16,7 @@ AppIndicator* appindicator;
 GtkWidget *menu, *play, *stop, *restart, *vocation, *waypoints, *clientid, *quit, *dialog, *xyz;
 gint res;
 
-gboolean update_label(gpointer data) {
+gboolean update_label( gpointer data ) {
   GtkWidget *label_child = gtk_bin_get_child(GTK_BIN(xyz));
   gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d | Y: %d | Z: %d", values.x, values.y, values.z));
   return TRUE;
@@ -119,4 +119,4 @@ void Interface( int argc, char** argv ) {
   gtk_main( );
 }
 
-#endif // GUI_H
+#endif

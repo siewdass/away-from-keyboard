@@ -1,10 +1,6 @@
+#include "utils.h"
 #include "location.h"
-#include "screenshot.h"
 
-#include <string>
-#include <fstream>
-
-Screenshot s;
 Mat img;
 Point3i point;
 
@@ -96,7 +92,7 @@ Point3i Location::find( Point3i point, Mat minimap ) {
 bool Location::compare( Point3i point, Mat minimap ) {
 	part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
 
-	//imwrite( "321.png", part );
+	//imwrite( "part.png", part );
 	threshold = 0;
 
 	for ( int x = 0; x < minimap.rows - 1; x++ ) {
@@ -111,16 +107,16 @@ bool Location::compare( Point3i point, Mat minimap ) {
 }
 
 bool Location::walkable( Point3i point ) {
-	//z = pathsx[ point.z ];
-	//zImg = Mat( maps[ p.z ], Rect( p.x, p.y, width, height ) );
-
-	/*console.log( paths[ point.z ][ point.x -1 ][ point.y -1 ], paths[ point.z ][ point.x ][ point.y -1 ], paths[ point.z ][ point.x +1 ][ point.y -1 ] );
-	console.log( paths[ point.z ][ point.x -1 ][ point.y    ], paths[ point.z ][ point.x ][ point.y    ], paths[ point.z ][ point.x +1 ][ point.y    ] );
-	console.log( paths[ point.z ][ point.x -1 ][ point.y +1 ], paths[ point.z ][ point.x ][ point.y +1 ], paths[ point.z ][ point.x +1 ][ point.y +1 ] );*/
-
-
-
-	//imwrite( "123.png", z );
-	return true;
-	//return paths[ point.z ][ point.x ][ point.y ] == 0 ? false : true;
+	/*for ( int j = point.y -5 ; j < point.y + 6; ++j ) {
+		for ( int i = point.x - 5; i < point.x + 6; ++i ) {
+			if ( j == point.y && i == point.x ) {
+				cout << 2 << " ";	
+			} else {
+				cout << paths[ point.z ][ j ][ i ] << " ";
+			}
+        }
+        cout << endl;
+    }
+	cout << endl;*/
+	return paths[ point.z ][ point.y ][ point.x ] == 0 ? false : true;
 }

@@ -5,6 +5,11 @@ Acknow acknowv;
 
 using namespace std;
 
+vector < Point > upV{ Point( -1,-1 ), Point( 0,-1 ), Point( 1,-1 ) };
+vector < Point > rightV{ Point( 1,-1 ), Point( 1,0 ), Point( 1,1 ) };
+vector < Point > downV{ Point( -1,1 ), Point( 0,1 ), Point( 1,1 ) };
+vector < Point > leftV{ Point( -1,-1 ), Point( -1,0 ), Point( -1,1 ) };
+
 Point Viewport::xy( int x, int y ) {
 
     vector < int > arr;
@@ -87,11 +92,10 @@ Point Viewport::xy( int x, int y ) {
     return Point( X, Y );
 }
 
-tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check( Mat GW ) {
+tuple < int, vector < Point >, string, bool, Point, bool > Viewport::check( Mat GW ) {
     int box = 0;
     vector < Point > arr;
-    bool visibleMonsters;
-    string side;
+    string side = "";
     bool target;
     Point TARGET;
     bool oldTarget;
@@ -104,7 +108,6 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
     oldTarget = old;
 
     for ( auto [ point, targeting ] : GameWindow ) {
-
         Point p = Viewport::xy( point.x + 23, point.y + 35 );
 
         if ( targeting ) {
@@ -113,17 +116,11 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
             TARGET.y = p.y;
         }
 
-        if ( p.x == 0 && p.y == 0 ) {
-            continue;
-        }
-
+        if ( p.x == 0 && p.y == 0 ) continue;
+        
         arr.push_back( p );
-        if ( p.x >= -1 & p.x <= 1 & p.y >= -1 & p.y <= 1 ) {
-            box += 1;
-        }  
+        if ( p.x >= -1 & p.x <= 1 & p.y >= -1 & p.y <= 1 ) box++;
     }
-
-    visibleMonsters = arr.size( ) > 0 ? true : false;
 
     bool topLeft = false,
          topCenter = false,   
@@ -136,56 +133,40 @@ tuple < int, vector < Point >, bool, string, bool, Point, bool > Viewport::check
 
     if ( arr.size( ) > 0 ) {
         
-        for ( Point point : arr ) {
-            if ( point.x == -1 && point.y == -1 ) {
-                topLeft = true;
-            } else if ( point.x == 0 && point.y == -1 ) {
-                topCenter = true;
-            } else if ( point.x == 1 && point.y == -1 ) {
-                topRight = true;
-            } else if ( point.x == -1 && point.y == 0 ) {
-                midleLeft = true;
-            } else if ( point.x == 1 && point.y == 0 ) {
-                midleRight = true;
-            } else if ( point.x == -1 && point.y == 1 ) {
-                bottomLeft = true;
-            } else if ( point.x == 0 && point.y == 1 ) {
-                bottomCenter = true;
-            } else if ( point.x == 1 && point.y == 1 ) {
-                bottomRight = true;
-            }
-        }
+        int upCount = 0;
+        int rightCount = 0;
+        int downCount = 0;
+        int leftCount = 0;
 
-        if ( topLeft && topCenter && topRight ) {
+        for ( Point point : arr ) {
+            for ( Point p : upV ) if ( point.x == p.x && point.y == p.y ) upCount++;
+            for ( Point p : rightV ) if ( point.x == p.x && point.y == p.y ) rightCount++;
+            for ( Point p : downV ) if ( point.x == p.x && point.y == p.y ) downCount++;
+            for ( Point p : leftV ) if ( point.x == p.x && point.y == p.y ) leftCount++;
+        }       
+
+        if ( upCount == 3 ) {
             side = "Up";
-        } else if ( topRight && midleRight && bottomRight ) {
+        } else if ( rightCount == 3 ) {
             side = "Right";
-        } else if ( bottomRight && bottomCenter && bottomLeft ) {
+        } else if ( downCount == 3 ) {
             side = "Down";
-        } else if ( bottomLeft && midleLeft && topLeft ) {
+        } else if ( leftCount == 3 ) {
             side = "Left";
-        } else if ( ( topLeft && topCenter ) || ( topCenter && topRight ) || ( topLeft && topRight ) ) {
+        } else if ( upCount == 2 ) {
             side = "Up";
-        } else if ( ( topRight && midleRight ) || ( midleRight && bottomRight ) || ( topRight && bottomRight ) ) {
+        } else if ( rightCount == 2 ) {
             side = "Right";
-        } else if ( ( bottomRight && bottomCenter ) || ( bottomCenter && bottomLeft ) || ( bottomRight && bottomLeft ) ) {
+        } else if ( downCount == 2 ) {
             side = "Down";
-        } else if ( ( bottomLeft && midleLeft ) || ( midleLeft && topLeft ) || ( bottomLeft && topLeft ) ) {
-            side = "Left";
-        } else if ( topLeft || topCenter || topRight ) {
-            side = "Up";
-        } else if ( topRight || midleRight || bottomRight ) {
-            side = "Right";
-        } else if ( bottomRight || bottomCenter || bottomLeft ) {
-            side = "Down";
-        } else if ( bottomLeft || midleLeft || topLeft ) {
+        } else if ( leftCount == 2 ) {
             side = "Left";
         }
     }
 
     //imwrite( "screenshot.png", GW );
 
-    return make_tuple( box, arr, visibleMonsters, side, target, TARGET, oldTarget );
+    return make_tuple( box, arr, side, target, TARGET, oldTarget );
 }
 
    

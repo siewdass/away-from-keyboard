@@ -237,15 +237,21 @@ bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vec
             to.y = waypoints[ position ].y;
 
             /*vector < vector < int > > matrix;
-            for ( int i = ( values.x - 100 ); i > ( values.x + 100 ); i++ ) {
+
+            for ( int i = values.y - 100; i < values.y + 100; ++i ) {
                 vector < int > row;
-                for ( int j = ( values.y - 100 ); j < ( values.y + 100 ); j++ ) {
+                for ( int j = values.x - 100; j < values.x + 100; ++j ) {
                     row.push_back( paths[ values.z ][ i ][ j ] );
                 }
                 matrix.push_back( row );
             }
 
-            for ( vector < int > row : matrix ) { for ( int e : row ) { std::cout << e << " "; } std::cout << endl; }*/
+            for ( vector < int > row : matrix ) {
+                for ( int e : row ) {
+                    std::cout << e << " ";
+                }
+                std::cout << endl;
+            }*/
 
             auto way = path.find( paths[ values.z ], from, to );
 
@@ -328,7 +334,7 @@ bool Actions::runaway( Values values, vector < Waypoint > waypoints, vector < ve
             to.y = waypoints[ runPosition ].y;
             console.log( "walk" );
 
-            auto paths = path.find( map[ z ], from, to );
+            auto paths = path.find( map[ values.z ], from, to );
             if ( paths.size( ) > 0 ) {
 
                 if ( paths.size( ) >= 1 ) {
@@ -379,7 +385,7 @@ bool Actions::lootway( Values values, vector < vector < vector < int > > > map, 
             to.x = lootpoint.x;
             to.y = lootpoint.y;
             try {
-            auto paths = path.find( map[ z ], from, to );
+            auto paths = path.find( map[ values.z ], from, to );
             console.log( position, runPosition );
 
             if ( paths.size( ) > 0 ) {

@@ -11,14 +11,12 @@
 #include "utils.h"
 #include "licence.h"
 
-
 string CHARACTER = "";
 string WAYPOINTS = "";
 string TIBIA = "";
 bool running = false;
 function < void ( ) > run;
 Values values;
-
 #include "inputs.h"
 #include "gui.h"
 
@@ -41,9 +39,32 @@ int height = 642, width = 1012, middle = ( 1012 / 2 ), percent = ( ( width / 2 )
 Mat HP, MP, BD, FK, minimap, BATTLE, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY, GameWindow, FloorIndex, Minimap;
 void updateThread( ) {
 
-	Screenshot screenshot( TIBIA );
-	
+	Screenshot screenshot( TIBIA ); // hacerle el .load
+	double cooldown = 0;
+
 	while ( running ) {
+
+		if ( time.clock( ) > cooldown ) {
+			GameWindow = screenshot.get( 189, 40, 615, 451 );
+			auto [ box, monsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( GameWindow );
+			values.box = box;
+			values.monsters = monsters;
+			values.side = side;
+			values.isTargeting = isTargeting;
+			values.targetPosition = targetPosition;
+			values.boxTarget = boxTarget;
+
+			FloorIndex = screenshot.get( 1001, 54, 1, 61 );
+			Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
+			auto [ x, y, z ] = location.update( FloorIndex, Minimap, values.x, values.y );
+			values.diffx = values.x == x;
+			values.diffy = values.y == y;
+			values.x = x;
+			values.y = y;
+			values.z = z;
+			cooldown = time.clock( ) + 900;
+		}
+
 		CAPACITY = screenshot.get( 919, 255, 11, 1 );
 		WEAPON = screenshot.get( 861, 186, 1, 1 );
 		AMULET = screenshot.get(  862, 158, 1, 1 );
@@ -54,23 +75,7 @@ void updateThread( ) {
 		MP = screenshot.get( middle+40, 5, width-middle-188+40, 1 );
 		BD = screenshot.get( 480, 4, 53, 27);
 		FK = screenshot.get( 836, 304, 176, 296 );
-		GameWindow = screenshot.get( 189, 40, 615, 451 );
-		FloorIndex = screenshot.get( 1001, 54, 1, 61 );
-		Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
-
-		auto [ box, monsters, visibleMonsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( GameWindow );
 		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, weapon, necklace, ring, lowcapacity ] = stats.update( CAPACITY, WEAPON, AMULET, RING, BATTLE, CHAT, HP, MP, BD, FK );
-		auto [ x, y, z ] = location.update( FloorIndex, Minimap, values.x, values.y );
-
-		values.diffx = values.x == x;
-		values.diffy = values.y == y;
-		values.box = box;
-		values.monsters = monsters;
-		values.visibleMonsters = visibleMonsters;
-		values.side = side;
-		values.isTargeting = isTargeting;
-		values.targetPosition = targetPosition;
-		values.boxTarget = boxTarget;
 		values.health = health;
 		values.mana = mana;
 		values.hungry = hungry;
@@ -78,9 +83,6 @@ void updateThread( ) {
 		values.poison = poison;
 		values.haste = haste;
 		values.flasks = flasks;
-		values.x = x;
-		values.y = y;
-		values.z = z;
 		values.alarm = alarm;
 		values.weapon = weapon;
 		values.necklace = necklace;
@@ -98,59 +100,62 @@ void updateThread( ) {
 
 void alternatorThread( ) {
 
-	int lastX = 0, lastY = 0;
-
-	time.sleep( 2000 );
+	int valid;
 
 	while ( running ) {
 
 		if ( mode.walking ) {
 
 			if ( values.diffx && values.diffy ) {
+				valid = -1;
+				for ( int i = values.y - 1; i < values.y + 2; ++i ) {
+					for ( int j = values.x - 1; j < values.x + 2; ++j ) {
+						if ( location.paths[ values.z ][ i ][ j ] == 1 ) valid++;
+					}
+				}
+				if ( values.box == valid ) {
+					if ( position == character.waypoints.size( ) ) {
+						position = 0;
+					} else {
+						position++;
+					}
+					mode.attacking = true;
+					mode.walking = false;
+				}
+			}
+			
+			if ( values.diffx && values.diffy && !mode.attacking ) {
 				mode.attacking = actions.walker( values, character.waypoints, location.paths );
-			}
-
-			if ( mode.attacking && values.visibleMonsters ) {
-				mode.walking = false;
-			}
-
-			if ( !mode.attacking && values.x == lastX && values.y == lastY && values.box >= 4 ) {
-				//console.log( "TTTTTTTTRRRRRRRRRRAAAAAAAAAPPPPPPPP" );
-				mode.attacking = true;
-				mode.walking = false;
-			} else {
-				lastX = values.x;
-				lastY = values.y;
+				if ( mode.attacking && values.monsters.size() > 0 ) {
+					mode.walking = false;
+				} else {
+					mode.attacking = false;
+				}
 			}
 
 		} else if ( mode.attacking ) {		
 
 			mode.looting = actions.attacker( values );
-			if ( mode.looting ) {
-				mode.attacking = false;
-			}
+			if ( mode.looting ) mode.attacking = false;
 
 		} else if ( mode.looting ) {
 
 			mode.walking = actions.looter( );
 			if ( mode.walking ) {
 				mode.looting = false;
-
 				for ( int i = 0; i < values.flasks.size( ); i++ ) {
 					Point flask = values.flasks[ values.flasks.size( ) -1 ];
 					inputs.mouseDrag( 836 + flask.x, 290 + flask.y );
 				}
-
 			}
 			
 			if ( Stop == true ) {
 				Toggle( );
-				Stop = false;
 			}
 
 		}
 
-		time.sleep( 300 );
+		time.sleep( 333 );
 	}
 }
 
@@ -162,8 +167,6 @@ void healThread( ) {
 		healCooldown2 = 0,
 		healCooldown3 = 0,
 		recoveryCooldown = 0;
-
-	time.sleep( 3000 );
 
 	while ( running ) {
 
@@ -320,8 +323,6 @@ void attackKnightBox( ) {
 		attackCooldown6 = 0,
 		attackCooldown7 = 0;
 
-	time.sleep( 3000 );
-
 	while ( running ) {
 
 		try {
@@ -447,60 +448,53 @@ void knightTargetThread( ) {
 
 	double autoAttackCooldown = 0;
 
-	time.sleep( 3000 );
-
 	while ( running ) {
-		
-		if ( Pause ) {
-			try {
 
-				if ( mode.walking ) {
+		try {
 
-					if ( values.monsters.size( ) == 0 ) {
-						actions.walker( values, character.waypoints, location.paths );
-					} else {
-						mode.attacking = true;
-						mode.walking = false;
-					}
+			if ( mode.walking ) {
 
-				} else if ( mode.attacking ) {
-
-					if ( !values.isTargeting && values.monsters.size( ) > 0 ) {
-						if ( time.clock( ) > autoAttackCooldown ) {
-							inputs.keyboard( "space" );
-							autoAttackCooldown = time.clock( ) + 1000;
-							mode.looting = true;
-							mode.attacking = false;
-						}
-					} else {
-						mode.walking = true;
-						mode.attacking = false;
-					}
-
-				} else if ( mode.looting ) {
-
-					if ( !values.isTargeting ) {
-						actions.looter( );
-						if ( values.monsters.size( ) > 0 ) {
-							mode.looting = false;
-							mode.attacking = true;
-						} else {
-							mode.looting = false;
-							mode.walking = true;
-						}
-					}
-
+				if ( values.monsters.size( ) == 0 ) {
+					actions.walker( values, character.waypoints, location.paths );
+				} else {
+					mode.attacking = true;
+					mode.walking = false;
 				}
 
-			} catch ( const exception &err ) {
-				console.log( "ERROR:", err.what( ) );
+			} else if ( mode.attacking ) {
+				//console.log( values.isTargeting, values.monsters.size() );
+				if ( !values.isTargeting && values.monsters.size( ) > 0 ) {
+					if ( time.clock( ) > autoAttackCooldown ) {
+						inputs.keyboard( "space" );
+						autoAttackCooldown = time.clock( ) + 1000;
+						mode.looting = true;
+						mode.attacking = false;
+					}
+				} else {
+					mode.walking = true;
+					mode.attacking = false;
+				}
+
+			} else if ( mode.looting ) {
+
+				if ( !values.boxTarget ) {
+					actions.looter( );
+					if ( values.monsters.size( ) > 0 ) {
+						mode.looting = false;
+						mode.attacking = true;
+					} else {
+						mode.looting = false;
+						mode.walking = true;
+					}
+				}
+
 			}
 
-			time.sleep( 200 );
-		} else {
-			time.sleep( 2000 );
+		} catch ( const exception &err ) {
+			console.log( "ERROR:", err.what( ) );
 		}
 
+		time.sleep( 200 );
 	}
 }
 
@@ -631,13 +625,11 @@ void autoAttackThread( ) {
 						}
 					}
 				}
-				
 				time.sleep( 200 );
-
 			} else {
 				time.sleep( 1000 );
 			}
-
+			
 		} catch ( const exception &err ) {
 			console.log( "ERROR:", err.what( ) );
 		}
@@ -741,10 +733,6 @@ int main( int argc, char** argv ) {
 // astar pasa a ser pathfinder
 
 // detectar cantidad de vida segun pixeles internos de la barra de vida
-// exori min minimo 2
 // knight pegarle al que tiene mas vida
 // paladin pegarle a los de la cruz
-// botar flask en 1 solo lugar
-// acomodar mapa antes de iniciar en alternador
-// acomodar autoatack 
 // autoattack y box de paladin en 1 solo

@@ -16,7 +16,7 @@ namespace pf
 	m_startPos(0, 0),
 	m_targetPos(0, 0),
 	m_size(0),
-	m_nrOfDirections(4)
+	m_nrOfDirections(8)
 	{
 		m_directions = { { -1,  0 }, {  1,  0 }, {  0,  1 },
 					     {  0, -1 },             { -1, -1 },
@@ -116,11 +116,6 @@ namespace pf
 		m_dimensions.y = height;
 		m_size = m_dimensions.x * m_dimensions.y;
 
-	}
-
-	void Astar::setDiagonalMovement(bool enable)
-	{
-		m_nrOfDirections = (enable) ? 8 : 4;
 	}
 
 	bool Astar::isValid(const Vec2i& pos) const
