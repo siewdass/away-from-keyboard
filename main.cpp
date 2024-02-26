@@ -155,7 +155,7 @@ void alternatorThread( ) {
 
 		}
 
-		time.sleep( 333 );
+		time.sleep( 300 );
 	}
 }
 
@@ -736,3 +736,6 @@ int main( int argc, char** argv ) {
 // knight pegarle al que tiene mas vida
 // paladin pegarle a los de la cruz
 // autoattack y box de paladin en 1 solo
+
+
+// LOOP POR TODO EL MAPA HASTA QUE TE CONSIGA
