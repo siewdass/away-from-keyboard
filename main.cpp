@@ -47,7 +47,9 @@ void updateThread( ) {
 			if ( time.clock( ) > cooldown ) {
 				FloorIndex = screenshot.get( 1001, 54, 1, 61 );
 				Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
+
 				auto [ x, y, z ] = location.update( FloorIndex, Minimap, values.x, values.y );
+				
 				values.diffx = values.x == x;
 				values.diffy = values.y == y;
 				values.x = x;
@@ -57,7 +59,9 @@ void updateThread( ) {
 			}
 
 			GameWindow = screenshot.get( 189, 40, 615, 451 );
+			
 			auto [ box, monsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( GameWindow );
+
 			values.box = box;
 			values.monsters = monsters;
 			values.side = side;
@@ -77,7 +81,7 @@ void updateThread( ) {
 			FK = screenshot.get( 836, 304, 176, 296 );
 
 			auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, weapon, necklace, ring, lowcapacity ] = stats.update( CAPACITY, WEAPON, AMULET, RING, BATTLE, CHAT, HP, MP, BD, FK );
-			
+
 			values.health = health;
 			values.mana = mana;
 			values.hungry = hungry;
