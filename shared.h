@@ -38,21 +38,20 @@ public:
 		looting = false;
 };
 
-class Client {
-public:
-	string process( string cmd ) {
-		const int MAX_BUFFER = 2048;
-		char buffer[ MAX_BUFFER ];
-		FILE *stream = popen( cmd.c_str( ) , "r" );
-		if ( stream ) {
-			while ( !feof( stream ) ) {
-				if ( fgets( buffer, MAX_BUFFER, stream ) != NULL) { }
-			}
-			pclose( stream );
+
+string process( string cmd ) {
+	const int MAX_BUFFER = 2048;
+	char buffer[ MAX_BUFFER ];
+	FILE *stream = popen( cmd.c_str( ) , "r" );
+	if ( stream ) {
+		while ( !feof( stream ) ) {
+			if ( fgets( buffer, MAX_BUFFER, stream ) != NULL) { }
 		}
-		string v{ buffer };
-		return v;
+		pclose( stream );
 	}
-};
+	string v{ buffer };
+	v.pop_back( );
+	return v;
+}
 
 #endif // SHARED_H

@@ -680,8 +680,7 @@ int main( int argc, char** argv ) {
 
 	run = execute;
 
-	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
-	serial.pop_back( );
+	string serial = process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
 
 	system( "rm -f /tmp/licence.json" );
 	system( "wget -O /tmp/licence.json https://siewdass.github.io/licence.json > /dev/null 2>&1" );
