@@ -9,7 +9,6 @@
 #include "actions.h"
 #include "path.h"
 #include "utils.h"
-#include "licence.h"
 
 string CHARACTER = "";
 string WAYPOINTS = "";
@@ -25,7 +24,6 @@ Viewport viewport;
 
 Location location;
 Character character;
-Licence licence;
 Client client;
 
 Time time;
@@ -44,7 +42,20 @@ void updateThread( ) {
 
 	while ( running ) {
 
-		if ( time.clock( ) > cooldown ) {
+		try {
+
+			if ( time.clock( ) > cooldown ) {
+				FloorIndex = screenshot.get( 1001, 54, 1, 61 );
+				Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
+				auto [ x, y, z ] = location.update( FloorIndex, Minimap, values.x, values.y );
+				values.diffx = values.x == x;
+				values.diffy = values.y == y;
+				values.x = x;
+				values.y = y;
+				values.z = z;
+				cooldown = time.clock( ) + 900;
+			}
+
 			GameWindow = screenshot.get( 189, 40, 615, 451 );
 			auto [ box, monsters, side, isTargeting, targetPosition, boxTarget ] = viewport.check( GameWindow );
 			values.box = box;
@@ -54,45 +65,40 @@ void updateThread( ) {
 			values.targetPosition = targetPosition;
 			values.boxTarget = boxTarget;
 
-			FloorIndex = screenshot.get( 1001, 54, 1, 61 );
-			Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
-			auto [ x, y, z ] = location.update( FloorIndex, Minimap, values.x, values.y );
-			values.diffx = values.x == x;
-			values.diffy = values.y == y;
-			values.x = x;
-			values.y = y;
-			values.z = z;
-			cooldown = time.clock( ) + 900;
+			CAPACITY = screenshot.get( 919, 255, 11, 1 );
+			WEAPON = screenshot.get( 861, 186, 1, 1 );
+			AMULET = screenshot.get(  862, 158, 1, 1 );
+			RING = screenshot.get( 861, 220, 1, 1 );
+			BATTLE = screenshot.get( 26, 30, 1, 1 );
+			CHAT = screenshot.get( 189, 575, 1, 42 );
+			HP = screenshot.get( 188, 5, middle-188-40, 1 );
+			MP = screenshot.get( middle+40, 5, width-middle-188+40, 1 );
+			BD = screenshot.get( 480, 4, 53, 27);
+			FK = screenshot.get( 836, 304, 176, 296 );
+
+			auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, weapon, necklace, ring, lowcapacity ] = stats.update( CAPACITY, WEAPON, AMULET, RING, BATTLE, CHAT, HP, MP, BD, FK );
+			
+			values.health = health;
+			values.mana = mana;
+			values.hungry = hungry;
+			values.paralyze = paralyze;
+			values.poison = poison;
+			values.haste = haste;
+			values.flasks = flasks;
+			values.alarm = alarm;
+			values.weapon = weapon;
+			values.necklace = necklace;
+			values.ring = ring;
+			values.lowcapacity = lowcapacity;
+
+			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
+			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
+
+			//console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:", to_string( ( mana / 278 ) * 100 ) + "%" );
+
+		} catch ( const std::exception& e ) {
+			console.log( "ERROR:", e.what( ) );
 		}
-
-		CAPACITY = screenshot.get( 919, 255, 11, 1 );
-		WEAPON = screenshot.get( 861, 186, 1, 1 );
-		AMULET = screenshot.get(  862, 158, 1, 1 );
-		RING = screenshot.get( 861, 220, 1, 1 );
-		BATTLE = screenshot.get( 26, 30, 1, 1 );
-		CHAT = screenshot.get( 189, 575, 1, 42 );
-		HP = screenshot.get( 188, 5, middle-188-40, 1 );
-		MP = screenshot.get( middle+40, 5, width-middle-188+40, 1 );
-		BD = screenshot.get( 480, 4, 53, 27);
-		FK = screenshot.get( 836, 304, 176, 296 );
-		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, weapon, necklace, ring, lowcapacity ] = stats.update( CAPACITY, WEAPON, AMULET, RING, BATTLE, CHAT, HP, MP, BD, FK );
-		values.health = health;
-		values.mana = mana;
-		values.hungry = hungry;
-		values.paralyze = paralyze;
-		values.poison = poison;
-		values.haste = haste;
-		values.flasks = flasks;
-		values.alarm = alarm;
-		values.weapon = weapon;
-		values.necklace = necklace;
-		values.ring = ring;
-		values.lowcapacity = lowcapacity;
-
-		auto [ XPOS, YPOS ] = inputs.mouseLocation( );
-		if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
-
-		//console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:", to_string( ( mana / 278 ) * 100 ) + "%" );
 
 		time.sleep( 300 );
 	}
@@ -149,10 +155,7 @@ void alternatorThread( ) {
 				}
 			}
 			
-			if ( Stop == true ) {
-				Toggle( );
-			}
-
+			if ( Stop == true ) Toggle( );
 		}
 
 		time.sleep( 300 );
@@ -161,12 +164,7 @@ void alternatorThread( ) {
 
 void healThread( ) {
 
-	double global = 1050;
-	double healCooldown = 0,
-		healCooldown1 = 0,
-		healCooldown2 = 0,
-		healCooldown3 = 0,
-		recoveryCooldown = 0;
+	double global = 1050, healCooldown = 0, healCooldown1 = 0, healCooldown2 = 0, healCooldown3 = 0, recoveryCooldown = 0;
 
 	while ( running ) {
 
@@ -214,8 +212,6 @@ void potionsThread( ) {
 	double global = 1050;
 	double potionCooldown = 0;
 
-	time.sleep( 3000 );
-
 	while ( running ) {
 		
 		int hppercent = ( double ) values.health / percent * 100;
@@ -244,42 +240,32 @@ void potionsThread( ) {
 void ammoThread( ) {
 
 	double quiver = 0, throwing = 0;
-	time.sleep( 4000 );
 
 	while ( running ) {
-		
-		if ( Pause ) {
 
-			try {
+		try {
 
-				if ( time.clock( ) > quiver && character.quiver != "" ) {
-					inputs.keyboard( character.quiver );
-					inputs.keyboard( character.quiver );
-					inputs.keyboard( character.quiver );
-					quiver = time.clock( ) + 60000;
-				} else if ( values.weapon && character.throwing != "" ) {
-					inputs.keyboard( character.throwing );
-				}
-
-			} catch ( const std::exception& e ) {
-				console.log( "ERROR:", e.what( ) );
+			if ( time.clock( ) > quiver && character.quiver != "" ) {
+				inputs.keyboard( character.quiver );
+				inputs.keyboard( character.quiver );
+				inputs.keyboard( character.quiver );
+				quiver = time.clock( ) + 60000;
+			} else if ( values.weapon && character.throwing != "" ) {
+				inputs.keyboard( character.throwing );
 			}
 
-			time.sleep( 2000 );
-		} else {
-  		time.sleep( 2000 );
+		} catch ( const std::exception& e ) {
+			console.log( "ERROR:", e.what( ) );
 		}
+
+		time.sleep( 2000 );
+		
 	}
 }
 
 void toolsThread( ) {
 
-	double necklaceCooldown = 0,
-		ringCooldown = 0,
-		foodCooldown = 0,
-		hasteCooldown = 0;
-
-	time.sleep( 4000 );
+	double necklaceCooldown = 0, ringCooldown = 0, foodCooldown = 0, hasteCooldown = 0;
 
 	while ( running ) {
 		try {
@@ -313,15 +299,7 @@ void toolsThread( ) {
 void attackKnightBox( ) {
 
 	bool keepAttacking;
-	double global = 2100;
-	double attackCooldown = 0,
-		attackCooldown1 = 0,
-		attackCooldown2 = 0,
-		attackCooldown3 = 0,
-		attackCooldown4 = 0,
-		attackCooldown5 = 0,
-		attackCooldown6 = 0,
-		attackCooldown7 = 0;
+	double global = 2100, challengeCooldown = 0, attackCooldown = 0, attackCooldown1 = 0, attackCooldown2 = 0, attackCooldown3 = 0, attackCooldown4 = 0, attackCooldown5 = 0, attackCooldown6 = 0, attackCooldown7 = 0;
 
 	while ( running ) {
 
@@ -329,10 +307,14 @@ void attackKnightBox( ) {
 			if ( mode.attacking ) {
 
 				if ( values.mana > 10 ) {
-					if ( values.box >= 3 || keepAttacking ) {
+					if ( values.box >= 2 || keepAttacking ) {
 						keepAttacking = true;
 						if ( time.clock( ) > attackCooldown ) {
-							if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
+							if ( character.challenge != "" && time.clock( ) > challengeCooldown && values.box > 0 ) {
+								inputs.keyboard( character.challenge );
+								challengeCooldown = time.clock( ) + 3150;
+								attackCooldown = time.clock( ) + 100;
+							} else if ( character.annihilation != "" && time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
 								inputs.keyboard( character.annihilation );
 								attackCooldown = time.clock( ) + global*2;
 								attackCooldown1 = time.clock( ) + 31500;
@@ -462,22 +444,22 @@ void knightTargetThread( ) {
 				}
 
 			} else if ( mode.attacking ) {
-				//console.log( values.isTargeting, values.monsters.size() );
+
 				if ( !values.isTargeting && values.monsters.size( ) > 0 ) {
 					if ( time.clock( ) > autoAttackCooldown ) {
-						inputs.keyboard( "space" );
+						auto [ x, y ] = actions.gameWindow( values.monsters[ 0 ].x, values.monsters[ 0 ].y );
+						inputs.mouse( x, y, 3 );
 						autoAttackCooldown = time.clock( ) + 1000;
-						mode.looting = true;
-						mode.attacking = false;
+						inputs.mouseMove( 742, 596 );
 					}
-				} else {
-					mode.walking = true;
+				} else if ( values.isTargeting ) {
+					mode.looting = true;
 					mode.attacking = false;
 				}
 
 			} else if ( mode.looting ) {
 
-				if ( !values.boxTarget ) {
+				if ( !values.isTargeting ) {
 					actions.looter( );
 					if ( values.monsters.size( ) > 0 ) {
 						mode.looting = false;
@@ -494,7 +476,7 @@ void knightTargetThread( ) {
 			console.log( "ERROR:", err.what( ) );
 		}
 
-		time.sleep( 200 );
+		time.sleep( 300 );
 	}
 }
 
@@ -506,95 +488,88 @@ void paladinTargetThread( ) {
 	double autoAttackCooldown = 0;
 	int count2 = 0;
 
-	time.sleep( 3000 );
-
 	while ( running ) {
-		
-		if ( Pause ) {
-			try {
-				if ( values.x == 0 && values.y == 0 ) {
-					count2 += 1;
-					if ( count2 >= 7 ) {
-					 	inputs.keyboard( "s" );
-					}
+
+		try {
+			if ( values.x == 0 && values.y == 0 ) {
+				count2 += 1;
+				if ( count2 >= 7 ) {
+					inputs.keyboard( "s" );
 				}
-
-				if ( mode.walking ) {
-					if ( values.monsters.size( ) == 0 ) {
-						mode.attacking = actions.walker( values, character.waypoints, location.paths );
-						if ( mode.attacking ) {
-							mode.walking = false;
-						}
-					} else {
-						mode.attacking = true;
-						mode.walking = false;
-					}
-				} else if ( mode.attacking ) {
-					if ( values.monsters.size( ) > 0 ) {
-						if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
-							inputs.keyboard( "Escape" );
-							time.sleep( 1000 );
-							inputs.keyboard( "space" );
-							autoAttackCooldown = time.clock( ) + 1000;
-							mode.looting = true;
-							mode.attacking = false;
-						}
-					} else {
-						mode.walking = true;
-						mode.attacking = false;
-					}
-				} else if ( mode.looting ) {
-
-					if ( !values.isTargeting ) {
-						 valuableLoot = stats.valuableLoot( LOOTCHAT );
-						 console.log( valuableLoot );
-						if ( valuableLoot ) {
-						if ( character.vocation == "knight" ) {
-							mode.walking = actions.looter( );
-							if ( mode.walking && values.monsters.size( ) > 0 ) {
-								mode.looting = false;
-								mode.attacking = true;
-								mode.walking = false;
-							} else if ( mode.walking && values.monsters.size( ) == 0 ) {
-								mode.looting = false;
-								mode.attacking = false;
-								mode.walking = true;
-							}
-						} else {
-							auto [ X, Y ] = actions.mapWindow( values.targetPosition.x, values.targetPosition.y );
-							inputs.mouse( X, Y, 1 );
-							time.sleep( 3000 );
-							mode.walking = actions.looter( );
-							mode.looting = false;
-							mode.attacking = false;
-						}
-						 }
-						 else {
-					 	mode.walking = true;
-					 	mode.looting = false;
-					 	mode.attacking = false;
-						 }
-					} else if ( character.vocation == "paladin" ) {
-						
-						if ( time.clock( ) > attackCooldown ) {
-							if ( character.divinemissile != "" ) {
-								inputs.keyboard( character.divinemissile );
-								attackCooldown = time.clock( ) + 2100;
-							}
-						}
-
-					}
-				}
-
-			} catch ( const exception &err ) {
-				console.log( "ERROR:", err.what( ) );
 			}
 
-			time.sleep( 500 );
-		} else {
-			time.sleep( 2000 );
+			if ( mode.walking ) {
+				if ( values.monsters.size( ) == 0 ) {
+					mode.attacking = actions.walker( values, character.waypoints, location.paths );
+					if ( mode.attacking ) {
+						mode.walking = false;
+					}
+				} else {
+					mode.attacking = true;
+					mode.walking = false;
+				}
+			} else if ( mode.attacking ) {
+				if ( values.monsters.size( ) > 0 ) {
+					if ( time.clock( ) > autoAttackCooldown && !values.isTargeting ) {
+						inputs.keyboard( "Escape" );
+						time.sleep( 1000 );
+						inputs.keyboard( "space" );
+						autoAttackCooldown = time.clock( ) + 1000;
+						mode.looting = true;
+						mode.attacking = false;
+					}
+				} else {
+					mode.walking = true;
+					mode.attacking = false;
+				}
+			} else if ( mode.looting ) {
+
+				if ( !values.isTargeting ) {
+						valuableLoot = stats.valuableLoot( LOOTCHAT );
+						console.log( valuableLoot );
+					if ( valuableLoot ) {
+					if ( character.vocation == "knight" ) {
+						mode.walking = actions.looter( );
+						if ( mode.walking && values.monsters.size( ) > 0 ) {
+							mode.looting = false;
+							mode.attacking = true;
+							mode.walking = false;
+						} else if ( mode.walking && values.monsters.size( ) == 0 ) {
+							mode.looting = false;
+							mode.attacking = false;
+							mode.walking = true;
+						}
+					} else {
+						auto [ X, Y ] = actions.mapWindow( values.targetPosition.x, values.targetPosition.y );
+						inputs.mouse( X, Y, 1 );
+						time.sleep( 3000 );
+						mode.walking = actions.looter( );
+						mode.looting = false;
+						mode.attacking = false;
+					}
+						}
+						else {
+					mode.walking = true;
+					mode.looting = false;
+					mode.attacking = false;
+						}
+				} else if ( character.vocation == "paladin" ) {
+					
+					if ( time.clock( ) > attackCooldown ) {
+						if ( character.divinemissile != "" ) {
+							inputs.keyboard( character.divinemissile );
+							attackCooldown = time.clock( ) + 2100;
+						}
+					}
+
+				}
+			}
+
+		} catch ( const exception &err ) {
+			console.log( "ERROR:", err.what( ) );
 		}
 
+		time.sleep( 500 );
 	}
 }
 
@@ -638,30 +613,26 @@ void autoAttackThread( ) {
 
 void alarmThread( ) {
 
-	time.sleep( 20000 );
+	//time.sleep( 20000 );
 
 	string critical = "mpg123 /opt/afk/critical.mp3 > /dev/null 2>&1";
 	string safe = "mpg123 /opt/afk/safe.mp3 > /dev/null 2>&1";
 
+	double alarmCooldown = 0, capacityCooldown = 0, aliveCooldown = 0;
+
 	while ( running ) {
-		if ( values.alarm ) {
+		if ( time.clock( ) + alarmCooldown && values.alarm ) {
 			Stop = true;
 			system( critical.c_str( ) );
-			time.sleep( 60000 );
-		} else if ( values.lowcapacity ) {
+			alarmCooldown = time.clock( ) + 60000;
+		} else if ( time.clock( ) + capacityCooldown && values.lowcapacity ) {
 			values.lowcapacity = false;
 			system( safe.c_str( ) );
-			time.sleep( 60000 );
-		} else if ( values.x == 0 && values.y == 0 ) {
-			unknow += 1;
-			if ( unknow >= 50 ) {
-				unknow = 0;
-				system( critical.c_str( ) );
-				time.sleep( 60000 );
-			}
-		} else if ( values.mana <= 40 ) {
+			capacityCooldown = time.clock( ) + 60000;
+		} else if ( time.clock( ) + aliveCooldown && ( values.mana <= 20 || values.health <= 20 ) ) {
+			Stop = true;
 			system( critical.c_str( ) );
-			time.sleep( 60000 );
+			aliveCooldown = time.clock( ) + 60000;
 		}
 
 		time.sleep( 2000 );
@@ -677,22 +648,25 @@ void execute( ) {
 	thread( updateThread ).detach( );
 	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );
-	thread( alarmThread ).detach( );
 	thread( toolsThread ).detach( );
-	if ( character.vocation == "knight" && character.hunt == "box" ) {
-		thread( alternatorThread ).detach( );
-		thread( autoAttackThread ).detach( );
-		thread( attackKnightBox ).detach( );
-	} else if ( character.vocation == "knight" && character.hunt == "target" ) {
-		thread( knightTargetThread ).detach( );
-	} else if ( character.vocation == "paladin" && character.hunt == "box" ) {
-		thread( alternatorThread ).detach( );
-		thread( autoAttackThread ).detach( );
-		thread( attackPaladinBox ).detach( );
-		thread( ammoThread ).detach( );
-	} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
-		thread( paladinTargetThread ).detach( );
-		thread( ammoThread ).detach( );
+
+	if ( values.x != 0 && values.y != 0 ) {
+		thread( alarmThread ).detach( );
+		if ( character.vocation == "knight" && character.hunt == "box" ) {
+			thread( alternatorThread ).detach( );
+			thread( autoAttackThread ).detach( );
+			thread( attackKnightBox ).detach( );
+		} else if ( character.vocation == "knight" && character.hunt == "target" ) {
+			thread( knightTargetThread ).detach( );
+		} else if ( character.vocation == "paladin" && character.hunt == "box" ) {
+			thread( alternatorThread ).detach( );
+			thread( autoAttackThread ).detach( );
+			thread( attackPaladinBox ).detach( );
+			thread( ammoThread ).detach( );
+		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
+			thread( paladinTargetThread ).detach( );
+			thread( ammoThread ).detach( );
+		}
 	}
 }
 
@@ -707,10 +681,12 @@ int main( int argc, char** argv ) {
 
 	system( "rm -f /tmp/licence.json" );
 	system( "wget -O /tmp/licence.json https://siewdass.github.io/licence.json > /dev/null 2>&1" );
-	licence.load( "/tmp/licence.json" );
 
-	for ( auto entry : licence.accepted ) {
-		if ( entry == serial ) {
+	Json config;
+	config.open( "/tmp/licence.json" );
+
+	for ( Json entry: config.readArray( "accepted" ) ) {
+		if ( entry.readString( "id" ) == serial ) {
 			Interface( argc, argv );
 			break;
 		}

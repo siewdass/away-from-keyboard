@@ -1,10 +1,9 @@
 #include "utils.h"
 #include "location.h"
 
-Mat img;
-Point3i point;
-
 void Location::load( ) {
+	Mat img;
+
 	for ( int i = 0; i <= 15; i++ ) {
 		img = imread( "/opt/afk/maps/" + to_string( i ) + "-map.png" );
 		maps.push_back( img );
@@ -23,8 +22,10 @@ void Location::load( ) {
 }
 
 tuple < int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int x, int y ) {
-	point.x = x;
-	point.y = y;
+	Point3i point;
+
+	point.x = x == 0 ? maps[ 0 ].cols / 2 : x;
+	point.y = y == 0 ? maps[ 0 ].rows / 2 : y;
 	point.z = 0;
 
 	for ( int i = 0; i < FloorIndex.rows; i+=4 ) {
@@ -42,81 +43,72 @@ tuple < int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int x, in
 }
 
 Point3i Location::find( Point3i point, Mat minimap ) {
-	z = maps[ point.z ];
-	
-	old.x = point.x;
-	old.y = point.y;
-	old.z = point.z;
+	Point3i old = point;
 
-	if ( compare( point, minimap ) ) return point;
+	try {
+		if ( compare( point, minimap ) ) return point;
 
-	int x = 0, y = 0, grow = 0;
-	bool xmin = true, xmax = true, ymin = true, ymax = true;
+		Mat z = maps[ point.z ];
 
-	while ( grow < 140 ) {
-		grow = grow + 2;
-		point.x--;
-		point.y--;
+		int x, y, grow = 0;
 
-		x = point.x;
-		while ( xmax && point.x < x + grow ) {
-			if ( walkable( point ) && compare( point, minimap ) ) return point;
-			point.x++;
-			if ( point.x > z.rows - 1 ) xmax = false;
-		}
-
-		y = point.y;
-		while ( ymax && point.y < y + grow ) {
-			if ( walkable( point ) && compare( point, minimap ) ) return point;
-			point.y++;
-			if ( point.y > z.cols - 1 ) ymax = false;
-		}
-
-		x = point.x;
-		while ( xmin && point.x > x - grow ) {
-			if ( walkable( point ) && compare( point, minimap ) ) return point;
+		while ( grow < max( z.cols, z.rows) ) {
+			grow += 2;
 			point.x--;
-			if ( point.x < 0 ) xmin = false;
+			point.y--;
+
+			x = point.x;
+			while ( point.x < z.rows && point.x < x + grow ) {
+				if ( compare( point, minimap ) ) return point;
+				point.x++;
+			}
+
+			y = point.y;
+			while ( point.y < z.cols && point.y < y + grow ) {
+				if ( compare( point, minimap ) ) return point;
+				point.y++;
+			}
+
+			x = point.x;
+			while ( point.x >= 0 && point.x > x - grow ) {
+				if ( compare( point, minimap ) ) return point;
+				point.x--;
+			}
+
+			y = point.y;
+			while ( point.y >= 0 && point.y > y - grow ) {
+				if ( compare( point, minimap ) ) return point;
+				point.y--;
+			}
 		}
 
-		y = point.y;
-		while ( ymin && point.y > y - grow ) {
-			if ( walkable( point ) && compare( point, minimap ) ) return point;
-			point.y--;
-			if ( point.y < 0 ) ymin = false;
-		}
-	}
+		return old;
+	} catch ( exception &e ) {
+		return old;
+    }
+
 	return old;
 }
 
 bool Location::compare( Point3i point, Mat minimap ) {
-	part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
+	try {
+		if ( paths[ point.z ][ point.y ][ point.x ] == 0 ) return false;
 
-	//imwrite( "part.png", part );
-	threshold = 0;
+		Mat part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
 
-	for ( int x = 0; x < minimap.rows - 1; x++ ) {
-		for ( int y = 0; y < minimap.cols - 1; y++ ) {
-			if ( minimap.at < Vec3b > ( x, y ) == Vec3b( 255, 255, 255 ) ) continue; // CANT
-			if ( threshold > 10 ) return false;
-			if ( minimap.at < Vec3b > ( x, y ) != part.at < Vec3b > ( x, y ) ) threshold++;
-		}
-	}
+		//imwrite( "part.png", part );
+		int threshold = 0;
 
-	return true;
-}
-
-bool Location::walkable( Point3i point ) {
-	/*for ( int j = point.y -5 ; j < point.y + 6; ++j ) {
-		for ( int i = point.x - 5; i < point.x + 6; ++i ) {
-			if ( j == point.y && i == point.x ) {
-				cout << 2 << " ";	
-			} else {
-				cout << paths[ point.z ][ j ][ i ] << " ";
+		for ( int x = 0; x < minimap.rows - 1; x++ ) {
+			for ( int y = 0; y < minimap.cols - 1; y++ ) {
+				if ( minimap.at < Vec3b > ( x, y ) == Vec3b( 255, 255, 255 ) ) continue; // CANT
+				if ( threshold > 20 ) return false;
+				if ( minimap.at < Vec3b > ( x, y ) != part.at < Vec3b > ( x, y ) ) threshold++;
 			}
-        }
-        cout << endl;
+		}
+
+		return true;
+	} catch ( exception &e ) {
+		return false;
     }
-	cout << endl;*/
-	return paths[ point.z ][ point.y ][ point.x ] == 0 ? false : true;
 }

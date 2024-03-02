@@ -66,80 +66,11 @@ tuple < bool, string, string, string, string, int, int, int > Actions::supporter
 
 bool Actions::attacker( Values values ) {
 
-    if ( values.monsters.size( ) >= 2 || values.box >= 1 ) {
+    if ( values.box == 0 ) count++;
+    else count == 0;
+    //count = values.box == 0 ? 0 : count++;
 
-        /*if ( time.clock( ) > autoAttackCooldown ) {
-            if ( values.box >= 1 && !values.isTargeting ) {
-                for ( Point point : values.monsters ) {
-                    if ( point.x >= -1 & point.x <= 1 & point.y >= -1 & point.y <= 1 ) {
-                        auto [ x, y ] = Actions::gameWindow( point.x, point.y );
-                        inputs.mouse( x, y, 3 );
-                        autoAttackCooldown = time.clock( ) + 2000;
-                        break;
-                        //return make_tuple( false, "mouse", "", x, y, 3 );
-                    }
-                }
-            }
-        }
-
-        if ( time.clock( ) > supportCooldown ) {
-            if ( values.mana > 10 ) {
-                if ( keepAttacking ) {
-                    supportCooldown = time.clock( ) + 5000;
-                    return make_tuple( false, "keyboard", "1", "", "Exori", 0, 0, 0 );
-                }
-            }
-        }
-
-        if ( time.clock( ) > attackCooldown ) {
-            if ( values.mana > 50 ) {
-                if ( values.box >= 3 || keepAttacking ) {
-                    count = 0;
-                    single = true;
-                    keepAttacking = true;
-                    if ( time.clock( ) > attackCooldown1 && values.isTargeting && values.box == 1 ) {
-                        attackCooldown = time.clock( ) + 2100;
-                        attackCooldown1 = time.clock( ) + 33000;
-                        return make_tuple( false, "keyboard", "0", "", "Exori Gran Ico", 0, 0, 0 );
-                    } else if ( time.clock( ) > attackCooldown2 && values.isTargeting && values.box == 1 ) {
-                        attackCooldown = time.clock( ) + 2100;
-                        attackCooldown2 = time.clock( ) + 6300;
-                        return make_tuple( false, "keyboard", "F2", "", "Exori Ico", 0, 0, 0 );
-                    } else if ( time.clock( ) > attackCooldown3 && values.isTargeting && values.box == 1 ) {
-                        attackCooldown = time.clock( ) + 2100;
-                        attackCooldown3 = time.clock( ) + 6300;
-                        return make_tuple( false, "keyboard", "F3", "", "Exori Hur", 0, 0, 0 );
-                    } else if ( time.clock( ) > attackCooldown4 && values.box <= 3 && values.monsters.size( ) >= 5 ) {
-                        attackCooldown = time.clock( ) + 2100;
-                        attackCooldown4 = time.clock( ) + 8400;
-                        return make_tuple( false, "keyboard", "8", "", "Exori Mas", 0, 0, 0 );
-                    } else if ( time.clock( ) > attackCooldown5 ) {
-                        attackCooldown = time.clock( ) + 2100;
-                        attackCooldown5 = time.clock( ) + 4200;
-                        return make_tuple( false, "keyboard", "5", "", "Exori", 0, 0, 0 );
-                    } else if ( time.clock( ) > attackCooldown6 ) {
-                        attackCooldown = time.clock( ) + 2100;
-                        attackCooldown6 = time.clock( ) + 6300;
-                        return make_tuple( false, "keyboard", "6", "", "Exori Gran", 0, 0, 0 );
-                    } else if ( time.clock( ) > attackCooldown7 ) {
-                        attackCooldown = time.clock( ) + 2100;
-                        attackCooldown7 = time.clock( ) + 6300;
-                        return make_tuple( false, "keyboard", "7", values.side, "Exori Min", 0, 0, 0 );
-                    }
-                }
-            }
-        }*/
-    } else {
-        if ( count == 3 ) {
-            keepAttacking = false;
-            single = false;
-            return true;
-        } else {
-            count += 1;
-        }
-    }
-
-    return false;
+    return count == 5 ? true : false;
 }
 
 bool Actions::looter( ) {

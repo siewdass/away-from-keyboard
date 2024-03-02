@@ -60,6 +60,18 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
                     if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
 
                         // top
+                        /*while ( top < 27 ) top = img.at < Vec3b > ( y, x + top ) != Vec3b( 0, 0, 0 ) ? 100 : top++;
+
+                        // bottom
+                        while ( top == 27 && bottom < 27 ) bottom = img.at < Vec3b > ( y + 3, x + bottom ) != Vec3b( 0, 0, 0 ) ? 100 : bottom++;
+
+                        // left
+                        while ( bottom == 27 && left < 3 ) left = img.at < Vec3b > ( y + left, x ) != Vec3b( 0, 0, 0 ) ? 100 : left++;
+
+                        // right
+                        while ( left == 2 && right < 3 ) right = img.at < Vec3b > ( y + right, x + 26 ) != Vec3b( 0, 0, 0 ) ? 100 : right++;*/
+
+                        // top
                         for ( int i = 0; i < count; i++ ) {
                             pixel = Acknow::rgb( img, x + i, y );
                             if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
@@ -104,8 +116,8 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
                                 }
                             }
                         }
-
-                        if ( top == count & bottom == count & left == 2 & right == 2 ) {
+                        
+                        if ( top == 27 & bottom == 27 & left == 2 & right == 2 ) {
 
                             Point point;
                             point.x = x;
@@ -158,9 +170,8 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
     } catch ( exception &e ) {
     }
 
-    //string url = "/home/siewdass/images/" + to_string( count ) + ".png";
-    //imwrite( url, img );
-    //count += 1;
+    //std::cout << "dsadsa" << std::endl;
+    //imwrite( "viewport.png", img );
 
     return make_tuple( target, arr );
 }

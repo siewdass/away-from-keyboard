@@ -17,7 +17,6 @@ set( SOURCES
      ${CMAKE_SOURCE_DIR}/character.cpp
      ${CMAKE_SOURCE_DIR}/astar.cpp
      ${CMAKE_SOURCE_DIR}/path.cpp
-     ${CMAKE_SOURCE_DIR}/licence.cpp
      ${CMAKE_SOURCE_DIR}/global.cpp
      ${CMAKE_SOURCE_DIR}/location.cpp
      ${CMAKE_SOURCE_DIR}/main.cpp

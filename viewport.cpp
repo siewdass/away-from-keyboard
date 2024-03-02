@@ -104,7 +104,7 @@ tuple < int, vector < Point >, string, bool, Point, bool > Viewport::check( Mat 
     int height = sqm * 11;
     
     auto [ old, GameWindow ] = acknowv.detect( GW );
-
+    
     oldTarget = old;
 
     for ( auto [ point, targeting ] : GameWindow ) {
@@ -170,3 +170,4 @@ tuple < int, vector < Point >, string, bool, Point, bool > Viewport::check( Mat 
 }
 
    
+
