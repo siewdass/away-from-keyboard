@@ -1,3 +1,4 @@
+#include <cmath>
 #include "actions.h"
 #include <iostream>
 
@@ -67,7 +68,7 @@ tuple < bool, string, string, string, string, int, int, int > Actions::supporter
 bool Actions::attacker( Values values ) {
 
     if ( values.box == 0 ) count++;
-    else count == 0;
+    else count = 0;
     //count = values.box == 0 ? 0 : count++;
 
     return count == 5 ? true : false;
@@ -92,6 +93,7 @@ bool Actions::looter( ) {
 
         auto [ x, y ] = Actions::gameWindow( point.x, point.y );
         inputs.mouse( x, y, 3 );
+        inputs.mouse( x, y, 3 );
         time.sleep( 100 );
 
     }
@@ -102,196 +104,58 @@ bool Actions::looter( ) {
 
 bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vector < vector < int > > > paths ) {
 
-    if ( values.minimap == old ) {
-        count += 1;
-    } else if ( values.minimap != old  ) {
+    count += 1;
+
+    if ( count >= 4 ) {
         count = 0;
-        old = values.minimap;
-    } if ( count >= 4 ) {
-        runPosition = position-1;
-        count = 0;
-        if ( time.clock( ) > walkCoolDown ) {
 
-            if ( values.x == waypoints[ position ].x &&
-                 values.y == waypoints[ position ].y && 
-                 waypoints[ position ].action == "attack" ) {
-                console.log( "action" );
-                position += 1;
-                return true;
-            } else if ( ( values.x == waypoints[ position ].x -1 || 
-                          values.x == waypoints[ position ].x +1 ) && 
-                        ( values.y == waypoints[ position ].y -1 || 
-                          values.y == waypoints[ position ].y +1 ||
-                          values.y == waypoints[ position ].y ) && 
-                          waypoints[ position ].action == "attack" ) {
-                console.log( "action wrong x" );
-                position += 1;
-                return true;
-            } else if ( ( values.y == waypoints[ position ].y -1 || 
-                          values.y == waypoints[ position ].y +1 ) && 
-                        ( values.x == waypoints[ position ].x -1 || 
-                          values.x == waypoints[ position ].x +1 ||
-                          values.x == waypoints[ position ].x ) && 
-                          waypoints[ position ].action == "attack" ) {
-                console.log( "action wrong y" );
-                position += 1;
-                return true;
-            }  else if ( values.x == waypoints[ position ].x &&
-                 values.y == waypoints[ position ].y && 
-                 waypoints[ position ].action == "walk" ) {
-                console.log( "walk" );
-                position += 1;
-            } else if ( ( values.x == waypoints[ position ].x -1 || 
-                          values.x == waypoints[ position ].x +1 ) && 
-                        ( values.y == waypoints[ position ].y -1 || 
-                          values.y == waypoints[ position ].y +1 ||
-                          values.y == waypoints[ position ].y ) && 
-                          waypoints[ position ].action == "walk" ) {
-                console.log( "walk wrong x" );
-                position += 1;
-            } else if ( ( values.y == waypoints[ position ].y -1 || 
-                          values.y == waypoints[ position ].y +1 ) && 
-                        ( values.x == waypoints[ position ].x -1 || 
-                          values.x == waypoints[ position ].x +1 ||
-                          values.x == waypoints[ position ].x ) && 
-                          waypoints[ position ].action == "walk" ) {
-                console.log( "walk wrong y" );
-                position += 1;
-            } if ( position == waypoints.size( ) ) {
-                console.log( "reset positions" );
-                position = 0;
-            }
+        if ( abs( values.x - waypoints[ position ].x ) <= 1 && abs( values.y - waypoints[ position ].y ) <= 1 ) {
+            console.log( "action", waypoints[ position ].action );
+            bool attack = waypoints[ position ].action == "attack" ? true : false;
+            position += 1;
+            if ( attack && values.monsters.size() > 0 ) return true;
+        }
 
-            from.x = values.x;
-            from.y = values.y;
-            to.x = waypoints[ position ].x;
-            to.y = waypoints[ position ].y;
+        if ( position == waypoints.size( ) ) {
+            console.log( "reset positions" );
+            position = 0;
+        }
 
-            /*vector < vector < int > > matrix;
+        auto way = path.find(
+            paths[ values.z ],
+            Point( values.x, values.y ),
+            Point( waypoints[ position ].x, waypoints[ position ].y )
+        );
 
-            for ( int i = values.y - 100; i < values.y + 100; ++i ) {
-                vector < int > row;
-                for ( int j = values.x - 100; j < values.x + 100; ++j ) {
-                    row.push_back( paths[ values.z ][ i ][ j ] );
-                }
-                matrix.push_back( row );
-            }
+        if ( way.size( ) > 0 ) {
+            x = way[ way.size( ) >= 57 ? 56 : way.size( ) - 1 ].x;
+            y = way[ way.size( ) >= 57 ? 56 : way.size( ) - 1 ].y;
 
-            for ( vector < int > row : matrix ) {
-                for ( int e : row ) {
-                    std::cout << e << " ";
-                }
-                std::cout << endl;
-            }*/
+            console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
 
-            auto way = path.find( paths[ values.z ], from, to );
-
-            if ( way.size( ) > 0 ) {
-                x = way[ way.size( ) >= 57 ? 56 : way.size( ) - 1 ].x;
-                y = way[ way.size( ) >= 57 ? 56 : way.size( ) - 1 ].y;
-
-                int X = x - values.x; 
-                int Y = y - values.y; 
-
-                console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
-                //console.log( left + ( pixel * X ), top + ( pixel * Y ) );
-
-                inputs.keyboard( "Escape" );
-                time.sleep( 100 );
-                inputs.mouse( left + ( pixel * X ), top + ( pixel * Y ), 1 );
-
-                walkCoolDown =  time.clock( ) + 1000;
-                return false;
-            }
+            inputs.keyboard( "Escape" );
+            time.sleep( 100 );
+            inputs.mouse( left + ( pixel * ( x - values.x ) ), top + ( pixel * ( y - values.y ) ), 1 );
         }
     }
     return false;
 }
 
-bool Actions::runaway( Values values, vector < Waypoint > waypoints, vector < vector < vector < int > > > map ) {
+void Actions::run( Values values, Point to, vector < vector < vector < int > > > paths ) {
    
-    if ( values.minimap == old ) {
-        count += 1;
-    } else if ( values.minimap != old  ) {
-        count = 0;
-        old = values.minimap;
-    } if ( count >= 2 ) {
-        count = 0;
-        if ( time.clock( ) > walkCoolDown ) {
-            if ( values.x == waypoints[ runPosition ].x &&
-                 values.y == waypoints[ runPosition ].y ) {
-                console.log( "run" );
-                if ( runPosition == 0 ) {
-                    runPosition = 1;
-                } else if ( runPosition == position - 1) { 
-                    runPosition -= 1;
-                } else if ( runPosition == position - 2 ) {
-                    runPosition += 1;
-                }
-            } else if ( ( values.x == waypoints[ runPosition ].x -1 || 
-                          values.x == waypoints[ runPosition ].x +1 ) && 
-                        ( values.y == waypoints[ runPosition ].y -1 || 
-                          values.y == waypoints[ runPosition ].y +1 ||
-                          values.y == waypoints[ runPosition ].y )  ) {
-                console.log( "run wrong x" );
-                if ( runPosition == 0 ) {
-                    runPosition = 1;
-                } else if ( runPosition == position - 1) { 
-                    runPosition -= 1;
-                } else if ( runPosition == position - 2 ) {
-                    runPosition += 1;
-                }
-            } else if ( ( values.y == waypoints[ runPosition ].y -1 || 
-                          values.y == waypoints[ runPosition ].y +1 ) && 
-                        ( values.x == waypoints[ runPosition ].x -1 || 
-                          values.x == waypoints[ runPosition ].x +1 ||
-                          values.x == waypoints[ runPosition ].x ) ) {
-                console.log( "run wrong y" );
-                if ( runPosition == 0 ) {
-                    runPosition = 1;
-                } else if ( runPosition == position - 1) { 
-                    runPosition -= 1;
-                } else if ( runPosition == position - 2 ) {
-                    runPosition += 1;
-                }
-            }
+    auto ways = path.find( paths[ values.z ], Point( values.x, values.y ), to );
+    if ( ways.size( ) > 0 ) {
 
-            if ( runPosition < 0 ) {
-                runPosition = 0;
-            }
-            from.x = values.x;
-            from.y = values.y;
-            to.x = waypoints[ runPosition ].x;
-            to.y = waypoints[ runPosition ].y;
-            console.log( "walk" );
+        x = ways[ ways.size( ) >= 3 ? 3 : ways.size( ) - 1 ].x;
+        y = ways[ ways.size( ) >= 3 ? 3 : ways.size( ) - 1 ].y;
 
-            auto paths = path.find( map[ values.z ], from, to );
-            if ( paths.size( ) > 0 ) {
+        console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
 
-                if ( paths.size( ) >= 1 ) {
-                    x = paths[ 0 ].x;
-                    y = paths[ 0 ].y;
-                } else {
-                    x = paths[ paths.size( ) -1 ].x;
-                    y = paths[ paths.size( ) -1 ].y;
-                }
-
-                console.log( "from x:", values.x, "from y:", values.y );
-                console.log( "to x:", x, "to y:", y );
-
-                int X = x - values.x; 
-                int Y = y - values.y; 
-
-                //inputs.keyboard( "Escape" );
-                //time.sleep( 100 );
-                inputs.mouse( left + ( pixel * X ), top + ( pixel * Y ), 1 );
-                console.log( left + ( pixel * X ), top + ( pixel * Y ), 1 );
-                walkCoolDown =  time.clock( ) + 1000;
-                return false;
-            }
-        }
+        inputs.keyboard( "Escape" );
+        time.sleep( 100 );
+        inputs.mouse( left + ( pixel * ( x - values.x ) ), top + ( pixel * ( y - values.y ) ), 1 );
     }
-    return false;
+
 }
 
 bool Actions::lootway( Values values, vector < vector < vector < int > > > map, Point lootpoint ) {
@@ -356,4 +220,11 @@ bool Actions::lootway( Values values, vector < vector < vector < int > > > map, 
 }
 
 void Actions::adjustMap( ) {
+}
+
+void Actions::throwFlask( Values values ) {
+    for ( int i = 0; i < values.flasks.size( ); i++ ) {
+        Point flask = values.flasks[ values.flasks.size( ) -1 ];
+        inputs.mouseDrag( 836 + flask.x, 290 + flask.y );
+    }
 }

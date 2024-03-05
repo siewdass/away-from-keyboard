@@ -34,132 +34,42 @@ vector < Pixel > Acknow::inspect( Mat img ) {
 tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
 
     vector < tuple < Point, bool > > arr;
-    vector < int > targeting;
-    Pixel pixel;
     bool target;
-    int X, Y;
 
     try {
 
         if ( !img.empty( ) ) {
-            
-            int battlecount = 0;
-            int rb = 255, gb = 0, bb = 0;
-            int rmax = 0, gmax = 0, bmax = 0, count = 27;
-            int width = img.cols, height = img.rows;
-            int secuence = 0;
 
-            for ( int y = 0; y <= height; y++ ) {
-                for ( int x = 0; x <= width; x++ ) {
+            for ( int y = 0; y <= img.rows; y++ ) {
+                for ( int x = 0; x <= img.cols; x++ ) {
 
-                    int top = 0, bottom = 0, middle = 0, fail = 0, check = 0;
-                    int left = 0, right = 0;
+                    int top = 0, bottom = 0, left = 0, right = 0;
 
-                    pixel = Acknow::rgb( img, x, y );
+                    if ( img.at < Vec3b > ( y, x ) == Vec3b( 0, 0, 0 ) ) {
 
-                    if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
+                        while ( top < 27 ) top = img.at < Vec3b > ( y, x + top ) != Vec3b( 0, 0, 0 ) ? 100 : top + 1;
 
-                        // top
-                        /*while ( top < 27 ) top = img.at < Vec3b > ( y, x + top ) != Vec3b( 0, 0, 0 ) ? 100 : top++;
+                        while ( top == 27 && bottom < 27 ) bottom = img.at < Vec3b > ( y + 3, x + bottom ) != Vec3b( 0, 0, 0 ) ? 100 : bottom + 1;
 
-                        // bottom
-                        while ( top == 27 && bottom < 27 ) bottom = img.at < Vec3b > ( y + 3, x + bottom ) != Vec3b( 0, 0, 0 ) ? 100 : bottom++;
+                        while ( bottom == 27 && left < 3 ) left = img.at < Vec3b > ( y + left, x ) != Vec3b( 0, 0, 0 ) ? 100 : left + 1;
 
-                        // left
-                        while ( bottom == 27 && left < 3 ) left = img.at < Vec3b > ( y + left, x ) != Vec3b( 0, 0, 0 ) ? 100 : left++;
-
-                        // right
-                        while ( left == 2 && right < 3 ) right = img.at < Vec3b > ( y + right, x + 26 ) != Vec3b( 0, 0, 0 ) ? 100 : right++;*/
-
-                        // top
-                        for ( int i = 0; i < count; i++ ) {
-                            pixel = Acknow::rgb( img, x + i, y );
-                            if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
-                                top += 1;
-                            } else {
-                                i = 100;
-                            }
-                        }
-
-                        // bottom
-                        if ( top == count ) {
-                            for ( int i = 0; i < count; i++ ) {
-                                pixel = Acknow::rgb( img, x + i, y + 3 );
-                                if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
-                                    bottom += 1;
-                                } else {
-                                    i = 100;
-                                }
-                            }
-                        }
-
-                        // left
-                        if ( bottom == count ) {
-                            for ( int i = 1; i < 3; i++ ) {
-                                pixel = Acknow::rgb( img, x, y + i );
-                                if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
-                                    left += 1;
-                                } else {
-                                    i = 100;
-                                }
-                            }
-                        }
-
-                        // right
-                        if ( left == 2 ) {
-                            for ( int i = 1; i < 3; i++ ) {
-                                pixel = Acknow::rgb( img, x + 26, y + i );
-                                if ( pixel.r == rmax & pixel.g == gmax & pixel.b == bmax ) {
-                                    right += 1;
-                                } else {
-                                    i = 100;
-                                }
-                            }
-                        }
+                        while ( left == 3 && right < 3 ) right = img.at < Vec3b > ( y + right, x + 26 ) != Vec3b( 0, 0, 0 ) ? 100 : right + 1;
                         
-                        if ( top == 27 & bottom == 27 & left == 2 & right == 2 ) {
+                        if ( top == 27 & bottom == 27 & left == 3 & right == 3 ) {
 
-                            Point point;
-                            point.x = x;
-                            point.y = y;
+ 
+                            int targeting = 0;
 
-                            target = false;
-                            targeting.clear( );
-
-                            X = x - 7, Y = y + 45;
-
-                            for ( int i = 0; i <= 3; i++ ) {
-                                for ( int j = 0; j <= 42; j++ ) {
-                                    pixel = Acknow::rgb( img, X + j, Y + i );
-                                    if ( pixel.r == 255 & pixel.g == 0 && pixel.b == 0 ||
-                                         pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ) {
-                                        targeting.push_back( 1 );
-                                    }
-                                }
+                            for ( int t = 1; t <= 20; t++ ) {
+                                Pixel pixel = Acknow::rgb( img, x + 15 - t, y + 28 - t );
+                                if ( pixel.r <= 233 && pixel.r >= 127 && pixel.g < 66 && pixel.b < 66 && pixel.b > 12 ) targeting++;
+                                //img.at < Vec3b > (  y + 28 - t, x + 15 - t ) = Vec3b( 255, 0, 0 );
                             }
 
-                            X = x + 32, Y = y + 6;
+                            target = targeting > 3;
 
-                            for ( int i = 0; i <= 42; i++ ) {
-                                for ( int j = 0; j <= 3; j++ ) {
-                                    pixel = Acknow::rgb( img, X + j, Y + i );
-                                    if ( pixel.r == 255 & pixel.g == 0 && pixel.b == 0 ||
-                                         pixel.r == 255 & pixel.g == 128 & pixel.b == 128 ) {
-                                        targeting.push_back( 1 );
-                                    }
-                                }
-                            }
-
-                            //std::cout << "target pixels:" << targeting.size( ) << std::endl;
-                            
-                            if ( targeting.size( ) > 35 ) {
-                                target = true;
-                                //cv::Rect rect( x - 9, y + 4, 46, 46 );
-                                //cv::rectangle( img, rect, cv::Scalar( 0, 255, 255 ) );
-                            }
-
-							arr.push_back( make_tuple( point, target ) );
-                            x += count;
+							arr.push_back( make_tuple( Point( x, y ), target ) );
+                            x += 27;
                         }
                     }
 
@@ -170,9 +80,8 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
     } catch ( exception &e ) {
     }
 
-    //std::cout << "dsadsa" << std::endl;
-    //imwrite( "viewport.png", img );
-
+    //imwrite( "viewport.png", img ); 
+    
     return make_tuple( target, arr );
 }
 

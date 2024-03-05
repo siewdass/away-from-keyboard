@@ -57,7 +57,10 @@ void Toggle( ) {
   if ( CHARACTER != "" && WAYPOINTS != "" ) {
     running = !running;
     gtk_menu_item_set_label( GTK_MENU_ITEM( play ), running ? "Stop" : "Play" );
-    if ( running == true ) run();
+    if ( running == true ) {
+      Stop = false;
+      run();
+    }
   }
 }
 
@@ -68,6 +71,9 @@ void Restart( ) {
 void Interface( int argc, char** argv ) {
 
   gtk_init( &argc, &argv );
+
+  //#include <sys/prctl.h>
+  //prctl(PR_SET_NAME, "afk1");
 
   if ( filesystem::exists( "/tmp/afk3" ) ) {
     which = 4;

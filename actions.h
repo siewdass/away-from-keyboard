@@ -46,10 +46,12 @@ public:
     //int position = 0;
     int left = 898, top = 59, pixel = 1;
     Point from, to;
+    int valid;
 
     bool looter( );
+    void throwFlask( Values values );
     bool walker( Values, vector < Waypoint >, vector < vector < vector < int > > > );
-    bool runaway( Values, vector < Waypoint >, vector < vector < vector < int > > > );
+    void run( Values, Point, vector < vector < vector < int > > > );
     bool lootway( Values, vector < vector < vector < int > > >, Point);
     tuple < bool, string, string, string, string, int, int, int > potions( int, int );
     tuple < bool, string, string, string, string, int, int, int > supporter( Values );

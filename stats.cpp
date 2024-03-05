@@ -19,12 +19,23 @@ vector < Pixel > weapon;
 vector < Pixel > ring;
 vector < Pixel > amulet;
 vector < Pixel > capacity;
+vector < Pixel > monsters;
 
 int AlarmCount = 0;
 
-tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bool, bool > Stats::update( Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK ) {
+tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bool, bool, bool > Stats::update( Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK, Mat Monsters ) {
 
-    //1012 642
+    monsters = acknows.inspect( Monsters );
+
+    bool target = false;
+
+    for ( Pixel pixel : monsters ) {
+        if ( pixel.r == 255 && pixel.g == 0 && pixel.b == 0 ) {
+            target = true;
+            break;   
+        }
+    }
+
     capacity = acknows.inspect( CAPACITY );
 
     int cap = 0;
@@ -145,19 +156,6 @@ tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bo
     }
 
     Flask = acknows.flask( FK );
-    
-    /*isTargeting = false;
-
-    for ( Pixel pixel : Battle ) {
-        int r = pixel.r, g = pixel.g, b = pixel.b;
-        if ( r == 255 & g == 0 & b == 0 ) {
-            isTargeting = true;
-            break;
-        } else if ( r == 255 & g == 128 & b == 128 ) {
-            isTargeting = true;
-            break;
-        }
-    }*/
 
     return make_tuple(
         health,
@@ -171,7 +169,8 @@ tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bo
         weaponEquipped,
         amuletEquipped,
         ringEquipped,
-        lowcap
+        lowcap,
+        target
     );
 }
 
