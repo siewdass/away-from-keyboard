@@ -5,6 +5,8 @@
 
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include "types.h"
+#include <vector>
 
 using namespace std;
 using namespace cv;
@@ -19,6 +21,7 @@ public:
 	void load( );
 	Location( ) {}
 	Point3i old;
+	void walkable( vector < Waypoint > );
 };
 
 #endif // LOCATION_H

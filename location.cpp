@@ -21,6 +21,10 @@ void Location::load( ) {
 	}
 }
 
+void Location::walkable( vector < Waypoint > walkable ) {
+	for ( Waypoint wp : walkable ) paths[ wp.z ][ wp.y ][ wp.x ] = 0;
+}
+
 tuple < int, int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int x, int y ) {
 	Point3i point;
 

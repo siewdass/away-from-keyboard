@@ -55,6 +55,7 @@ public:
 	string hunt = "";
 	string leave = "";
 	vector < Waypoint > waypoints;
+	vector < Waypoint > walkable;
 	void load( const char*, const char* );
 };
 

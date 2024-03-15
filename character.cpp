@@ -79,5 +79,13 @@ void Character::load( const char* c, const char* w ) {
 		waypoints.push_back( wp );
 	}
 
+	for ( Json waypoint: configw.readArray( "Walkable" ) ) {
+		Waypoint wp;
+		wp.x = waypoint.readInteger( "x" );
+		wp.y = waypoint.readInteger( "y" );
+		wp.z = waypoint.readInteger( "z" );
+		walkable.push_back( wp );
+	}
+
 }
 
