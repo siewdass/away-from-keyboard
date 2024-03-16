@@ -3,7 +3,7 @@ Version: 1.0
 Architecture: amd64
 Maintainer: siewdass@gmail.com
 Installed-Size: 240
-Depends: libopencv-dev
+Depends: libopencv-dev xserver-xephyr wget mpg123
 Section: games
 Priority: optional
 Homepage: https://www.tibia.com/
