@@ -28,18 +28,25 @@ void Location::walkable( vector < Waypoint > walkable ) {
 tuple < int, int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int x, int y ) {
 	Point3i point;
 
-	point.x = x == 0 ? maps[ 0 ].cols / 2 : x;
-	point.y = y == 0 ? maps[ 0 ].rows / 2 : y;
+	point.x = x;
+	point.y = y;
 	point.z = 0;
 
 	for ( int i = 0; i < FloorIndex.rows; i+=4 ) {
-		if ( FloorIndex.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) {
-			break;
-		}
+		if ( FloorIndex.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) break;
 		point.z++;
 	}
 
-	point = Location::find( point, Minimap );
+	if ( x == 0 && y == 0 ) {
+		for ( int i = 16; i < maps[ 0 ].rows - 16; i++ ) {
+			for ( int j = 16; j < maps[ 0 ].cols - 16; j++ ) {
+				if ( compare( Point3i( j, i, point.z ), Minimap ) ) point = Point3i( j, i, point.z );
+			}
+		}
+	} else {
+		point = Location::find( point, Minimap );
+	}
+
 	int valid = -1;
 
 	for ( int i = point.y - 1; i < point.y + 2; ++i ) {
@@ -54,16 +61,15 @@ tuple < int, int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int 
 }
 
 Point3i Location::find( Point3i point, Mat minimap ) {
-	//Point3i old = point;
-
+	Point3i old = point; 
 	try {
-		/*if ( compare( point, minimap ) ) return point;
+		if ( compare( point, minimap ) ) return point;
 
 		Mat z = maps[ point.z ];
 
 		int x, y, grow = 0;
 
-		while ( grow < max( z.cols, z.rows ) ) {
+		while ( grow < 150 ) {
 			grow += 2;
 			point.x--;
 			point.y--;
@@ -91,47 +97,38 @@ Point3i Location::find( Point3i point, Mat minimap ) {
 				if ( compare( point, minimap ) ) return point;
 				point.y--;
 			}
-		}*/
+		}
 	
-		int i, rows = 2559, cols = 2047;
+		/*int i, rows = 2559, cols = 2047;
 		int startX = point.x, startY = point.y;
-
-		//if ( abs( point.x - old.x ) > 100 || abs( point.y - old.y ) > 100 ) { }
-
 		int low_row = ( 0 > startX ) ? 0 : startX;
 		int low_column = ( 0 > startY ) ? 0 : startY;
 		int high_row = ( ( startX + 1 ) >= rows ) ? rows - 1 : startX + 1;
 		int high_column = ( ( startY + 1 ) >= cols ) ? cols - 1 : startY + 1;
 
 		while ( low_row > 0 - rows && low_column > 0 - cols ) {
-
 			for ( i = low_column + 1; i <= high_column && i < cols && low_row >= 0; ++i ) if ( compare( Point3i( low_row, i, point.z ), minimap ) ) return Point3i( low_row, i, point.z );
-		
 			low_row -= 1;
 
 			for ( i = low_row + 2; i <= high_row && i < rows && high_column < cols; ++i ) if ( compare( Point3i( i, high_column, point.z ), minimap ) ) return Point3i( i, high_column, point.z );
-
 			high_column += 1;
 
 			for ( i = high_column - 2; i >= low_column && i >= 0 && high_row < rows; --i ) if ( compare( Point3i( high_row, i, point.z ), minimap ) ) return Point3i( high_row, i, point.z );
-			
 			high_row += 1;
 
 			for ( i = high_row - 2; i > low_row && i >= 0 && low_column >= 0; --i ) if ( compare( Point3i( i, low_column, point.z ), minimap ) ) return Point3i( i, low_column, point.z );
-			
 			low_column -= 1;
-			
-		}
+		}*/
 
 	} catch ( exception &e ) {
     }
 
-	return point;
+	return old;
 }
 
 bool Location::compare( Point3i point, Mat minimap ) {
 	try {
-		if ( paths[ point.z ][ point.y ][ point.x ] == 0 && point.x >= 16 && point.x <= ( 2559 - 16 ) && point.y >= 16 && point.y <= ( 2047 - 16 ) ) return false;
+		if ( paths[ point.z ][ point.y ][ point.x ] == 0 && point.x >= 16 && point.x <= ( 2559 - 16 ) && point.y >= 16 && point.y <= ( 2559 - 16 ) ) return false;
 
 		Mat part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
 

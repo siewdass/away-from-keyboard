@@ -54,7 +54,7 @@ void Quit( ) {
 }
 
 void Toggle( ) {
-  if ( CHARACTER != "" && WAYPOINTS != "" ) {
+  if ( CHARACTER != "" && WAYPOINTS != "" && loaded ) {
     running = !running;
     gtk_menu_item_set_label( GTK_MENU_ITEM( play ), running ? "Stop" : "Play" );
     if ( running == true ) {

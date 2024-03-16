@@ -74,7 +74,12 @@
         "variant": "cpp",
         "*.ipp": "cpp",
         "codecvt": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "cmake.configureOnOpen": false

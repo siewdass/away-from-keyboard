@@ -13,6 +13,7 @@
 string CHARACTER = "";
 string WAYPOINTS = "";
 string TIBIA = "";
+bool loaded = false;
 bool running = false;
 function < void ( ) > run;
 Values values;
@@ -59,7 +60,7 @@ void updateThread( ) {
 				values.validSqm = validSqm;
 				cooldown = time.clock( ) + 900;
 
-				vector < vector < int > > matrix;
+				/*vector < vector < int > > matrix;
 
 				for ( int i = values.y - 10; i < values.y + 10; ++i ) {
 					vector < int > row;
@@ -79,7 +80,7 @@ void updateThread( ) {
 					}
 					std::cout << endl;
 				}
-				std::cout << endl;
+				std::cout << endl;*/
 			}
 
 			GameWindow = screenshot.get( 189, 40, 615, 451 );
@@ -136,13 +137,17 @@ void updateThread( ) {
 
 void alternatorThread( ) {
 
+	int count;
+
 	while ( running ) {
 
 		try {
 
 			if ( mode.walking ) {
 
-				if ( values.diffx && values.diffy ) {
+				count = ( values.diffx && values.diffy ) ? ( count + 1 ) : 0;
+
+				if ( count >= 3 ) {
 					if ( values.box == values.validSqm ) {
 						position = position == character.waypoints.size( ) ? 0 : position + 1;
 						mode.attacking = true;
@@ -150,7 +155,8 @@ void alternatorThread( ) {
 					} else {
 						mode.attacking = actions.walker( values, character.waypoints, location.paths );
 						if ( mode.attacking ) mode.walking = false;
-						
+						count = 0;
+						time.sleep( 300 );
 					}
 				}
 
@@ -172,7 +178,6 @@ void alternatorThread( ) {
 		} catch ( const std::exception& e ) {
 			console.log( "ERROR:", e.what( ) );
 		}
-
 
 		time.sleep( 300 );
 	}
@@ -359,7 +364,7 @@ void attackKnightBox( ) {
 								inputs.keyboard( character.fierceberserker );
 								attackCooldown = time.clock( ) + global;
 								attackCooldown6 = time.clock( ) + 6300;
-							} else if ( character.frontsweep != "" && time.clock( ) > attackCooldown7 && values.box >= 2 ) {
+							} else if ( character.frontsweep != "" && values.side != "" && time.clock( ) > attackCooldown7 && values.box >= 2 ) {
 								string modifier = "control+";
 								modifier.append( values.side );
 								inputs.keywith( modifier.c_str( ) );
@@ -656,7 +661,7 @@ void execute( ) {
 
 int main( int argc, char** argv ) {
 	
-	thread( [&]( ) { location.load( ); }).detach( );
+	thread( [&]( ) { location.load( ); loaded = true; }).detach( );
 
 	run = execute;
 
