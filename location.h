@@ -15,12 +15,11 @@ class Location {
 public:
 	vector < Mat > maps;
 	vector < vector < vector < int > > > paths;
-	Point3i find( Point3i, Mat );
+	tuple < int, int > find( int, int, int, Mat );
 	tuple < int, int, int, int > update( Mat, Mat, int, int );
-	bool compare( Point3i, Mat );
+	bool compare( int, int, int, Mat );
 	void load( );
 	Location( ) {}
-	Point3i old;
 	void walkable( vector < Waypoint > );
 };
 

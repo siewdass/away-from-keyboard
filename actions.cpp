@@ -98,6 +98,7 @@ bool Actions::looter( ) {
 
         auto [ x, y ] = Actions::gameWindow( point.x, point.y );
         inputs.mouse( x, y, 3 );
+        inputs.mouse( x, y, 3 );
         time.sleep( 130 );
 
     }
@@ -106,36 +107,36 @@ bool Actions::looter( ) {
     return true;
 }
 
-bool Actions::walker( Values values, vector < Waypoint > waypoints, vector < vector < vector < int > > > paths ) {
+bool Actions::walker( Values values, Character character, vector < vector < vector < int > > > paths ) {
 
-    if ( abs( values.x - waypoints[ position ].x ) <= 1 && abs( values.y - waypoints[ position ].y ) <= 1 ) {
-        console.log( "action", waypoints[ position ].action );
-        bool attack = waypoints[ position ].action == "attack" ? true : false;
+    if ( abs( values.x - character.waypoints[ position ].x ) <= 1 && abs( values.y - character.waypoints[ position ].y ) <= 1 ) {
+        console.log( "action", character.waypoints[ position ].action );
+        bool attack = character.waypoints[ position ].action == "attack" ? true : false;
         position += 1;
         if ( attack && values.monsters.size( ) > 0 ) return true;
     }
 
-    if ( position == waypoints.size( ) ) position = 0;
+    if ( position == character.waypoints.size( ) ) position = 0;
 
     auto ways = path.find(
         paths[ values.z ],
         Point( values.x, values.y ),
-        Point( waypoints[ position ].x, waypoints[ position ].y )
+        Point( character.waypoints[ position ].x, character.waypoints[ position ].y )
     );
 
     if ( ways.size( ) > 0 ) {
         x = ways[ ways.size( ) >= 57 ? 56 : ways.size( ) - 1 ].x;
         y = ways[ ways.size( ) >= 57 ? 56 : ways.size( ) - 1 ].y;
 
-        if ( waypoints[ position ].action == "walk" ) {
+        if ( character.waypoints[ position ].action == "walk" ) {
             x += dis( gen );
             y += dis( gen );
         }
 
         console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
 
-        inputs.keyboard( "Escape" );
-        time.sleep( 200 );
+        //inputs.keyboard( "Escape" );
+        //time.sleep( 400 );
         inputs.mouse( left + ( pixel * ( x - values.x ) ), top + ( pixel * ( y - values.y ) ), 1 );
     }
 

@@ -26,125 +26,103 @@ void Location::walkable( vector < Waypoint > walkable ) {
 }
 
 tuple < int, int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int x, int y ) {
-	Point3i point;
-
-	point.x = x;
-	point.y = y;
-	point.z = 0;
+	int z = 0;
 
 	for ( int i = 0; i < FloorIndex.rows; i+=4 ) {
 		if ( FloorIndex.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) break;
-		point.z++;
+		z++;
 	}
 
 	if ( x == 0 && y == 0 ) {
 		for ( int i = 16; i < maps[ 0 ].rows - 16; i++ ) {
 			for ( int j = 16; j < maps[ 0 ].cols - 16; j++ ) {
-				if ( compare( Point3i( j, i, point.z ), Minimap ) ) point = Point3i( j, i, point.z );
+				if ( compare( j, i, z, Minimap ) ) {
+					x = j, y = j;
+				}
 			}
 		}
 	} else {
-		point = Location::find( point, Minimap );
+		auto [ X, Y ] = find( x, y, z, Minimap );
+		x = X;
+		y = Y;
 	}
 
 	int valid = -1;
 
-	for ( int i = point.y - 1; i < point.y + 2; ++i ) {
-		for ( int j = point.x - 1; j < point.x + 2; ++j ) {
-			if ( paths[ point.z ][ i ][ j ] == 1 ) valid++;
+	for ( int i = y - 1; i < y + 2; ++i ) {
+		for ( int j = x - 1; j < x + 2; ++j ) {
+			if ( paths[ z ][ i ][ j ] == 1 ) valid++;
 		}
 	}
 
 	//imwrite( "minimap.png", Minimap );
 
-	return make_tuple( point.x, point.y, point.z, valid );
+	return make_tuple( x, y, z, valid );
 }
 
-Point3i Location::find( Point3i point, Mat minimap ) {
-	Point3i old = point; 
+tuple < int, int > Location::find( int x, int y, int z, Mat minimap ) {
+	int oldX = x, oldY = y; 
 	try {
-		if ( compare( point, minimap ) ) return point;
+		if ( compare( x, y, z, minimap ) ) return make_tuple( x, y );
 
-		Mat z = maps[ point.z ];
-
-		int x, y, grow = 0;
+		int X, Y, grow = 0;
 
 		while ( grow < 150 ) {
 			grow += 2;
-			point.x--;
-			point.y--;
+			x--;
+			y--;
 
-			x = point.x;
-			while ( point.x < z.rows && point.x < x + grow ) {
-				if ( compare( point, minimap ) ) return point;
-				point.x++;
+			X = x;
+			while ( x < maps[ z ].rows && x < X + grow ) {
+				if ( compare( x, y, z, minimap ) ) return make_tuple( x, y );
+				x++;
 			}
 
-			y = point.y;
-			while ( point.y < z.cols && point.y < y + grow ) {
-				if ( compare( point, minimap ) ) return point;
-				point.y++;
+			Y = y;
+			while ( y < maps[ z ].cols && y < Y + grow ) {
+				if ( compare( x, y, z, minimap ) ) return make_tuple( x, y );
+				y++;
 			}
 
-			x = point.x;
-			while ( point.x >= 0 && point.x > x - grow ) {
-				if ( compare( point, minimap ) ) return point;
-				point.x--;
+			X = x;
+			while ( x >= 0 && x > X - grow ) {
+				if ( compare( x, y, z, minimap ) ) return make_tuple( x, y );
+				x--;
 			}
 
-			y = point.y;
-			while ( point.y >= 0 && point.y > y - grow ) {
-				if ( compare( point, minimap ) ) return point;
-				point.y--;
+			Y = y;
+			while ( y >= 0 && y > Y - grow ) {
+				if ( compare( x, y, z, minimap ) ) return make_tuple( x, y );
+				y--;
 			}
 		}
 	
-		/*int i, rows = 2559, cols = 2047;
-		int startX = point.x, startY = point.y;
-		int low_row = ( 0 > startX ) ? 0 : startX;
-		int low_column = ( 0 > startY ) ? 0 : startY;
-		int high_row = ( ( startX + 1 ) >= rows ) ? rows - 1 : startX + 1;
-		int high_column = ( ( startY + 1 ) >= cols ) ? cols - 1 : startY + 1;
-
-		while ( low_row > 0 - rows && low_column > 0 - cols ) {
-			for ( i = low_column + 1; i <= high_column && i < cols && low_row >= 0; ++i ) if ( compare( Point3i( low_row, i, point.z ), minimap ) ) return Point3i( low_row, i, point.z );
-			low_row -= 1;
-
-			for ( i = low_row + 2; i <= high_row && i < rows && high_column < cols; ++i ) if ( compare( Point3i( i, high_column, point.z ), minimap ) ) return Point3i( i, high_column, point.z );
-			high_column += 1;
-
-			for ( i = high_column - 2; i >= low_column && i >= 0 && high_row < rows; --i ) if ( compare( Point3i( high_row, i, point.z ), minimap ) ) return Point3i( high_row, i, point.z );
-			high_row += 1;
-
-			for ( i = high_row - 2; i > low_row && i >= 0 && low_column >= 0; --i ) if ( compare( Point3i( i, low_column, point.z ), minimap ) ) return Point3i( i, low_column, point.z );
-			low_column -= 1;
-		}*/
-
 	} catch ( exception &e ) {
     }
 
-	return old;
+	return make_tuple( oldX, oldY );
 }
 
-bool Location::compare( Point3i point, Mat minimap ) {
+bool Location::compare( int x, int y, int z, Mat minimap ) {
 	try {
-		if ( paths[ point.z ][ point.y ][ point.x ] == 0 && point.x >= 16 && point.x <= ( 2559 - 16 ) && point.y >= 16 && point.y <= ( 2559 - 16 ) ) return false;
+		if ( paths[ z ][ y ][ x ] == 0 && x >= 16 && x <= ( 2559 - 16 ) && y >= 16 && y <= ( 2559 - 16 ) ) return false;
 
-		Mat part = Mat( maps[ point.z ], Rect( point.x - 16, point.y - 16, 34, 34 ) );
+		Mat part = Mat( maps[ z ], Rect( x - 16, y - 16, 34, 34 ) );
 
 		//imwrite( "part.png", part );
 		int threshold = 0;
 
-		for ( int x = 0; x < minimap.rows - 1; x++ ) {
-			for ( int y = 0; y < minimap.cols - 1; y++ ) {
-				if ( minimap.at < Vec3b > ( x, y ) == Vec3b( 255, 255, 255 ) ) continue; // CANT
+		for ( int i = 0; i < minimap.rows - 1; i++ ) {
+			for ( int j = 0; j < minimap.cols - 1; j++ ) {
+				if ( minimap.at < Vec3b > ( i, j ) == Vec3b( 255, 255, 255 ) ) continue; // CANT
 				if ( threshold > 20 ) return false;
-				if ( minimap.at < Vec3b > ( x, y ) != part.at < Vec3b > ( x, y ) ) threshold++;
+				if ( minimap.at < Vec3b > ( i, j ) != part.at < Vec3b > ( i, j ) ) threshold++;
 			}
 		}
 
 		return true;
 	} catch ( exception &e ) {
-		return false;
     }
+
+	return false;
 }

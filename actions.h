@@ -50,7 +50,7 @@ public:
 
     bool looter( );
     void throwFlask( Values values );
-    bool walker( Values, vector < Waypoint >, vector < vector < vector < int > > > );
+    bool walker( Values, Character, vector < vector < vector < int > > > );
     void run( Values, Point, vector < vector < vector < int > > > );
     bool lootway( Values, vector < vector < vector < int > > >, Point);
     tuple < bool, string, string, string, string, int, int, int > potions( int, int );

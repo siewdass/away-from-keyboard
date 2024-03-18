@@ -137,7 +137,7 @@ void updateThread( ) {
 
 void alternatorThread( ) {
 
-	int count;
+	int count; // TIENE QUE SER FLOAT Y NO AUMENTAR DE 1 en 1 si no de 300ms algo asi
 
 	while ( running ) {
 
@@ -147,16 +147,16 @@ void alternatorThread( ) {
 
 				count = ( values.diffx && values.diffy ) ? ( count + 1 ) : 0;
 
-				if ( count >= 3 ) {
+				if ( count >= 2 ) {
 					if ( values.box == values.validSqm ) {
 						position = position == character.waypoints.size( ) ? 0 : position + 1;
 						mode.attacking = true;
 						mode.walking = false;
 					} else {
-						mode.attacking = actions.walker( values, character.waypoints, location.paths );
+						mode.attacking = actions.walker( values, character, location.paths );
 						if ( mode.attacking ) mode.walking = false;
 						count = 0;
-						time.sleep( 300 );
+						time.sleep( 1500 );
 					}
 				}
 
@@ -179,7 +179,7 @@ void alternatorThread( ) {
 			console.log( "ERROR:", e.what( ) );
 		}
 
-		time.sleep( 300 );
+		time.sleep( 250 );
 	}
 }
 
@@ -207,7 +207,7 @@ void healThread( ) {
 					inputs.keyboard( character.healing1 );
 					healCooldown = time.clock( ) + global;
 					healCooldown1 = time.clock( ) + global;
-				} else if ( values.paralyze && character.paralyze != "" ) {
+				} else if ( values.paralyze && character.paralyze != "" && mode.walking ) {
 					inputs.keyboard( character.paralyze );
 					healCooldown = time.clock( ) + global;
 				} else if ( values.poison && character.curepoison != "" ) {
@@ -457,7 +457,7 @@ void knightTargetThread( ) {
 			if ( mode.walking ) {
 
 				if ( values.diffx && values.diffy && values.monsters.size( ) == 0 ) {
-					actions.walker( values, character.waypoints, location.paths );
+					actions.walker( values, character, location.paths );
 				} else if ( values.monsters.size( ) > 0 ) {
 					mode.attacking = true;
 					mode.walking = false;
@@ -542,7 +542,7 @@ void paladinTargetThread( ) {
 			if ( mode.walking ) {
 
 				if ( values.diffx && values.diffy && values.monsters.size( ) == 0 ) {
-					actions.walker( values, character.waypoints, location.paths );
+					actions.walker( values, character, location.paths );
 				} else if ( values.monsters.size( ) > 0 ) {
 					mode.attacking = true;
 					mode.walking = false;
@@ -584,7 +584,6 @@ void paladinTargetThread( ) {
 
 void autoAttackThread( ) {
 
-	//int count = 0;
 	double autoAttackCooldown = 0;
 
 	while ( running ) {
@@ -600,7 +599,6 @@ void autoAttackThread( ) {
 			} else {
 				time.sleep( 1000 );
 			}
-			
 		} catch ( const exception &err ) {
 			console.log( "ERROR:", err.what( ) );
 		}
@@ -621,7 +619,6 @@ void alarmThread( ) {
 			system( "mpg123 /opt/afk/safe.mp3 > /dev/null 2>&1" );
 			safeCooldown = time.clock( ) + 60000;
 		}
-
 		time.sleep( 2000 );
 	}
 }
@@ -685,21 +682,12 @@ int main( int argc, char** argv ) {
 	return 0;
 }
 
-// corregir cuando el cliente abre, un while loop hasta que detecte la ventana y que se asegure de que este en X y Y 
-// usar el opencv que viene en el SO
-// HAY QUE CORREGIR EL MAPA DONDE DA CLICK TIENE QUE SER PEQUENO
 // cambiar Values a Player
-// create only one instance of screenshot and send it
-// #pragma once in all .h
+// pasar todo a un solo utils
 // crear una clase para knight otra para rp y asi
-// converter se va
-// delete script
 // astar pasa a ser pathfinder
 
 // detectar cantidad de vida segun pixeles internos de la barra de vida
 // knight pegarle al que tiene mas vida
 // paladin pegarle a los de la cruz
 // autoattack y box de paladin en 1 solo
-
-
-// LOOP POR TODO EL MAPA HASTA QUE TE CONSIGA
