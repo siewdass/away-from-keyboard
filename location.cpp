@@ -34,10 +34,10 @@ tuple < int, int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int 
 	}
 
 	if ( x == 0 && y == 0 ) {
-		for ( int i = 16; i < maps[ 0 ].rows - 16; i++ ) {
-			for ( int j = 16; j < maps[ 0 ].cols - 16; j++ ) {
+		for ( int i = 16; i < maps[ z ].rows - 16; i++ ) {
+			for ( int j = 16; j < maps[ z ].cols - 16; j++ ) {
 				if ( compare( j, i, z, Minimap ) ) {
-					x = j, y = j;
+					x = j, y = i;
 				}
 			}
 		}

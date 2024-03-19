@@ -28,8 +28,7 @@ public:
 	bool alarm;
 	bool weapon, necklace, ring;
 	bool lowcapacity = false;
-	bool diffx;
-	bool diffy;
+	bool canWalk;
 };
 
 class Mode {

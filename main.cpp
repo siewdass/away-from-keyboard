@@ -35,53 +35,47 @@ Path path;
 Actions actions;
 Inputs inputs;
 
+Screenshot screenshot;
+
 int height = 642, width = 1012, middle = ( 1012 / 2 ), percent = ( ( width / 2 ) - 188 ) - 32, unknow = 0;
 Mat HP, MP, BD, FK, minimap, Player, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY, GameWindow, FloorIndex, Minimap, Monsters;
-void updateThread( ) {
 
-	Screenshot screenshot( TIBIA ); // hacerle el .load
+void updateLocation( ) {
+
 	double cooldown = 0;
+	int oldX, oldY, count = 0;
 
 	while ( running ) {
 
 		try {
 
-			if ( time.clock( ) > cooldown ) {
-				FloorIndex = screenshot.get( 1001, 54, 1, 61 );
-				Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
+			FloorIndex = screenshot.get( 1001, 54, 1, 61 );
+			Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
 
-				auto [ x, y, z, validSqm ] = location.update( FloorIndex, Minimap, values.x, values.y );
-				
-				values.diffx = values.x == x;
-				values.diffy = values.y == y;
-				values.x = x;
-				values.y = y;
-				values.z = z;
-				values.validSqm = validSqm;
-				cooldown = time.clock( ) + 900;
+			auto [ x, y, z, validSqm ] = location.update( FloorIndex, Minimap, values.x, values.y );
 
-				/*vector < vector < int > > matrix;
+			count = ( oldX == x && oldY == y ) ? count + 1 : 0;
+			oldX = x;
+			oldY = y;
 
-				for ( int i = values.y - 10; i < values.y + 10; ++i ) {
-					vector < int > row;
-					for ( int j = values.x - 10; j < values.x + 10; ++j ) {
-						if ( i == values.y && j == values.x ) {
-							row.push_back( 2 );
-						} else {
-							row.push_back( location.paths[ values.z ][ i ][ j ] );
-						}
-					}
-					matrix.push_back( row );
-				}
+			values.canWalk = count >= 2; 
+			values.x = x;
+			values.y = y;
+			values.z = z;
+			values.validSqm = validSqm;
+	
+		} catch ( const std::exception& e ) {
+		}
 
-				for ( vector < int > row : matrix ) {
-					for ( int e : row ) {
-						std::cout << e << " ";
-					}
-					std::cout << endl;
-				}
-				std::cout << endl;*/
-			}
+		time.sleep( 300 );
+	}
+}
+
+void updateThread( ) {
+
+	while ( running ) {
+
+		try {
 
 			GameWindow = screenshot.get( 189, 40, 615, 451 );
 			
@@ -128,7 +122,6 @@ void updateThread( ) {
 			//console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:", to_string( ( mana / 278 ) * 100 ) + "%" );
 
 		} catch ( const std::exception& e ) {
-			console.log( "ERROR:", e.what( ) );
 		}
 
 		time.sleep( 300 );
@@ -137,17 +130,13 @@ void updateThread( ) {
 
 void alternatorThread( ) {
 
-	int count; // TIENE QUE SER FLOAT Y NO AUMENTAR DE 1 en 1 si no de 300ms algo asi
-
 	while ( running ) {
 
 		try {
 
 			if ( mode.walking ) {
 
-				count = ( values.diffx && values.diffy ) ? ( count + 1 ) : 0;
-
-				if ( count >= 2 ) {
+				if ( values.canWalk ) {
 					if ( values.box == values.validSqm ) {
 						position = position == character.waypoints.size( ) ? 0 : position + 1;
 						mode.attacking = true;
@@ -155,8 +144,7 @@ void alternatorThread( ) {
 					} else {
 						mode.attacking = actions.walker( values, character, location.paths );
 						if ( mode.attacking ) mode.walking = false;
-						count = 0;
-						time.sleep( 1500 );
+						time.sleep( 2000 );
 					}
 				}
 
@@ -176,7 +164,6 @@ void alternatorThread( ) {
 			}
 
 		} catch ( const std::exception& e ) {
-			console.log( "ERROR:", e.what( ) );
 		}
 
 		time.sleep( 250 );
@@ -456,7 +443,7 @@ void knightTargetThread( ) {
 
 			if ( mode.walking ) {
 
-				if ( values.diffx && values.diffy && values.monsters.size( ) == 0 ) {
+				if ( values.canWalk && values.monsters.size( ) == 0 ) {
 					actions.walker( values, character, location.paths );
 				} else if ( values.monsters.size( ) > 0 ) {
 					mode.attacking = true;
@@ -541,7 +528,7 @@ void paladinTargetThread( ) {
 
 			if ( mode.walking ) {
 
-				if ( values.diffx && values.diffy && values.monsters.size( ) == 0 ) {
+				if ( values.canWalk && values.monsters.size( ) == 0 ) {
 					actions.walker( values, character, location.paths );
 				} else if ( values.monsters.size( ) > 0 ) {
 					mode.attacking = true;
@@ -624,12 +611,14 @@ void alarmThread( ) {
 }
 
 void execute( ) {
+	screenshot.load( TIBIA );
 	character.load( CHARACTER.c_str( ), WAYPOINTS.c_str( ) );
 	location.walkable( character.walkable );
 	values.x = character.waypoints[ 0 ].x;
 	values.y = character.waypoints[ 0 ].y;
 	inputs.load( TIBIA.c_str( ) );
 
+	thread( updateLocation ).detach( );
 	thread( updateThread ).detach( );
 	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );

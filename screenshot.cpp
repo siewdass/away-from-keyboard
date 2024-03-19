@@ -7,12 +7,18 @@ int init =  XInitThreads( );
 Display *display;
 Window root;
 
-Screenshot::Screenshot( string value ) {
+Screenshot::Screenshot( ) {
+}
+
+Screenshot::~Screenshot( ) {
+}
+
+void Screenshot::load( string value ) {
 	display = XOpenDisplay( value.c_str( ) );
 	root = DefaultRootWindow( display );
 }
 
-Screenshot::~Screenshot( ) {
+void Screenshot::unload( ) {
 	XCloseDisplay( display );
 }
 

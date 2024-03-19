@@ -13,9 +13,10 @@ using namespace std;
 
 class Screenshot {
 public:
-	Screenshot( ) {}
-	Screenshot( string );
+	Screenshot( );
 	~Screenshot( );
+	void load( string );
+	void unload( );
 	Mat get( int, int, int, int );
 };
 
