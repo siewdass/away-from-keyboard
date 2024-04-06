@@ -49,6 +49,9 @@ void updateLocation( ) {
 
 		try {
 
+			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
+			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
+
 			FloorIndex = screenshot.get( 1001, 54, 1, 61 );
 			Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
 
@@ -115,9 +118,6 @@ void updateThread( ) {
 			values.ring = ring;
 			values.lowcapacity = lowcapacity;
 			values.target = target;
-
-			auto [ XPOS, YPOS ] = inputs.mouseLocation( );
-			if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
 			//console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:", to_string( ( mana / 278 ) * 100 ) + "%" );
 
@@ -598,6 +598,7 @@ void alarmThread( ) {
 
 	while ( running ) {
 		if ( time.clock( ) > criticalCooldown && ( values.alarm || values.mana <= 20 || values.health <= 20 ) )  {
+			values.alarm = false;
 			Stop = true;
 			system( "mpg123 /opt/afk/critical.mp3 > /dev/null 2>&1" );
 			criticalCooldown = time.clock( ) + 60000;
@@ -608,6 +609,8 @@ void alarmThread( ) {
 		}
 		time.sleep( 2000 );
 	}
+
+	values.lowcapacity = false;
 }
 
 void execute( ) {
@@ -639,7 +642,8 @@ void execute( ) {
 			thread( ammoThread ).detach( );
 		} else if ( character.vocation == "paladin" && character.hunt == "target" ) {
 			thread( paladinTargetThread ).detach( );
-			thread( keepDistance ).detach( );
+			//thread( keepDistance ).detach( );
+			thread( attackPaladinBox ).detach( );
 			thread( ammoThread ).detach( );
 		}
 	}

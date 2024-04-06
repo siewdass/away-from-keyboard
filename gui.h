@@ -68,6 +68,10 @@ void Restart( ) {
   position = 0;
 }
 
+void Clipboard( ) {
+  system( string( "echo '{ \"x\": "+ to_string( values.x ) +", \"y\": "+ to_string( values.y ) +", \"z\": "+ to_string( values.z ) +", \"action\": \"\", \"optional\": null }' | xclip -selection clipboard" ).c_str() );
+}
+
 void Interface( int argc, char** argv ) {
 
   gtk_init( &argc, &argv );
@@ -104,6 +108,7 @@ void Interface( int argc, char** argv ) {
   g_signal_connect( clientid, "activate", G_CALLBACK( open_tibia ), appindicator );
   g_signal_connect( vocation, "activate", G_CALLBACK( open_character ), appindicator );
   g_signal_connect( waypoints, "activate", G_CALLBACK( open_waypoints ), appindicator );
+  g_signal_connect( xyz, "activate", G_CALLBACK( Clipboard ), appindicator );
 	g_signal_connect( quit, "activate", G_CALLBACK( Quit ), appindicator );
 
   gtk_menu_shell_append( GTK_MENU_SHELL( menu ), play );
