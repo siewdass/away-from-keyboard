@@ -611,12 +611,13 @@ void alarmThread( ) {
 	}
 
 	values.lowcapacity = false;
+	values.alarm = false;
 }
 
 void execute( ) {
 	screenshot.load( TIBIA );
 	character.load( CHARACTER.c_str( ), WAYPOINTS.c_str( ) );
-	location.walkable( character.walkable );
+	//location.walkable( character.walkable );
 	values.x = character.waypoints[ 0 ].x;
 	values.y = character.waypoints[ 0 ].y;
 	inputs.load( TIBIA.c_str( ) );

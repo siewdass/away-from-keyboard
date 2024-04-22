@@ -38,6 +38,7 @@ void open_waypoints( GtkWidget* widget, gpointer data ) {
   if ( res == GTK_RESPONSE_ACCEPT ) {
     GtkFileChooser *chooser = GTK_FILE_CHOOSER( dialog );
     WAYPOINTS = string( gtk_file_chooser_get_filename( chooser ) );
+    position = 0;
   }
   gtk_widget_destroy( dialog );
 }
@@ -49,7 +50,6 @@ void open_tibia( GtkWidget *widget, gpointer data ) {
 }
 
 void Quit( ) {
-  system( string("rm /tmp/afk" + to_string( which )).c_str( ) );
   gtk_main_quit( );
 }
 
@@ -79,17 +79,18 @@ void Interface( int argc, char** argv ) {
   //#include <sys/prctl.h>
   //prctl(PR_SET_NAME, "afk1");
 
-  if ( filesystem::exists( "/tmp/afk3" ) ) {
+	string count = client.process( "ps aux | grep afk | wc -l" );
+
+  if ( count == "6" ) {
     which = 4;
-  } else if ( filesystem::exists( "/tmp/afk2" ) ) {
+  } else if ( count == "5" ) {
     which = 3;
-  } else if ( filesystem::exists( "/tmp/afk1" ) ) {
+  } else if ( count == "4" ) {
     which = 2;
   }
 
   TIBIA = string( ":" + to_string( which ) );
-  system( string( "touch /tmp/afk" + to_string( which ) ).c_str( ) );
-  const char* ico = string("/opt/afk/t" + to_string( which ) + ".png").c_str( );
+  const char* ico = string( "/opt/afk/t" + to_string( which ) + ".png" ).c_str( );
   
   appindicator = app_indicator_new( "AFK", ico, APP_INDICATOR_CATEGORY_APPLICATION_STATUS );
 
@@ -101,7 +102,6 @@ void Interface( int argc, char** argv ) {
   waypoints = gtk_menu_item_new_with_label( "Waypoints" );
   xyz = gtk_menu_item_new_with_label( "X: 0 | Y: 0 | Z: 0" );
   quit = gtk_menu_item_new_with_label( "Quit" );
-  // submenu
 
   g_signal_connect( play, "activate", G_CALLBACK( Toggle ), appindicator );
   g_signal_connect( restart, "activate", G_CALLBACK( Restart ), appindicator );
@@ -119,7 +119,6 @@ void Interface( int argc, char** argv ) {
   gtk_menu_shell_append( GTK_MENU_SHELL( menu ), xyz );
   gtk_menu_shell_append( GTK_MENU_SHELL( menu ), quit );
   gtk_widget_show_all( menu );
-  //gtk_widget_hide( stop );
 
   app_indicator_set_status( appindicator, APP_INDICATOR_STATUS_ACTIVE );
   app_indicator_set_attention_icon( appindicator, "dialog-warning" );
