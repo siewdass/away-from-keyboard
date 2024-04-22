@@ -38,6 +38,7 @@ void open_waypoints( GtkWidget* widget, gpointer data ) {
   if ( res == GTK_RESPONSE_ACCEPT ) {
     GtkFileChooser *chooser = GTK_FILE_CHOOSER( dialog );
     WAYPOINTS = string( gtk_file_chooser_get_filename( chooser ) );
+    //console.log( WAYPOINTS );
     position = 0;
   }
   gtk_widget_destroy( dialog );

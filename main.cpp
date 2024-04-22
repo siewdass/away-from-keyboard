@@ -615,6 +615,7 @@ void alarmThread( ) {
 }
 
 void execute( ) {
+	console.log( WAYPOINTS );
 	screenshot.load( TIBIA );
 	character.load( CHARACTER.c_str( ), WAYPOINTS.c_str( ) );
 	//location.walkable( character.walkable );

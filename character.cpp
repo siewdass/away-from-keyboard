@@ -70,6 +70,8 @@ void Character::load( const char* c, const char* w ) {
 	hunt = config.readString( "Hunt" );
 	leave = config.readString( "Leave" );
 	
+	waypoints.clear( );
+
 	for ( Json waypoint: configw.readArray( "Waypoints" ) ) {
 		Waypoint wp;
 		wp.x = waypoint.readInteger( "x" );
