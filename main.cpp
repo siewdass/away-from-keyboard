@@ -623,13 +623,13 @@ void execute( ) {
 	values.y = character.waypoints[ 0 ].y;
 	inputs.load( TIBIA.c_str( ) );
 
-	thread( updateLocation ).detach( );
 	thread( updateThread ).detach( );
 	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );
 	thread( toolsThread ).detach( );
 
 	if ( values.x != 0 && values.y != 0 ) {
+		thread( updateLocation ).detach( );
 		thread( alarmThread ).detach( );
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );

@@ -4,7 +4,7 @@
 #pragma once
 
 #include <gtk/gtk.h>
-#include <libappindicator/app-indicator.h>
+#include <libayatana-appindicator3-0.1/libayatana-appindicator/app-indicator.h>
 #include <filesystem>
 #include "global.h"
 
