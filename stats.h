@@ -15,7 +15,7 @@ class Stats {
 public:
 	int health, mana, middle = ( 1012 / 2 );
 	bool hungry, paralyze, poison, isTargeting, haste;
-	tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bool, bool, bool > update( Mat, Mat, Mat, Mat, Mat, Mat, Mat, Mat, Mat, Mat, Mat );
+	tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bool, bool, bool, bool > update( Mat, Mat, Mat, Mat, Mat, Mat, Mat, Mat, Mat, Mat, Mat );
 	bool valuableLoot( Mat );
 };
 

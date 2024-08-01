@@ -29,6 +29,7 @@ public:
 	bool weapon, necklace, ring;
 	bool lowcapacity = false;
 	bool canWalk;
+	bool nearPlayer;
 };
 
 class Mode {

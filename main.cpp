@@ -103,7 +103,7 @@ void updateThread( ) {
 			Monsters = screenshot.get( 23, 72, 1, 174 );
 			//imwrite( "monsters.png", Monsters );
 
-			auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, weapon, necklace, ring, lowcapacity, target ] = stats.update( CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters );
+			auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, near, weapon, necklace, ring, lowcapacity, target ] = stats.update( CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters );
 
 			values.health = health;
 			values.mana = mana;
@@ -118,6 +118,7 @@ void updateThread( ) {
 			values.ring = ring;
 			values.lowcapacity = lowcapacity;
 			values.target = target;
+			values.nearPlayer = near;
 
 			//console.log( "x:", values.x, "y:", values.y, "z:", values.z, "hp:", to_string( ( health / 278 ) * 100 ) + "%", "mana:", to_string( ( mana / 278 ) * 100 ) + "%" );
 
@@ -606,6 +607,23 @@ void alarmThread( ) {
 			values.lowcapacity = false;
 			system( "mpg123 /opt/afk/safe.mp3 > /dev/null 2>&1" );
 			safeCooldown = time.clock( ) + 60000;
+		} else if ( mode.walking && values.nearPlayer ) {
+			int index = position;
+
+			while ( true ) {
+				if ( index == character.waypoints.size( ) ) index = 0;
+
+				Waypoint waypoint = character.waypoints[ index ];
+				if ( waypoint.action == "attack" ) {
+					position = index + 1;
+					break;
+				}
+				
+				index++;
+			}
+
+			values.nearPlayer = false;
+			system( "mpg123 /opt/afk/player.mp3 > /dev/null 2>&1" );
 		}
 		time.sleep( 2000 );
 	}
@@ -623,13 +641,14 @@ void execute( ) {
 	values.y = character.waypoints[ 0 ].y;
 	inputs.load( TIBIA.c_str( ) );
 
+	thread( updateLocation ).detach( );
 	thread( updateThread ).detach( );
 	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );
 	thread( toolsThread ).detach( );
 
 	if ( values.x != 0 && values.y != 0 ) {
-		thread( updateLocation ).detach( );
+		
 		thread( alarmThread ).detach( );
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );

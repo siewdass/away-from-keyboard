@@ -23,7 +23,7 @@ vector < Pixel > monsters;
 
 int AlarmCount = 0;
 
-tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bool, bool, bool > Stats::update( Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK, Mat Monsters ) {
+tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bool, bool, bool, bool > Stats::update( Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK, Mat Monsters ) {
 
     monsters = acknows.inspect( Monsters );
 
@@ -88,6 +88,7 @@ tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bo
         }
     }
 
+    bool near = false;
     bool alarm = false;
 
     battle = acknows.inspect( BATTLE );
@@ -96,7 +97,7 @@ tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bo
         int r = pixel.r, g = pixel.g, b = pixel.b;
         if ( r == 0 && g == 0 && b == 0 ) {   
             //std::cout << r << " " << g << " " << b << std::endl;         
-            alarm = true;
+            near = true;
         }
     }
 
@@ -166,6 +167,7 @@ tuple < int, int, bool, bool, bool, bool, vector < Point >, bool, bool, bool, bo
         haste,
         Flask,
         alarm,
+        near,
         weaponEquipped,
         amuletEquipped,
         ringEquipped,
