@@ -675,7 +675,7 @@ int main( int argc, char** argv ) {
 	thread( [&]( ) { location.load( ); loaded = true; }).detach( );
 
 	run = execute;
-
+	
 	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
 
 	system( "rm -f /tmp/licence.json" );
@@ -692,6 +692,7 @@ int main( int argc, char** argv ) {
 	}
 
 	console.log( serial );
+
 
 	return 0;
 }

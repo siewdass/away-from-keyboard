@@ -10,7 +10,7 @@
 
 bool Pause = false;
 bool Stop = false;
-int which = 1;
+string which = "0";
 
 AppIndicator* appindicator;
 GtkWidget *menu, *play, *stop, *restart, *vocation, *waypoints, *clientid, *quit, *dialog, *xyz;
@@ -45,8 +45,8 @@ void open_waypoints( GtkWidget* widget, gpointer data ) {
 }
 
 void open_tibia( GtkWidget *widget, gpointer data ) {
-  if ( !filesystem::exists( string("/tmp/.X11-unix/X" + to_string( which ) ).c_str( ) ) ) { 
-    system( string( "/opt/afk/client.sh " + to_string( which ) ).c_str( ) );
+  if ( !filesystem::exists( string( "/tmp/.X11-unix/X" + which ).c_str( ) ) ) { 
+    system( string( "/opt/afk/client.sh " + which ).c_str( ) );
   }
 }
 
@@ -75,23 +75,15 @@ void Clipboard( ) {
 
 void Interface( int argc, char** argv ) {
 
+  if ( argc == 2 ) {
+		which = argv[ 1 ];
+	}
+	
+  TIBIA = string( ":" + which );
+
   gtk_init( &argc, &argv );
 
-  //#include <sys/prctl.h>
-  //prctl(PR_SET_NAME, "afk1");
-
-	string count = client.process( "ps aux | grep afk | wc -l" );
-
-  if ( count == "6" ) {
-    which = 4;
-  } else if ( count == "5" ) {
-    which = 3;
-  } else if ( count == "4" ) {
-    which = 2;
-  }
-
-  TIBIA = string( ":" + to_string( which ) );
-  const char* ico = string( "/opt/afk/t" + to_string( which ) + ".png" ).c_str( );
+  const char* ico = string( "/opt/afk/t" + which + ".png" ).c_str( );
   
   appindicator = app_indicator_new( "AFK", ico, APP_INDICATOR_CATEGORY_APPLICATION_STATUS );
 
