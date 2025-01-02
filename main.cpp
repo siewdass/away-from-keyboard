@@ -644,7 +644,7 @@ void networkThread( ) {
 			size_t pos = ping.find("time=");
 			if (pos != string::npos) {
 				number = std::stoi( ping.substr(pos + 5) );
-				if ( number > 500 ) system( "mpg123 /opt/afk/lag.mp3 > /dev/null 2>&1" );
+				if ( number > 100 ) system( "mpg123 /opt/afk/lag.mp3 > /dev/null 2>&1" );
 			}
 		}
 
