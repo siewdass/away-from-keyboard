@@ -632,6 +632,26 @@ void alarmThread( ) {
 	values.alarm = false;
 }
 
+void networkThread( ) {
+	string ping;
+	string prefix = "time=";
+	int number = 0;
+
+	while ( running ) {
+		ping = client.process( "ping -c 1 8.8.8.8 | awk '/time=/ {print $7}' | cut -d '/' -f1 | cut -d '.' -f1" );
+
+		if ( ping.size() >= prefix.size() && ping.substr(0, prefix.size()) == prefix ) {
+			size_t pos = ping.find("time=");
+			if (pos != string::npos) {
+				number = std::stoi( ping.substr(pos + 5) );
+				if ( number > 500 ) system( "mpg123 /opt/afk/lag.mp3 > /dev/null 2>&1" );
+			}
+		}
+
+		time.sleep( 5000 );
+	}
+}
+
 void execute( ) {
 	console.log( WAYPOINTS );
 	screenshot.load( TIBIA );
@@ -646,6 +666,7 @@ void execute( ) {
 	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );
 	thread( toolsThread ).detach( );
+	thread( networkThread ).detach( );
 
 	if ( values.x != 0 && values.y != 0 ) {
 		
@@ -675,7 +696,6 @@ int main( int argc, char** argv ) {
 	thread( [&]( ) { location.load( ); loaded = true; }).detach( );
 
 	run = execute;
-	
 	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
 
 	system( "rm -f /tmp/licence.json" );

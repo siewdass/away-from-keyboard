@@ -4,6 +4,6 @@ echo Copying files..
 chmod -R 777 /opt/afk
 chmod +x /opt/afk/afk
 chmod +x /opt/afk/client.sh
-chmod +x /usr/local/bin/xseticon
+chmod +x /usr/bin/xseticon
 echo DONE
 exit 0
