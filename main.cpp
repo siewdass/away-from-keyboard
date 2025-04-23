@@ -138,7 +138,7 @@ void alternatorThread( ) {
 			if ( mode.walking ) {
 
 				if ( values.canWalk ) {
-					if ( values.box == values.validSqm ) {
+					if ( values.box == values.validSqm || values.box == values.validSqm - 1 ) {
 						position = position == character.waypoints.size( ) ? 0 : position + 1;
 						mode.attacking = true;
 						mode.walking = false;
@@ -636,29 +636,33 @@ void networkThread( ) {
 	string ping;
 	string prefix = "time=";
 	int number = 0;
+	int count = 0;
 
 	while ( running ) {
-		ping = client.process( "ping -c 1 8.8.8.8 | awk '/time=/ {print $7}' | cut -d '/' -f1 | cut -d '.' -f1" );
+		try {
+			ping = client.process( "ping -c 1 8.8.8.8 | awk '/time=/ {print $7}' | cut -d '/' -f1 | cut -d '.' -f1" );
 
-		if ( ping.size() >= prefix.size() && ping.substr(0, prefix.size()) == prefix ) {
-			size_t pos = ping.find("time=");
-			if (pos != string::npos) {
-				number = std::stoi( ping.substr(pos + 5) );
-				if ( number > 100 ) system( "mpg123 /opt/afk/lag.mp3 > /dev/null 2>&1" );
+			if ( ping.size() >= prefix.size() && ping.substr(0, prefix.size()) == prefix ) {
+				size_t pos = ping.find(prefix);
+				if (pos != string::npos) {
+					number = std::stoi( ping.substr(pos + 5) );
+					count = number > 100 ? count + 1 : 0;
+					if ( count >= 3 ) system( "mpg123 /opt/afk/lag.mp3 > /dev/null 2>&1" );
+				}
 			}
-		}
+		} catch ( exception &err ) { }
 
-		time.sleep( 5000 );
+		time.sleep( 3000 );
 	}
 }
 
 void execute( ) {
-	console.log( WAYPOINTS );
+	//console.log( WAYPOINTS );
 	screenshot.load( TIBIA );
 	character.load( CHARACTER.c_str( ), WAYPOINTS.c_str( ) );
 	//location.walkable( character.walkable );
-	values.x = character.waypoints[ 0 ].x;
-	values.y = character.waypoints[ 0 ].y;
+	values.x = character.waypoints.size( ) > 0 ? character.waypoints[ 0 ].x : 0;
+	values.y = character.waypoints.size( ) > 0 ? character.waypoints[ 0 ].y : 0;
 	inputs.load( TIBIA.c_str( ) );
 
 	thread( updateLocation ).detach( );
@@ -666,9 +670,9 @@ void execute( ) {
 	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );
 	thread( toolsThread ).detach( );
-	thread( networkThread ).detach( );
+	//thread( networkThread ).detach( );
 
-	if ( values.x != 0 && values.y != 0 ) {
+	if ( character.waypoints.size( ) > 0 ) {
 		
 		thread( alarmThread ).detach( );
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
@@ -696,7 +700,7 @@ int main( int argc, char** argv ) {
 	thread( [&]( ) { location.load( ); loaded = true; }).detach( );
 
 	run = execute;
-	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
+	/*string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
 
 	system( "rm -f /tmp/licence.json" );
 	system( "wget -O /tmp/licence.json https://siewdass.github.io/licence.json > /dev/null 2>&1" );
@@ -711,8 +715,9 @@ int main( int argc, char** argv ) {
 		}
 	}
 
-	console.log( serial );
+	console.log( serial );*/
 
+	Interface( argc, argv );
 
 	return 0;
 }

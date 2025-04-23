@@ -34,6 +34,7 @@ vector < Pixel > Acknow::inspect( Mat img ) {
 tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
 
     vector < tuple < Point, bool > > arr;
+    int max = 30;
     bool target;
 
     try {
@@ -47,29 +48,28 @@ tuple < bool, vector < tuple < Point, bool > > > Acknow::detect( Mat img ) {
 
                     if ( img.at < Vec3b > ( y, x ) == Vec3b( 0, 0, 0 ) ) {
 
-                        while ( top < 27 ) top = img.at < Vec3b > ( y, x + top ) != Vec3b( 0, 0, 0 ) ? 100 : top + 1;
+                        while ( top < max ) top = img.at < Vec3b > ( y, x + top ) != Vec3b( 0, 0, 0 ) ? 100 : top + 1;
 
-                        while ( top == 27 && bottom < 27 ) bottom = img.at < Vec3b > ( y + 3, x + bottom ) != Vec3b( 0, 0, 0 ) ? 100 : bottom + 1;
+                        while ( top == max && bottom < max ) bottom = img.at < Vec3b > ( y + 3, x + max ) != Vec3b( 0, 0, 0 ) ? 100 : bottom + 1;
+                       
+                        while ( bottom == max && left < 3 ) left = img.at < Vec3b > ( y + left, x ) != Vec3b( 0, 0, 0 ) ? 100 : left + 1;
 
-                        while ( bottom == 27 && left < 3 ) left = img.at < Vec3b > ( y + left, x ) != Vec3b( 0, 0, 0 ) ? 100 : left + 1;
-
-                        while ( left == 3 && right < 3 ) right = img.at < Vec3b > ( y + right, x + 26 ) != Vec3b( 0, 0, 0 ) ? 100 : right + 1;
+                        while ( left == 3 && right < 3 ) right = img.at < Vec3b > ( y + right, x + max ) != Vec3b( 0, 0, 0 ) ? 100 : right + 1;
                         
-                        if ( top == 27 & bottom == 27 & left == 3 & right == 3 ) {
+                        if ( top == max & bottom == max & left == 3 & right == 3 ) {
+                            //img.at < Vec3b > ( y, x ) = Vec3b( 255, 0, 0 );
 
- 
                             int targeting = 0;
 
                             for ( int t = 1; t <= 20; t++ ) {
                                 Pixel pixel = Acknow::rgb( img, x + 15 - t, y + 28 - t );
                                 if ( pixel.r <= 233 && pixel.r >= 127 && pixel.g < 66 && pixel.b < 66 && pixel.b > 12 ) targeting++;
-                                //img.at < Vec3b > (  y + 28 - t, x + 15 - t ) = Vec3b( 255, 0, 0 );
                             }
 
                             target = targeting > 3;
 
 							arr.push_back( make_tuple( Point( x, y ), target ) );
-                            x += 27;
+                            x += max;
                         }
                     }
 
