@@ -90,7 +90,7 @@ void updateThread( ) {
 			values.isTargeting = isTargeting;
 			values.targetPosition = targetPosition;
 
-			CAPACITY = screenshot.get( 919, 255, 11, 1 );
+			CAPACITY = screenshot.get( 919, 255, 30, 1 );
 			WEAPON = screenshot.get( 861, 186, 1, 1 );
 			AMULET = screenshot.get(  862, 158, 1, 1 );
 			RING = screenshot.get( 861, 220, 1, 1 );
@@ -101,7 +101,7 @@ void updateThread( ) {
 			BD = screenshot.get( 480, 4, 53, 27);
 			FK = screenshot.get( 836, 304, 176, 296 );
 			Monsters = screenshot.get( 23, 72, 1, 174 );
-			//imwrite( "monsters.png", Monsters );
+			//imwrite( "screenshot.png", CAPACITY );
 
 			auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, near, weapon, necklace, ring, lowcapacity, target ] = stats.update( CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters );
 
@@ -670,11 +670,12 @@ void execute( ) {
 	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );
 	thread( toolsThread ).detach( );
+
 	//thread( networkThread ).detach( );
 
 	if ( character.waypoints.size( ) > 0 ) {
-		
 		thread( alarmThread ).detach( );
+		
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
 			thread( alternatorThread ).detach( );
 			thread( autoAttackThread ).detach( );
