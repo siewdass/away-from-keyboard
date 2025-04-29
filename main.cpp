@@ -9,6 +9,7 @@
 #include "actions.h"
 #include "path.h"
 #include "utils.h"
+#include "inputs.h"
 
 string CHARACTER = "";
 string WAYPOINTS = "";
@@ -19,8 +20,10 @@ function < void ( ) > run;
 Values values;
 Client client;
 
-#include "inputs.h"
-#include "gui.h"
+bool Pause = false;
+bool Stop = false;
+
+void Toggle( ) {}
 
 Stats stats;
 Viewport viewport;
@@ -660,20 +663,20 @@ void execute( ) {
 	//console.log( WAYPOINTS );
 	screenshot.load( TIBIA );
 	character.load( CHARACTER.c_str( ), WAYPOINTS.c_str( ) );
+	inputs.load( TIBIA.c_str( ) );
 	//location.walkable( character.walkable );
 	values.x = character.waypoints.size( ) > 0 ? character.waypoints[ 0 ].x : 0;
 	values.y = character.waypoints.size( ) > 0 ? character.waypoints[ 0 ].y : 0;
-	inputs.load( TIBIA.c_str( ) );
 
-	thread( updateLocation ).detach( );
+	/*thread( updateLocation ).detach( );
 	thread( updateThread ).detach( );
 	thread( healThread ).detach( );
 	thread( potionsThread ).detach( );
-	thread( toolsThread ).detach( );
+	thread( toolsThread ).detach( );*/
 
 	//thread( networkThread ).detach( );
 
-	if ( character.waypoints.size( ) > 0 ) {
+	/*if ( character.waypoints.size( ) > 0 ) {
 		thread( alarmThread ).detach( );
 		
 		if ( character.vocation == "knight" && character.hunt == "box" ) {
@@ -693,14 +696,25 @@ void execute( ) {
 			thread( attackPaladinBox ).detach( );
 			thread( ammoThread ).detach( );
 		}
-	}
+	}*/
 }
 
 int main( int argc, char** argv ) {
 	
-	thread( [&]( ) { location.load( ); loaded = true; }).detach( );
+	location.load( );
+	loaded = true;
+	//thread( [&]( ) { location.load( ); loaded = true; }).detach( );
 
-	run = execute;
+	TIBIA = string( ":" + string(argv[ 1 ]) );
+	WAYPOINTS = string( "/opt/afk/waypoints/" + string(argv[ 2 ]) );
+	CHARACTER = string( "/opt/afk/characters/" + string(argv[ 3 ]) );
+
+	console.log( TIBIA );
+	console.log( CHARACTER );
+	console.log( WAYPOINTS );
+
+	execute( );
+	//run = execute;
 	/*string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
 
 	system( "rm -f /tmp/licence.json" );
@@ -718,7 +732,7 @@ int main( int argc, char** argv ) {
 
 	console.log( serial );*/
 
-	Interface( argc, argv );
+	//Interface( argc, argv );
 
 	return 0;
 }

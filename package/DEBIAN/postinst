@@ -1,9 +1,7 @@
 #! /bin/sh
 set -e
-echo Copying files..
 chmod -R 777 /opt/afk
 chmod +x /opt/afk/afk
-chmod +x /opt/afk/client.sh
-chmod +x /usr/bin/xseticon
-echo DONE
+chmod +x /opt/afk/gui
+chmod +x /opt/afk/vncviewer
 exit 0

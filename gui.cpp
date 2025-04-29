@@ -7,146 +7,158 @@
 namespace fs = std::filesystem;
 using namespace std;
 
-static void on_dropdown_changed(GtkComboBox *widget, gpointer data) {
-  gint active = gtk_combo_box_get_active(widget);
-  g_print("Selected item: %d\n", active);
-}
-
-static void on_window_closed(GtkWidget *widget, gpointer data) {
-  gtk_main_quit();
-}
+vector<vector<string>> data = {{"", ""}, {"", ""}, {"", ""}, {"", ""}};
 
 vector<string> get_files(const string& directory) {
   vector<string> files;
-  
-  try {
-    for (const auto& entry : fs::directory_iterator(directory)) {
-      if (entry.is_regular_file() && entry.path().extension() == ".json") {
-        files.push_back(entry.path().stem().string());
-      }
-    }
-  } catch (const fs::filesystem_error& e) {
-    g_printerr("Error accessing directory: %s\n", e.what());
+  for (const auto& entry : fs::directory_iterator(directory)) {
+    files.push_back(entry.path().stem().string());
   }
-  
   return files;
 }
 
-static void on_start_clicked(GtkWidget *widget, gpointer data) {
-  g_print("Start button clicked\n");
+vector<string> characters = get_files("/opt/afk/characters");
+vector<string> waypoints = get_files("/opt/afk/waypoints");
+
+void open_worker(GtkWidget *widget, gpointer data) {
+  int id = GPOINTER_TO_INT(data);
+  if (!filesystem::exists(string("/tmp/.X11-unix/X" + to_string(id)).c_str())) { 
+    system(string("/opt/afk/worker.sh " + to_string(id)).c_str());
+  }
+  if (filesystem::exists(string("/tmp/.X11-unix/X" + to_string(id)).c_str())) { 
+    system(string("/opt/afk/viewer.sh " + to_string(id)).c_str());
+  }
 }
 
-static void on_stop_clicked(GtkWidget *widget, gpointer data) {
+void close_worker(GtkWidget *widget, gpointer data) {
+  int id = GPOINTER_TO_INT(data);
+  system(string("pkill -f 'Xvfb.*:" + to_string(id) + "'").c_str());
+}
+
+void on_character_changed(GtkComboBox *widget, gpointer data) {
+  int id = GPOINTER_TO_INT(data);
+  int active = gtk_combo_box_get_active(widget);
+  ::data[id][0] = characters[active];
+}
+
+void on_waypoint_changed(GtkComboBox *widget, gpointer data) {
+  int id = GPOINTER_TO_INT(data);
+  int active = gtk_combo_box_get_active(widget);
+  ::data[id][1] = waypoints[active];
+}
+
+void on_window_closed(GtkWidget *widget, gpointer data) {
+  gtk_main_quit();
+}
+
+void on_start_clicked(GtkWidget *widget, gpointer mydata) {
+  int id = GPOINTER_TO_INT(mydata);
+  if (!::data[id][0].empty() && !::data[id][1].empty()) {
+    string cmd = "DISPLAY=:" + to_string(id) + " /opt/afk/afk " + ::data[id][0] + ".json " + ::data[id][1] + ".json";
+    g_print("test cmd: %s\n", cmd.c_str());
+    system(cmd.c_str());
+  } else {
+    g_print("Empty character or waypoint name!\n");
+  }
+}
+
+void on_stop_clicked(GtkWidget *widget, gpointer data) {
   g_print("Stop button clicked\n");
 }
 
-static void on_restart_clicked(GtkWidget *widget, gpointer data) {
-  g_print("Restart button clicked\n");
-}
-
-int main(int argc, char *argv[]) {
-  GtkWidget *window, *box, *button_box, *button_open;
-  GtkWidget *dropdown_char, *dropdown_waypoint;
-  GtkWidget *label_char, *label_waypoint, *label_bot, *label_client;
-  GtkWidget *start_btn, *stop_btn, *restart_btn, *viewer_btn, *open_btn;
-  
-  gtk_init(&argc, &argv);
-
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title(GTK_WINDOW(window), "AFK");
-  gtk_window_set_default_size(GTK_WINDOW(window), 350, 400);
-  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-  g_signal_connect(window, "destroy", G_CALLBACK(on_window_closed), NULL);
-
-  box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-  gtk_container_add(GTK_CONTAINER(window), box);
+GtkWidget* create_page(int id) {
+  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 7);
 
   {
-    label_char = gtk_label_new("Session:");
-    gtk_label_set_xalign(GTK_LABEL(label_char), 0.0);
-    gtk_widget_set_margin_start(label_char, 3);
-    gtk_box_pack_start(GTK_BOX(box), label_char, FALSE, FALSE, 0);
-    dropdown_char = gtk_combo_box_text_new();
-    for (int i = 1; i <= 4; i++) {
-      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(dropdown_char), to_string(i).c_str());
-    }
-    gtk_combo_box_set_active(GTK_COMBO_BOX(dropdown_char), 0);
-    gtk_box_pack_start(GTK_BOX(box), dropdown_char, FALSE, FALSE, 0);
-    g_signal_connect(dropdown_char, "changed", G_CALLBACK(on_dropdown_changed), NULL);
+    GtkWidget *label_worker = gtk_label_new("Client:");
+    gtk_label_set_xalign(GTK_LABEL(label_worker), 0.0);
+    gtk_widget_set_margin_start(label_worker, 0);
+    gtk_box_pack_start(GTK_BOX(box), label_worker, FALSE, FALSE, 0);
+
+    GtkWidget *worker_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_box_set_homogeneous(GTK_BOX(worker_box), TRUE);
+
+    GtkWidget *open_btn = gtk_button_new_with_label("Open");
+    GtkWidget *close_btn = gtk_button_new_with_label("Close");
+    
+    g_signal_connect(open_btn, "clicked", G_CALLBACK(open_worker), GINT_TO_POINTER(id));
+    g_signal_connect(close_btn, "clicked", G_CALLBACK(close_worker), GINT_TO_POINTER(id));
+    
+    gtk_box_pack_start(GTK_BOX(worker_box), open_btn, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(worker_box), close_btn, TRUE, TRUE, 0);
+    
+    gtk_box_pack_start(GTK_BOX(box), worker_box, FALSE, FALSE, 5);
   }
 
   {
-    label_client = gtk_label_new("Tibia:");
-    gtk_label_set_xalign(GTK_LABEL(label_client), 0.0);
-    gtk_widget_set_margin_start(label_client, 0);
-    gtk_box_pack_start(GTK_BOX(box), label_client, FALSE, FALSE, 0);
-
-    button_open = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_box_set_homogeneous(GTK_BOX(button_open), TRUE);
-
-    viewer_btn = gtk_button_new_with_label("Viewer");
-    open_btn = gtk_button_new_with_label("Client");
-    
-    g_signal_connect(viewer_btn, "clicked", G_CALLBACK(on_start_clicked), NULL);
-    g_signal_connect(open_btn, "clicked", G_CALLBACK(on_stop_clicked), NULL);
-    
-    gtk_box_pack_start(GTK_BOX(button_open), viewer_btn, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(button_open), open_btn, TRUE, TRUE, 0);
-    
-    gtk_box_pack_start(GTK_BOX(box), button_open, FALSE, FALSE, 5);
-  }
-
-  {
-    label_bot = gtk_label_new("Bot:");
+    GtkWidget *label_bot = gtk_label_new("Bot:");
     gtk_label_set_xalign(GTK_LABEL(label_bot), 0.0);
     gtk_widget_set_margin_start(label_bot, 0);
     gtk_box_pack_start(GTK_BOX(box), label_bot, FALSE, FALSE, 0);
 
-    button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_box_set_homogeneous(GTK_BOX(button_box), TRUE);
+    GtkWidget *bot_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_box_set_homogeneous(GTK_BOX(bot_box), TRUE);
 
-    start_btn = gtk_button_new_with_label("Start");
-    stop_btn = gtk_button_new_with_label("Stop");
-    restart_btn = gtk_button_new_with_label("Restart");
+    GtkWidget *start_btn = gtk_button_new_with_label("Start");
+    GtkWidget *stop_btn = gtk_button_new_with_label("Stop");
     
-    g_signal_connect(start_btn, "clicked", G_CALLBACK(on_start_clicked), NULL);
-    g_signal_connect(stop_btn, "clicked", G_CALLBACK(on_stop_clicked), NULL);
-    g_signal_connect(restart_btn, "clicked", G_CALLBACK(on_restart_clicked), NULL);
+    g_signal_connect(start_btn, "clicked", G_CALLBACK(on_start_clicked), GINT_TO_POINTER(id));
+    g_signal_connect(stop_btn, "clicked", G_CALLBACK(on_stop_clicked), GINT_TO_POINTER(id));
     
-    gtk_box_pack_start(GTK_BOX(button_box), start_btn, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), restart_btn, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), stop_btn, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(bot_box), start_btn, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(bot_box), stop_btn, TRUE, TRUE, 0);
     
-    gtk_box_pack_start(GTK_BOX(box), button_box, FALSE, FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(box), bot_box, FALSE, FALSE, 5);
   }
 
   {
-    label_char = gtk_label_new("Character:");
+    GtkWidget *label_char = gtk_label_new("Character:");
     gtk_label_set_xalign(GTK_LABEL(label_char), 0.0);
     gtk_widget_set_margin_start(label_char, 3);
     gtk_box_pack_start(GTK_BOX(box), label_char, FALSE, FALSE, 0);
-    dropdown_char = gtk_combo_box_text_new();
-    for (const auto& file : get_files("/opt/afk/characters")) {
+    GtkWidget *dropdown_char = gtk_combo_box_text_new();
+    for (const auto& file : characters) {
       gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(dropdown_char), file.c_str());
     }
     gtk_box_pack_start(GTK_BOX(box), dropdown_char, FALSE, FALSE, 0);
-    g_signal_connect(dropdown_char, "changed", G_CALLBACK(on_dropdown_changed), NULL);
+    g_signal_connect(dropdown_char, "changed", G_CALLBACK(on_character_changed), GINT_TO_POINTER(id));
   }
 
   {
-    label_waypoint = gtk_label_new("Waypoint:");
+    GtkWidget *label_waypoint = gtk_label_new("Waypoint:");
     gtk_label_set_xalign(GTK_LABEL(label_waypoint), 0.0);
     gtk_widget_set_margin_start(label_waypoint, 3);
     gtk_box_pack_start(GTK_BOX(box), label_waypoint, FALSE, FALSE, 0);
-    dropdown_waypoint = gtk_combo_box_text_new();
-    for (const auto& file : get_files("/opt/afk/waypoints")) {
+    GtkWidget *dropdown_waypoint = gtk_combo_box_text_new();
+    for (const auto& file : waypoints) {
       gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(dropdown_waypoint), file.c_str());
     }
     gtk_box_pack_start(GTK_BOX(box), dropdown_waypoint, FALSE, FALSE, 0);
-    g_signal_connect(dropdown_waypoint, "changed", G_CALLBACK(on_dropdown_changed), NULL);
+    g_signal_connect(dropdown_waypoint, "changed", G_CALLBACK(on_waypoint_changed), GINT_TO_POINTER(id));
   }
 
-  gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+  gtk_container_set_border_width(GTK_CONTAINER(box), 10);
+
+  return box;
+}
+
+int main(int argc, char *argv[]) {
+  gtk_init(&argc, &argv);
+
+  GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(window), "AFK");
+  gtk_window_set_default_size(GTK_WINDOW(window), 350, 350);
+  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+  g_signal_connect(window, "destroy", G_CALLBACK(on_window_closed), NULL);
+
+  GtkWidget *notebook = gtk_notebook_new();
+  gtk_container_add(GTK_CONTAINER(window), notebook);
+
+  for (int i = 1; i <= 6; i++) {
+    GtkWidget *page = create_page(i);
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), page, gtk_label_new(to_string(i).c_str()));
+  }
+
   gtk_widget_show_all(window);
   gtk_main();
   

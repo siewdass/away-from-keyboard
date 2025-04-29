@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 Xephyr -br -ac -noreset -screen 1012x642 -title Tibia$1 :$1 &
 sleep .2
-xseticon -id $(xdotool search --name Tibia$1) /opt/afk/t$1.png
+#xseticon -id $(xdotool search --name Tibia$1) /opt/afk/t$1.png
 export DISPLAY=:$1
 timeout 4 /opt/tibia/Tibia
 

@@ -2,8 +2,8 @@
 set -e
 if [ -d "/opt/afk" ]
   then
-    echo Deleting files...
     rm -rf /opt/afk
     rm -rf /usr/share/applications/afk.desktop
+    rm -rf /usr/share/applications/vncviewer.desktop
 fi
 exit 0

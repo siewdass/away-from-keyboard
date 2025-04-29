@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=AFK
+Exec=/opt/afk/afk
+Icon=/opt/afk/t1.ico
+Terminal=false
+Type=Application

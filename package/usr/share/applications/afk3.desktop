@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=AFK 3
-Comment=TIBIA MMORPG
-Exec=/opt/afk/afk 3
-Icon=/opt/afk/t3.png
-Terminal=false
-Type=Application
-Categories=Game;
