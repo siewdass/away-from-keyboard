@@ -61,11 +61,3 @@ target_link_libraries(
 	${X11_LIBRARIES}
 	${JSONCPP_LIBRARIES}
 ) 
-
-set(GUI_SOURCE ${CMAKE_SOURCE_DIR}/gui.cpp)
-
-add_executable(gui ${GUI_SOURCE})
-
-target_link_libraries(gui
-    ${GTK3_LIBRARIES}
-)

@@ -119,6 +119,9 @@ void Interface( int argc, char** argv ) {
 
   g_timeout_add_seconds(1, update_label, NULL);
 
+
+  console.log(TIBIA);
+
   gtk_main( );
 }
 

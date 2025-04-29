@@ -414,8 +414,6 @@ void attackPaladinBox( ) {
 							attackCooldown4 = time.clock( ) + 4200;
 						} else if ( character.arearune != "" && time.clock( ) > attackCooldown5 && values.box >= 2 ) {
 							inputs.keyboard( character.arearune );
-							//time.sleep( 100 );
-							//inputs.mouse( values.targetPosition.x, values.targetPosition.y, 0 );
 							attackCooldown = time.clock( ) + global;
 							attackCooldown5 = time.clock( ) + 2100;
 						}
