@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-Xvfb :$1 -screen 0 1020x650x24 -extension RANDR >/dev/null 2>&1 &
-sleep 0.2
+Xvfb :$1 -screen 0 1012x642x24 -extension RANDR >/dev/null 2>&1 &
+sleep 0.1
 
 x11vnc -display :$1 -forever -shared -rfbport 590$1 >/dev/null 2>&1 &
-sleep 0.2
+sleep 0.1
 
 DISPLAY=:$1 /opt/tibia/Tibia >/dev/null 2>&1 &
 

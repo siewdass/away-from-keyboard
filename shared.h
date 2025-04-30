@@ -13,6 +13,10 @@ using namespace cv;
 
 class Values {
 public:
+	Values( vector < Waypoint > waypoints ) {
+		x = waypoints.size() > 0 ? waypoints[0].x : 0;
+		y = waypoints.size() > 0 ? waypoints[0].y : 0;
+	}
 	int validSqm;
 	int health = 267, mana = 267;
 	bool hungry, paralyze, poison, haste;

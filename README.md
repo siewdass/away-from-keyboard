@@ -1,3 +1,3 @@
-./install.sh\
-./build.sh\
+./install.sh \
+./build.sh \
 ./package.sh

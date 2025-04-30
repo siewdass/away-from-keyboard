@@ -4,21 +4,18 @@
 #include <vector>
 #include <sys/stat.h>
 
-namespace fs = std::filesystem;
-using namespace std;
+vector<vector<string>> data = {{"", ""}, {"", ""}, {"", ""}, {"", ""}, {"", ""}, {"", ""}};
 
-vector<vector<string>> data = {{"", ""}, {"", ""}, {"", ""}, {"", ""}};
-
-vector<string> get_files(const string& directory) {
+vector<string> getJson(string directory) {
   vector<string> files;
-  for (const auto& entry : fs::directory_iterator(directory)) {
-    files.push_back(entry.path().stem().string());
+  for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+      files.push_back(entry.path().stem().string());
   }
   return files;
 }
 
-vector<string> characters = get_files("/opt/afk/characters");
-vector<string> waypoints = get_files("/opt/afk/waypoints");
+vector<string> characters = getJson("/opt/afk/characters");
+vector<string> waypoints = getJson("/opt/afk/waypoints");
 
 void open_worker(GtkWidget *widget, gpointer data) {
   int id = GPOINTER_TO_INT(data);
@@ -54,9 +51,7 @@ void on_window_closed(GtkWidget *widget, gpointer data) {
 void on_start_clicked(GtkWidget *widget, gpointer mydata) {
   int id = GPOINTER_TO_INT(mydata);
   if (!::data[id][0].empty() && !::data[id][1].empty()) {
-    string cmd = "DISPLAY=:" + to_string(id) + " /opt/afk/afk " + ::data[id][0] + ".json " + ::data[id][1] + ".json";
-    g_print("test cmd: %s\n", cmd.c_str());
-    system(cmd.c_str());
+    execute(id, ::data[id][0] + ".json ", ::data[id][1] + ".json");
   } else {
     g_print("Empty character or waypoint name!\n");
   }
@@ -142,7 +137,7 @@ GtkWidget* create_page(int id) {
   return box;
 }
 
-int main(int argc, char *argv[]) {
+void interface( int argc, char** argv ) {
   gtk_init(&argc, &argv);
 
   GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -161,6 +156,5 @@ int main(int argc, char *argv[]) {
 
   gtk_widget_show_all(window);
   gtk_main();
-  
-  return 0;
+
 }

@@ -6,7 +6,6 @@
 #include <opencv2/highgui.hpp>
 #include "shared.h"
 #include "character.h"
-#include "utils.h"
 #include "inputs.h"
 #include "path.h"
 #include "global.h"
@@ -59,7 +58,7 @@ public:
     void autoAttack( vector < Point > );
     tuple < int, int > gameWindow( int, int );
     tuple < int, int > mapWindow( int, int );
-    Time time;
+
     Inputs inputs;
     Path path;
     int cout = 0;

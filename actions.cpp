@@ -1,7 +1,9 @@
+#include "new/util.h"
 #include <cmath>
 #include "actions.h"
 #include <iostream>
 #include <random>
+
 
 std::random_device rd;
 std::mt19937 gen(rd());
@@ -25,7 +27,7 @@ tuple < int, int > Actions::mapWindow( int x, int y ) {
 
 tuple < bool, string, string, string, string, int, int, int > Actions::potions( int health, int mana ) {
     
-    if ( time.clock( ) > potionCooldown ) {
+    if ( timer.clock( ) > potionCooldown ) {
         if ( health <= 135 ) {
             potionCooldown = time.clock( ) + 1050;
             return make_tuple( true, "keyboard", "2", "", "Health Potion", 0, 0, 0 );
@@ -39,28 +41,28 @@ tuple < bool, string, string, string, string, int, int, int > Actions::potions( 
 
 tuple < bool, string, string, string, string, int, int, int > Actions::supporter( Values values ) {
     
-    if ( time.clock( ) > healCooldown ) {
-        if ( time.clock( ) > healCooldown1 ) {
+    if ( timer.clock( ) > healCooldown ) {
+        if ( timer.clock( ) > healCooldown1 ) {
             if ( values.health <= 236 ) {
                 if ( values.mana >= 10 ) {
-                    healCooldown = time.clock( ) + 1050;
-                    healCooldown1 = time.clock( ) + 63000;
+                    healCooldown = timer.clock( ) + 1050;
+                    healCooldown1 = timer.clock( ) + 63000;
                     return make_tuple( true, "keyboard", "F1", "", "Utura Gran", 0, 0, 0 );
                 }
             }
-        } else if ( time.clock( ) > healCooldown2 ) {
+        } else if ( timer.clock( ) > healCooldown2 ) {
             if ( values.health <= 170 || values.paralyze ) {
                 if ( values.mana >= 10 ) {
-                    healCooldown = time.clock( ) + 1050;
-                    healCooldown2 = time.clock( ) + 1050;
+                    healCooldown = timer.clock( ) + 1050;
+                    healCooldown2 = timer.clock( ) + 1050;
                     return make_tuple( true, "keyboard", "4", "", "Exura Mead Ico", 0, 0, 0 );
                 }
             }
-        } else if ( time.clock( ) > healCooldown3 ) {
+        } else if ( timer.clock( ) > healCooldown3 ) {
             if ( values.health <= 53 ) {
                 if ( values.mana >= 10 ) {
-                    healCooldown = time.clock( ) + 1050;
-                    healCooldown3 = time.clock( ) + 630000;
+                    healCooldown = timer.clock( ) + 1050;
+                    healCooldown3 = timer.clock( ) + 630000;
                     return make_tuple( true, "keyboard", "9", "", "Exura Gran Ico", 0, 0, 0 );
                 }
             }
@@ -99,7 +101,7 @@ bool Actions::looter( ) {
         auto [ x, y ] = Actions::gameWindow( point.x, point.y );
         inputs.mouse( x, y, 3 );
         inputs.mouse( x, y, 3 );
-        time.sleep( 130 );
+        timer.sleep( 130 );
 
     }
     inputs.shiftUp( );
@@ -136,7 +138,7 @@ bool Actions::walker( Values values, Character character, vector < vector < vect
         console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
 
         //inputs.keyboard( "Escape" );
-        //time.sleep( 400 );
+        //timer.sleep( 400 );
         inputs.mouse( left + ( pixel * ( x - values.x ) ), top + ( pixel * ( y - values.y ) ), 1 );
     }
 
@@ -154,7 +156,7 @@ void Actions::run( Values values, Point to, vector < vector < vector < int > > >
         console.log( "from x:", values.x, "from y:", values.y, "to x:", x, "to y:", y );
 
         inputs.keyboard( "Escape" );
-        time.sleep( 100 );
+        timer.sleep( 100 );
         inputs.mouse( left + ( pixel * ( x - values.x ) ), top + ( pixel * ( y - values.y ) ), 1 );
     }
 
@@ -169,7 +171,7 @@ bool Actions::lootway( Values values, vector < vector < vector < int > > > map, 
         old = values.minimap;
     } if ( count >= 3 ) {
         count = 0;
-        if ( time.clock( ) > walkCoolDown ) {
+        if ( timer.clock( ) > walkCoolDown ) {
 
             if ( values.x == lootpoint.x &&
                  values.y == lootpoint.y ) {

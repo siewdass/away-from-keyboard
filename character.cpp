@@ -1,13 +1,13 @@
 #include "character.h"
 #include "utils.h"
 
-void Character::load( const char* c, const char* w ) {
+Character::Character( string c, string w ) {
 
 	Json config;
-	config.open( c );
+	config.open( c.c_str() );
 
 	Json configw;
-	configw.open( w );
+	configw.open( w.c_str()  );
 
 	vocation = config.readString( "Vocation" ).c_str( );
 

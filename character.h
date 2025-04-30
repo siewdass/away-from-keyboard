@@ -9,6 +9,7 @@ using namespace std;
 
 class Character {
 public:
+	Character(string, string);
 	string vocation = "";
 	string bloodrage = "";
 	string challenge = "";
@@ -56,7 +57,6 @@ public:
 	string leave = "";
 	vector < Waypoint > waypoints;
 	vector < Waypoint > walkable;
-	void load( const char*, const char* );
 };
 
 #endif // CHARACTER_H
