@@ -737,12 +737,4 @@ int main( int argc, char** argv ) {
 	return 0;
 }
 
-// cambiar Values a Player
-// pasar todo a un solo utils
-// crear una clase para knight otra para rp y asi
-// astar pasa a ser pathfinder
 
-// detectar cantidad de vida segun pixeles internos de la barra de vida
-// knight pegarle al que tiene mas vida
-// paladin pegarle a los de la cruz
-// autoattack y box de paladin en 1 solo

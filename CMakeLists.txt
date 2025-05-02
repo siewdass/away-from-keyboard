@@ -45,6 +45,9 @@ include_directories( ${X11_INCLUDE_DIR} )
 #) 
 
 set( GUI_SOURCE
+     ${CMAKE_SOURCE_DIR}/astar.cpp
+     ${CMAKE_SOURCE_DIR}/path.cpp
+     ${CMAKE_SOURCE_DIR}/actions.cpp
      ${CMAKE_SOURCE_DIR}/character.cpp
      ${CMAKE_SOURCE_DIR}/acknow.cpp
      ${CMAKE_SOURCE_DIR}/viewport.cpp

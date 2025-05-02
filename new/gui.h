@@ -30,6 +30,7 @@ void open_worker(GtkWidget *widget, gpointer data) {
 void close_worker(GtkWidget *widget, gpointer data) {
   int id = GPOINTER_TO_INT(data);
   system(string("pkill -f 'Xvfb.*:" + to_string(id) + "'").c_str());
+  // CERRAR PRIMERO EL CLIENT VNCVIEWER
 }
 
 void on_character_changed(GtkComboBox *widget, gpointer data) {
@@ -50,15 +51,19 @@ void on_window_closed(GtkWidget *widget, gpointer data) {
 
 void on_start_clicked(GtkWidget *widget, gpointer mydata) {
   int id = GPOINTER_TO_INT(mydata);
-  if (!::data[id][0].empty() && !::data[id][1].empty()) {
-    execute(id, ::data[id][0] + ".json ", ::data[id][1] + ".json");
-  } else {
-    g_print("Empty character or waypoint name!\n");
+
+  if (*runnings[id] == false) {
+    *runnings[id] = true;
+    if (!::data[id][0].empty() && !::data[id][1].empty()) {
+      execute(id, "/opt/afk/characters/"+ ::data[id][0] + ".json", "/opt/afk/waypoints/"+::data[id][1] + ".json");
+    }
   }
 }
 
-void on_stop_clicked(GtkWidget *widget, gpointer data) {
-  g_print("Stop button clicked\n");
+void on_stop_clicked(GtkWidget *widget, gpointer mydata) {
+  int id = GPOINTER_TO_INT(mydata);
+  *runnings[id] = false;
+  g_print("Stop\n");
 }
 
 GtkWidget* create_page(int id) {

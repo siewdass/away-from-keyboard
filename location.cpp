@@ -26,35 +26,38 @@ void Location::walkable( vector < Waypoint > walkable ) {
 }
 
 tuple < int, int, int, int > Location::update( Mat FloorIndex, Mat Minimap, int x, int y ) {
-	int z = 0;
+	int z = 0, valid = -1;
 
-	for ( int i = 0; i < FloorIndex.rows; i+=4 ) {
-		if ( FloorIndex.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) break;
-		z++;
-	}
+	try  {
+		for ( int i = 0; i < FloorIndex.rows; i+=4 ) {
+			if ( FloorIndex.at < Vec3b > ( i, 0 ) == Vec3b( 38, 38, 37 ) ) break;
+			z++;
+		}
 
-	if ( x == 0 && y == 0 ) {
-		for ( int i = 16; i < maps[ z ].rows - 16; i++ ) {
-			for ( int j = 16; j < maps[ z ].cols - 16; j++ ) {
-				if ( compare( j, i, z, Minimap ) ) {
-					x = j, y = i;
+		if ( x == 0 && y == 0 ) {
+			for ( int i = 16; i < maps[ z ].rows - 16; i++ ) {
+				for ( int j = 16; j < maps[ z ].cols - 16; j++ ) {
+					if ( compare( j, i, z, Minimap ) ) {
+						x = j, y = i;
+					}
 				}
 			}
+		} else {
+			auto [ X, Y ] = find( x, y, z, Minimap );
+			x = X;
+			y = Y;
 		}
-	} else {
-		auto [ X, Y ] = find( x, y, z, Minimap );
-		x = X;
-		y = Y;
-	}
 
-	int valid = -1;
-
-	for ( int i = y - 1; i < y + 2; ++i ) {
-		for ( int j = x - 1; j < x + 2; ++j ) {
-			if ( paths[ z ][ i ][ j ] == 1 ) valid++;
+		for ( int i = y - 1; i < y + 2; ++i ) {
+			for ( int j = x - 1; j < x + 2; ++j ) {
+				if ( paths[ z ][ i ][ j ] == 1 ) valid++;
+			}
 		}
-	}
 
+	} catch (exception& e) {
+		console.log(e.what());
+	}
+	
 	//imwrite( "minimap.png", Minimap );
 
 	return make_tuple( x, y, z, valid );

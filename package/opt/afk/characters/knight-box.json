@@ -1,6 +1,6 @@
 {
   "Vocation": "knight",
-  "Knight":{
+  "Knight": {
     "BloodRage": "",
     "Challenge": "",
     "ChivalrousChallenge": "",
@@ -12,24 +12,22 @@
     "BrutalStrike": "y",
     "WhirlwindThrow": "g"
   },
-  "Paladin":{
+  "Paladin": {
     "Sharpshooter": "",
     "DivineDazzle": "",
-    "Salvation": "",
     "DivineCaldera": "",
     "AreaRune": "",
     "StrongEtherealSpear": "",
     "EtherealSpear": "",
-    "DivineMissile": "r",
+    "DivineMissile": "",
     "CureCurse": "",
-    "Quiver": "",
-    "Throwing": "f"
+    "Quiver": { "First": "", "Second": "" },
+    "Ammunition": "",
+    "Throwing": ""
   },
-  "Healing1": { "Percent": 60, "Hotkey": "4" },
-  "Healing2": { "Percent": 0, "Hotkey": "" },
-  "Healing3": { "Percent": 0, "Hotkey": "" },
+  "Healing": { "Percent": 70, "Hotkey": "4" },
   "HealthPotion": { "Percent": 40, "Hotkey": "2" },
-  "ManaPotion": { "Percent": 50, "Hotkey": "3" },
+  "ManaPotion": { "Percent": 70, "Hotkey": "3" },
   "Recovery": "p",
   "Haste": "b",
   "CurePoison": "",

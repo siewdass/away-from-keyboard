@@ -18,7 +18,7 @@ gint res;
 
 gboolean update_label( gpointer data ) {
   GtkWidget *label_child = gtk_bin_get_child(GTK_BIN(xyz));
-  gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d | Y: %d | Z: %d", values.x, values.y, values.z));
+  gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d | Y: %d | Z: %d", player.x, player.y, player.z));
   return TRUE;
 }
 
@@ -70,7 +70,7 @@ void Restart( ) {
 }
 
 void Clipboard( ) {
-  system( string( "echo '{ \"x\": "+ to_string( values.x ) +", \"y\": "+ to_string( values.y ) +", \"z\": "+ to_string( values.z ) +", \"action\": \"\", \"optional\": null }' | xclip -selection clipboard" ).c_str() );
+  system( string( "echo '{ \"x\": "+ to_string( player.x ) +", \"y\": "+ to_string( player.y ) +", \"z\": "+ to_string( player.z ) +", \"action\": \"\", \"optional\": null }' | xclip -selection clipboard" ).c_str() );
 }
 
 void Interface( int argc, char** argv ) {

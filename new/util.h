@@ -10,6 +10,10 @@
 #include <vector>
 #include <filesystem>
 
+#pragma once
+#include <atomic>
+#include <memory>
+
 namespace Jsoncpp = Json;
 
 #define Json _Json

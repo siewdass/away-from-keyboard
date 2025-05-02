@@ -6,9 +6,7 @@
 #include <opencv2/highgui.hpp>
 #include "shared.h"
 #include "character.h"
-#include "inputs.h"
 #include "path.h"
-#include "global.h"
 
 using namespace cv;
 using namespace std;
@@ -42,24 +40,23 @@ public:
     int runPosition = 0;    
     int walkCoolDown = 0;
     int x = 0, y = 0, z = 0;
-    //int position = 0;
+    
     int left = 898, top = 59, pixel = 1;
     Point from, to;
     int valid;
 
-    bool looter( );
-    void throwFlask( Values values );
-    bool walker( Values, Character, vector < vector < vector < int > > > );
-    void run( Values, Point, vector < vector < vector < int > > > );
-    bool lootway( Values, vector < vector < vector < int > > >, Point);
+    vector < tuple < int, int > > looter( );
+    vector<tuple<int, int>> throwFlask( Player );
+    tuple<bool, int, int> walker( Player, Character, vector < vector < vector < int > > >, atomic<int>& );
+    void run( Player, Point, vector < vector < vector < int > > > );
+    bool lootway( Player, vector < vector < vector < int > > >, Point);
     tuple < bool, string, string, string, string, int, int, int > potions( int, int );
-    tuple < bool, string, string, string, string, int, int, int > supporter( Values );
-    bool attacker( Values );
+    tuple < bool, string, string, string, string, int, int, int > supporter( Player );
+    bool attacker( Player );
     void autoAttack( vector < Point > );
     tuple < int, int > gameWindow( int, int );
     tuple < int, int > mapWindow( int, int );
 
-    Inputs inputs;
     Path path;
     int cout = 0;
 

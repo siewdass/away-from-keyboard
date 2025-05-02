@@ -5,15 +5,16 @@
 
 #include <string>
 #include <iostream>
+#include "types.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
 using namespace std;
 using namespace cv;
 
-class Values {
+class Player {
 public:
-	Values( vector < Waypoint > waypoints ) {
+	Player( vector < Waypoint > waypoints ) {
 		x = waypoints.size() > 0 ? waypoints[0].x : 0;
 		y = waypoints.size() > 0 ? waypoints[0].y : 0;
 	}

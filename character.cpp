@@ -1,15 +1,12 @@
 #include "character.h"
-#include "utils.h"
+#include "new/util.h"
 
 Character::Character( string c, string w ) {
 
 	Json config;
-	config.open( c.c_str() );
+	config.open( c.c_str( ) );
 
-	Json configw;
-	configw.open( w.c_str()  );
-
-	vocation = config.readString( "Vocation" ).c_str( );
+	vocation = config.readString( "Vocation" );
 
 	Json knight = config.readObject( "Knight" );
 	bloodrage = knight.readString( "BloodRage" );
@@ -32,20 +29,16 @@ Character::Character( string c, string w ) {
 	etherealspear = paladin.readString( "EtherealSpear" );
 	divinemissile = paladin.readString( "DivineMissile" );
 	curecurse = paladin.readString( "CureCurse" );
-	quiver = paladin.readString( "Quiver" );
 	throwing = paladin.readString( "Throwing" );
+	ammunition = paladin.readString( "Ammunition" );
+	
+	Json qv =  paladin.readObject( "Quiver" );
+	quiver1 = qv.readString( "First" );
+	quiver2 = qv.readString( "Second" );
 
-	Json h1 = config.readObject( "Healing1" );
-	healing1 = h1.readString( "Hotkey" );
-	healing1percent = h1.readInteger( "Percent" );
-
-	Json h2 = config.readObject( "Healing2" );
-	healing2 = h2.readString( "Hotkey" );
-	healing2percent = h2.readInteger( "Percent" );
-
-	Json h3 = config.readObject( "Healing3" );
-	healing3 = h3.readString( "Hotkey" );
-	healing3percent = h3.readInteger( "Percent" );
+	Json h = config.readObject( "Healing" );
+	healing = h.readString( "Hotkey" );
+	healingpercent = h.readInteger( "Percent" );
 
 	Json hp = config.readObject( "HealthPotion" );
 	healthpotion = hp.readString( "Hotkey" );
@@ -69,8 +62,11 @@ Character::Character( string c, string w ) {
 	rope = config.readString( "Rope" );
 	hunt = config.readString( "Hunt" );
 	leave = config.readString( "Leave" );
-	
+
 	waypoints.clear( );
+
+	Json configw;
+	configw.open( w.c_str( ) );
 
 	for ( Json waypoint: configw.readArray( "Waypoints" ) ) {
 		Waypoint wp;
@@ -80,14 +76,6 @@ Character::Character( string c, string w ) {
 		wp.action = waypoint.readString( "action" );
 		waypoints.push_back( wp );
 	}
-
-	/*for ( Json waypoint: configw.readArray( "Walkable" ) ) {
-		Waypoint wp;
-		wp.x = waypoint.readInteger( "x" );
-		wp.y = waypoint.readInteger( "y" );
-		wp.z = waypoint.readInteger( "z" );
-		walkable.push_back( wp );
-	}*/
 
 }
 
