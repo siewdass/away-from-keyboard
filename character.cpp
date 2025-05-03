@@ -1,5 +1,5 @@
 #include "character.h"
-#include "new/util.h"
+#include "util.h"
 
 Character::Character( string c, string w ) {
 

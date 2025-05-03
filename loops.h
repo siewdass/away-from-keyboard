@@ -2,20 +2,13 @@
 #include "inputs.h"
 #include "screenshot.h"
 
-#include "../types.h"
-#include "../shared.h"
-#include "../path.h"
-#include "../location.h"
-#include "../stats.h"
-#include "../viewport.h"
-#include "../character.h"
-#include "../actions.h"
+#include "shared.h"
+#include "location.h"
+#include "character.h"
 
-Path path;
-Stats stats;
-Viewport viewport;
+#include "procedure.h"
+
 Location location;
-Actions actions;
 
 void locationThread(atomic<bool>& running, Screenshot& screenshot, Inputs& inputs, Player& player) {
 
@@ -53,13 +46,14 @@ void locationThread(atomic<bool>& running, Screenshot& screenshot, Inputs& input
 void statsThread(atomic<bool>& running, Screenshot& screenshot, Inputs& inputs, Player& player) {
 
 	int width = 1012, middle = ( 1012 / 2 );
+	int AlarmCount = 0;
 	Mat HP, MP, BD, FK, Player, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY, GameWindow, Monsters;
 
 	while ( running ) {
 
 		GameWindow = screenshot.get( 189, 40, 615, 451 );
 		
-		auto [ box, monsters, side, isTargeting, targetPosition, _ ] = viewport.check( GameWindow );
+		auto [ box, monsters, side, isTargeting, targetPosition, _ ] = procedure.viewport( GameWindow );
 
 		player.box = box;
 		player.monsters = monsters;
@@ -80,7 +74,7 @@ void statsThread(atomic<bool>& running, Screenshot& screenshot, Inputs& inputs, 
 		Monsters = screenshot.get( 23, 72, 1, 174 );
 		//imwrite( "screenshot.png", GameWindow );
 
-		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, near, weapon, necklace, ring, lowcapacity, target ] = stats.update( CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters );
+		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, near, weapon, necklace, ring, lowcapacity, target ] = procedure.stats( CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters, AlarmCount);
 
 		player.health = health;
 		player.mana = mana;
@@ -105,6 +99,8 @@ void statsThread(atomic<bool>& running, Screenshot& screenshot, Inputs& inputs, 
 
 void alternatorThread(atomic<bool>& running, Mode& mode, Inputs& inputs, Player& player, Character& character, atomic<int>& position) {
     
+	int count = 0;
+
 	while ( running ) {
 
 		if ( mode.walking ) {
@@ -115,23 +111,29 @@ void alternatorThread(atomic<bool>& running, Mode& mode, Inputs& inputs, Player&
 					mode.attacking = true;
 					mode.walking = false;
 				} else {
-					auto [ attacking, X, Y ] = actions.walker( player, character, location.paths, position );
-					inputs.mouse( X, Y, 1 );
-					mode.attacking = attacking;
-					if ( mode.attacking ) mode.walking = false;
-					timer.sleep( 500 );
+					auto [ attacking, X, Y ] = procedure.walker( player, character, location.paths, position );
+					if ( !attacking && X != 0 && Y != 0 ) {
+						inputs.mouse( X, Y, 1 );
+					} else if ( attacking ) {
+						mode.attacking = true;
+						mode.walking = false;
+					}
+					timer.sleep( 2000 );
 				}
 			}
 
 		} else if ( mode.attacking ) {		
 
-			mode.looting = actions.attacker( player );
+			if ( player.box == 0 ) count++;
+			else count = 0;
+
+			mode.looting = count == 5;
 			if ( mode.looting ) mode.attacking = false;
 
 		} else if ( mode.looting ) {
 
 			inputs.shiftDown( );
-			for ( auto [ X, Y ] : actions.looter( ) ) {
+			for ( auto [ X, Y ] : procedure.looter( ) ) {
 				inputs.mouse( X, Y, 3 );
 				timer.sleep( 130 );
 			}
@@ -140,7 +142,7 @@ void alternatorThread(atomic<bool>& running, Mode& mode, Inputs& inputs, Player&
 			mode.looting = false;
 			mode.walking = true;
 
-			for ( auto [ flaskX, flaskY ] : actions.throwFlask( player ) ) inputs.mouseDrag( flaskX, flaskY );
+			for ( auto [ flaskX, flaskY ] : procedure.throwFlask( player ) ) inputs.mouseDrag( flaskX, flaskY );
 
 		}
 

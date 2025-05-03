@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Tibia
-Comment=Start a tibia client
-Exec=/opt/afk/vncviewer
-Icon=/opt/afk/tibia.ico
-Terminal=false
-Type=Application

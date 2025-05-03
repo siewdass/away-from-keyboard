@@ -4,3 +4,4 @@ Exec=/opt/afk/afk
 Icon=/opt/afk/t1.png
 Terminal=false
 Type=Application
+Categories=Game;

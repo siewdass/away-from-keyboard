@@ -3,21 +3,34 @@
 
 #include <string>
 #include <tuple>
+#include <memory>
 
-using namespace std;
+// Use the exact same declaration as xdo.h
+extern "C" {
+   typedef struct xdo xdo_t;
+}
 
 class Inputs {
+private:
+   struct XdoDeleter {
+      void operator()(xdo_t* xdo) const;
+   };
+   std::unique_ptr<xdo_t, XdoDeleter> xdo_;
+
 public:
-   void load( const char* );
-   void mouse( int, int, int );
-   void mouseMove( int, int );
-   void mouseDrag( int, int );
-   tuple < int, int > mouseLocation( );
-   void keyboard( std::string );
-   void keywith( const char* );
-   void shiftDown( );
-   void shiftUp( );
-   ~Inputs( );
+   explicit Inputs(const std::string& display = "");
+   void mouse(int x, int y, int button);
+   void mouseMove(int x, int y);
+   void mouseDrag(int x, int y);
+   std::tuple<int, int> mouseLocation();
+   void keyboard(std::string key);
+   void keywith(const char* key);
+   void shiftDown();
+   void shiftUp();
+
+   ~Inputs() = default;
+   Inputs(const Inputs&) = delete;
+   Inputs& operator=(const Inputs&) = delete;
 };
 
-#endif // INPUTS_H
+#endif

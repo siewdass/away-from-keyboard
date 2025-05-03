@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Tibia
+Exec=/usr/bin/Xephyr
+Icon=/opt/afk/tibia.ico
+Terminal=false
+Type=Application

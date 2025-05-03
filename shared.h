@@ -5,12 +5,36 @@
 
 #include <string>
 #include <iostream>
-#include "types.h"
+#include <queue>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
 using namespace std;
 using namespace cv;
+
+struct PathNode {
+    Point pos;
+    Point parent;
+    int g;  // Cost from start
+
+    PathNode(Point p, Point par, int cost) 
+        : pos(p), parent(par), g(cost) {}
+};
+
+struct Waypoint {
+	int x, y, z;
+	string action = "attack"; // walk, rope, stairs
+	int direction = 1;
+};
+
+struct Position {
+	int x, y, z;
+	string img;
+};
+
+struct Pixel {
+	int r, g, b;
+};
 
 class Player {
 public:
@@ -40,24 +64,6 @@ public:
 class Mode {
 public:
 	bool walking = true, attacking = false, looting = false;
-};
-
-class Client {
-public:
-	string process( string cmd ) {
-		const int MAX_BUFFER = 2048;
-		char buffer[ MAX_BUFFER ];
-		FILE *stream = popen( cmd.c_str( ) , "r" );
-		if ( stream ) {
-			while ( !feof( stream ) ) {
-				if ( fgets( buffer, MAX_BUFFER, stream ) != NULL) { }
-			}
-			pclose( stream );
-		}
-		string v{ buffer };
-		v.pop_back( );
-		return v;
-	}
 };
 
 #endif // SHARED_H

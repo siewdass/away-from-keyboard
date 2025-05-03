@@ -1,7 +1,7 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-#include "types.h"
+#include "shared.h"
 #include <vector>
 #include <opencv2/opencv.hpp>
 

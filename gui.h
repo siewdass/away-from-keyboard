@@ -1,125 +1,202 @@
-#ifndef GUI_H
-#define GUI_H
-
-#pragma once
-
 #include <gtk/gtk.h>
-#include <libayatana-appindicator3-0.1/libayatana-appindicator/app-indicator.h>
 #include <filesystem>
-#include "global.h"
+#include <string>
+#include <vector>
+#include <sys/stat.h>
 
-bool Pause = false;
-bool Stop = false;
-string which = "0";
+vector<vector<string>> data = {{"", ""}, {"", ""}, {"", ""}, {"", ""}, {"", ""}, {"", ""}};
 
-AppIndicator* appindicator;
-GtkWidget *menu, *play, *stop, *restart, *vocation, *waypoints, *clientid, *quit, *dialog, *xyz;
-gint res;
-
-gboolean update_label( gpointer data ) {
-  GtkWidget *label_child = gtk_bin_get_child(GTK_BIN(xyz));
-  gtk_label_set_text(GTK_LABEL(label_child), g_strdup_printf("X: %d | Y: %d | Z: %d", player.x, player.y, player.z));
-  return TRUE;
-}
-
-void open_character( GtkWidget* widget, gpointer data ) {
-  dialog = gtk_file_chooser_dialog_new( "Choose Character json file.", NULL, GTK_FILE_CHOOSER_ACTION_OPEN, "_Cancel", GTK_RESPONSE_CANCEL, "_Open", GTK_RESPONSE_ACCEPT, NULL );
-  res = gtk_dialog_run( GTK_DIALOG( dialog ) );
-  if ( res == GTK_RESPONSE_ACCEPT ) {
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER( dialog );
-    CHARACTER = string( gtk_file_chooser_get_filename( chooser ) );
+vector<string> getJson(string directory) {
+  vector<string> files;
+  for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+      files.push_back(entry.path().stem().string());
   }
-  gtk_widget_destroy( dialog );
+  return files;
 }
 
-void open_waypoints( GtkWidget* widget, gpointer data ) {
-  dialog = gtk_file_chooser_dialog_new( "Choose Waypoint json file.", NULL, GTK_FILE_CHOOSER_ACTION_OPEN, "_Cancel", GTK_RESPONSE_CANCEL, "_Open", GTK_RESPONSE_ACCEPT, NULL );
-  res = gtk_dialog_run( GTK_DIALOG( dialog ) );
-  if ( res == GTK_RESPONSE_ACCEPT ) {
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER( dialog );
-    WAYPOINTS = string( gtk_file_chooser_get_filename( chooser ) );
-    //console.log( WAYPOINTS );
-    position = 0;
+vector<string> characters = getJson("/opt/afk/characters");
+vector<string> waypoints = getJson("/opt/afk/waypoints");
+
+void open_worker(GtkWidget *widget, gpointer data) {
+  int id = GPOINTER_TO_INT(data);
+  if (!filesystem::exists(string("/tmp/.X11-unix/X" + to_string(id)).c_str())) { 
+    string script = R"(
+      #!/usr/bin/env bash
+      Xephyr -br -ac -noreset -screen 1012x642 -title "Tibia )" + to_string(id) + R"(" :)" + to_string(id) + R"( >/dev/null 2>&1 &
+      sleep 0.1
+      
+      DISPLAY=:)" + to_string(id) + R"( /opt/tibia/Tibia >/dev/null 2>&1 &
+      
+      while true; do
+        CLIENT=$(DISPLAY=:)" + to_string(id) + R"( xdotool search --onlyvisible --name Tibia)
+        if [ -n "$CLIENT" ]; then
+          DISPLAY=:)" + to_string(id) + R"( xdotool windowmove $CLIENT 0 0
+          DISPLAY=:)" + to_string(id) + R"( xdotool windowsize $CLIENT 1012 642
+          break 
+        fi
+        sleep 0.3
+      done
+      
+      # Clipboard synchronization loop
+      (
+        while [ -S "/tmp/.X11-unix/X)" + to_string(id) + R"(" ]; do
+          clipboard0=$(xclip -display :0 -o -selection clipboard 2>/dev/null)
+          clipboard1=$(xclip -display :)" + to_string(id) + R"( -o -selection clipboard 2>/dev/null)
+          
+          if [ -n "$clipboard0" ] && [ "$clipboard0" != "$clipboard1" ]; then
+            echo "$clipboard0" | xclip -display :)" + to_string(id) + R"( -selection clipboard
+          fi
+          
+          sleep 1
+        done
+      ) &
+    )";
+    
+    system(("bash -c '" + script + "'").c_str());
   }
-  gtk_widget_destroy( dialog );
-}
-
-void open_tibia( GtkWidget *widget, gpointer data ) {
-  if ( !filesystem::exists( string( "/tmp/.X11-unix/X" + which ).c_str( ) ) ) { 
-    system( string( "/opt/afk/client.sh " + which ).c_str( ) );
+  /*
+  if (!filesystem::exists(string("/tmp/.X11-unix/X" + to_string(id)).c_str())) { 
+    system(string("/opt/afk/worker.sh " + to_string(id)).c_str());
   }
+  if (filesystem::exists(string("/tmp/.X11-unix/X" + to_string(id)).c_str())) { 
+    system(string("/opt/afk/viewer.sh " + to_string(id)).c_str());
+  }
+  */
 }
 
-void Quit( ) {
-  gtk_main_quit( );
+void close_worker(GtkWidget *widget, gpointer data) {
+  int id = GPOINTER_TO_INT(data);
+  //system(string("pkill -f 'Xvfb.*:" + to_string(id) + "'").c_str());
+  // CERRAR PRIMERO EL CLIENT VNCVIEWER
 }
 
-void Toggle( ) {
-  if ( CHARACTER != "" && WAYPOINTS != "" && loaded ) {
-    running = !running;
-    gtk_menu_item_set_label( GTK_MENU_ITEM( play ), running ? "Stop" : "Play" );
-    if ( running == true ) {
-      Stop = false;
-      run();
+void on_character_changed(GtkComboBox *widget, gpointer data) {
+  int id = GPOINTER_TO_INT(data);
+  int active = gtk_combo_box_get_active(widget);
+  ::data[id][0] = characters[active];
+}
+
+void on_waypoint_changed(GtkComboBox *widget, gpointer data) {
+  int id = GPOINTER_TO_INT(data);
+  int active = gtk_combo_box_get_active(widget);
+  ::data[id][1] = waypoints[active];
+}
+
+void on_window_closed(GtkWidget *widget, gpointer data) {
+  gtk_main_quit();
+}
+
+void on_start_clicked(GtkWidget *widget, gpointer mydata) {
+  int id = GPOINTER_TO_INT(mydata);
+
+  if (*runnings[id] == false) {
+    *runnings[id] = true;
+    if (!::data[id][0].empty() && !::data[id][1].empty()) {
+      execute(id, "/opt/afk/characters/"+ ::data[id][0] + ".json", "/opt/afk/waypoints/"+::data[id][1] + ".json");
     }
   }
 }
 
-void Restart( ) {
-  position = 0;
+void on_stop_clicked(GtkWidget *widget, gpointer mydata) {
+  int id = GPOINTER_TO_INT(mydata);
+  *runnings[id] = false;
+  g_print("Stop\n");
 }
 
-void Clipboard( ) {
-  system( string( "echo '{ \"x\": "+ to_string( player.x ) +", \"y\": "+ to_string( player.y ) +", \"z\": "+ to_string( player.z ) +", \"action\": \"\", \"optional\": null }' | xclip -selection clipboard" ).c_str() );
+GtkWidget* create_page(int id) {
+  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 7);
+
+  {
+    GtkWidget *label_worker = gtk_label_new("Client:");
+    gtk_label_set_xalign(GTK_LABEL(label_worker), 0.0);
+    gtk_widget_set_margin_start(label_worker, 0);
+    gtk_box_pack_start(GTK_BOX(box), label_worker, FALSE, FALSE, 0);
+
+    GtkWidget *worker_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_box_set_homogeneous(GTK_BOX(worker_box), TRUE);
+
+    GtkWidget *open_btn = gtk_button_new_with_label("Open");
+    GtkWidget *close_btn = gtk_button_new_with_label("Close");
+    
+    g_signal_connect(open_btn, "clicked", G_CALLBACK(open_worker), GINT_TO_POINTER(id));
+    g_signal_connect(close_btn, "clicked", G_CALLBACK(close_worker), GINT_TO_POINTER(id));
+    
+    gtk_box_pack_start(GTK_BOX(worker_box), open_btn, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(worker_box), close_btn, TRUE, TRUE, 0);
+    
+    gtk_box_pack_start(GTK_BOX(box), worker_box, FALSE, FALSE, 5);
+  }
+
+  {
+    GtkWidget *label_bot = gtk_label_new("Bot:");
+    gtk_label_set_xalign(GTK_LABEL(label_bot), 0.0);
+    gtk_widget_set_margin_start(label_bot, 0);
+    gtk_box_pack_start(GTK_BOX(box), label_bot, FALSE, FALSE, 0);
+
+    GtkWidget *bot_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_box_set_homogeneous(GTK_BOX(bot_box), TRUE);
+
+    GtkWidget *start_btn = gtk_button_new_with_label("Start");
+    GtkWidget *stop_btn = gtk_button_new_with_label("Stop");
+    
+    g_signal_connect(start_btn, "clicked", G_CALLBACK(on_start_clicked), GINT_TO_POINTER(id));
+    g_signal_connect(stop_btn, "clicked", G_CALLBACK(on_stop_clicked), GINT_TO_POINTER(id));
+    
+    gtk_box_pack_start(GTK_BOX(bot_box), start_btn, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(bot_box), stop_btn, TRUE, TRUE, 0);
+    
+    gtk_box_pack_start(GTK_BOX(box), bot_box, FALSE, FALSE, 5);
+  }
+
+  {
+    GtkWidget *label_char = gtk_label_new("Character:");
+    gtk_label_set_xalign(GTK_LABEL(label_char), 0.0);
+    gtk_widget_set_margin_start(label_char, 3);
+    gtk_box_pack_start(GTK_BOX(box), label_char, FALSE, FALSE, 0);
+    GtkWidget *dropdown_char = gtk_combo_box_text_new();
+    for (const auto& file : characters) {
+      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(dropdown_char), file.c_str());
+    }
+    gtk_box_pack_start(GTK_BOX(box), dropdown_char, FALSE, FALSE, 0);
+    g_signal_connect(dropdown_char, "changed", G_CALLBACK(on_character_changed), GINT_TO_POINTER(id));
+  }
+
+  {
+    GtkWidget *label_waypoint = gtk_label_new("Waypoint:");
+    gtk_label_set_xalign(GTK_LABEL(label_waypoint), 0.0);
+    gtk_widget_set_margin_start(label_waypoint, 3);
+    gtk_box_pack_start(GTK_BOX(box), label_waypoint, FALSE, FALSE, 0);
+    GtkWidget *dropdown_waypoint = gtk_combo_box_text_new();
+    for (const auto& file : waypoints) {
+      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(dropdown_waypoint), file.c_str());
+    }
+    gtk_box_pack_start(GTK_BOX(box), dropdown_waypoint, FALSE, FALSE, 0);
+    g_signal_connect(dropdown_waypoint, "changed", G_CALLBACK(on_waypoint_changed), GINT_TO_POINTER(id));
+  }
+
+  gtk_container_set_border_width(GTK_CONTAINER(box), 10);
+
+  return box;
 }
 
-void Interface( int argc, char** argv ) {
+void interface( int argc, char** argv ) {
+  gtk_init(&argc, &argv);
 
-  if ( argc == 2 ) {
-		which = argv[ 1 ];
-	}
-	
-  TIBIA = string( ":" + which );
+  GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(window), "AFK");
+  gtk_window_set_default_size(GTK_WINDOW(window), 350, 350);
+  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+  g_signal_connect(window, "destroy", G_CALLBACK(on_window_closed), NULL);
 
-  gtk_init( &argc, &argv );
+  GtkWidget *notebook = gtk_notebook_new();
+  gtk_container_add(GTK_CONTAINER(window), notebook);
 
-  const char* ico = string( "/opt/afk/t" + which + ".png" ).c_str( );
-  
-  appindicator = app_indicator_new( "AFK", ico, APP_INDICATOR_CATEGORY_APPLICATION_STATUS );
+  for (int i = 1; i <= 6; i++) {
+    GtkWidget *page = create_page(i);
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), page, gtk_label_new(to_string(i).c_str()));
+  }
 
-  menu = gtk_menu_new( );
-  play = gtk_menu_item_new_with_label( "Play" );
-  restart = gtk_menu_item_new_with_label( "Restart" );
-  clientid = gtk_menu_item_new_with_label( "Client" );
-  vocation = gtk_menu_item_new_with_label( "Character" );
-  waypoints = gtk_menu_item_new_with_label( "Waypoints" );
-  xyz = gtk_menu_item_new_with_label( "X: 0 | Y: 0 | Z: 0" );
-  quit = gtk_menu_item_new_with_label( "Quit" );
+  gtk_widget_show_all(window);
+  gtk_main();
 
-  g_signal_connect( play, "activate", G_CALLBACK( Toggle ), appindicator );
-  g_signal_connect( restart, "activate", G_CALLBACK( Restart ), appindicator );
-  g_signal_connect( clientid, "activate", G_CALLBACK( open_tibia ), appindicator );
-  g_signal_connect( vocation, "activate", G_CALLBACK( open_character ), appindicator );
-  g_signal_connect( waypoints, "activate", G_CALLBACK( open_waypoints ), appindicator );
-  g_signal_connect( xyz, "activate", G_CALLBACK( Clipboard ), appindicator );
-	g_signal_connect( quit, "activate", G_CALLBACK( Quit ), appindicator );
-
-  gtk_menu_shell_append( GTK_MENU_SHELL( menu ), play );
-  gtk_menu_shell_append( GTK_MENU_SHELL( menu ), restart );
-  gtk_menu_shell_append( GTK_MENU_SHELL( menu ), clientid );
-  gtk_menu_shell_append( GTK_MENU_SHELL( menu ), vocation );
-  gtk_menu_shell_append( GTK_MENU_SHELL( menu ), waypoints );
-  gtk_menu_shell_append( GTK_MENU_SHELL( menu ), xyz );
-  gtk_menu_shell_append( GTK_MENU_SHELL( menu ), quit );
-  gtk_widget_show_all( menu );
-
-  app_indicator_set_status( appindicator, APP_INDICATOR_STATUS_ACTIVE );
-  app_indicator_set_attention_icon( appindicator, "dialog-warning" );
-  app_indicator_set_menu( appindicator, GTK_MENU( menu ) );
-
-  g_timeout_add_seconds(1, update_label, NULL);
-
-  gtk_main( );
 }
-
-#endif

@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <opencv2/opencv.hpp>
-#include "types.h"
+#include "shared.h"
 #include <vector>
 
 using namespace std;

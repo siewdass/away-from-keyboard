@@ -4,24 +4,41 @@
 #include <chrono>
 #include <thread>
 #include <jsoncpp/json/json.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui.hpp>
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <vector>
 #include <filesystem>
 
+#pragma once
+#include <atomic>
+#include <memory>
+#include <random>
+#include <cmath>
+
 namespace Jsoncpp = Json;
+
 #define Json _Json
-#define time _time
 #define Array std::vector
 
+using namespace std::chrono;
 using namespace std;
 
-class Time {
+class {
 	public:
-		void sleep( int ms );
-		double clock( );
-};
+		void sleep( int ms ) {
+            std::this_thread::sleep_for( milliseconds( ms ) );
+        };
+		double clock( ) {
+            return duration_cast < milliseconds > ( 
+                time_point_cast < milliseconds > ( 
+                    high_resolution_clock::now( ) 
+                ).time_since_epoch( ) 
+            ).count( );
+        }
+} timer;
 
 class {
 public:
@@ -185,5 +202,15 @@ class Json {
 		data[ key ].append( tmp );
 	}
 };
+
+class {
+public:
+	int plusMinus() {
+		random_device rd;
+		mt19937 gen(rd());
+		uniform_int_distribution<> dis(-1, 1);
+		return dis(gen);
+	}
+} other;
 
 #endif

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-Xvfb :$1 -screen 0 1012x642x24 -extension RANDR >/dev/null 2>&1 &
+Xephyr -br -ac -noreset -screen 1012x642 -title "Tibia $1" :$1 >/dev/null 2>&1 &
+#Xvfb :$1 -screen 0 1012x642x24 -extension RANDR >/dev/null 2>&1 &
 sleep 0.1
 
-x11vnc -display :$1 -forever -shared -rfbport 590$1 >/dev/null 2>&1 &
-sleep 0.1
+#x11vnc -display :$1 -forever -shared -rfbport 590$1 >/dev/null 2>&1 &
+#sleep 0.1
 
 DISPLAY=:$1 /opt/tibia/Tibia >/dev/null 2>&1 &
 
@@ -17,15 +18,29 @@ while true; do
 	sleep 0.3
 done
 
-(
-    while [ -S "/tmp/.X11-unix/X$1" ]; do
-        clipboard0=$(xclip -display :0 -o -selection clipboard 2>/dev/null)
-        clipboard1=$(xclip -display :$1 -o -selection clipboard 2>/dev/null)
+#(
+#    while [ -S "/tmp/.X11-unix/X$1" ]; do
 
-        if [ -n "$clipboard0" ] && [ "$clipboard0" != "$clipboard1" ]; then
-            echo "$clipboard0" | xclip -display :$1 -selection clipboard
-        fi
+#        clipboard0=$(xclip -display :0 -o -selection clipboard 2>/dev/null)
+#        clipboard1=$(xclip -display :$1 -o -selection clipboard 2>/dev/null)
 
-        sleep 1
-    done
-) &
+#        if [ -n "$clipboard0" ] && [ "$clipboard0" != "$clipboard1" ]; then
+#            echo "$clipboard0" | xclip -display :$1 -selection clipboard
+#        fi
+
+#        sleep 1
+#    done
+#) &
+
+#/opt/afk/vncviewer -viewonly 0 -menukey '' 127.0.0.1:590$1 >/dev/null 2>&1 &
+
+#HOSTNAME=$(hostname)
+
+#while true; do
+#    CLIENT=$(xdotool search --onlyvisible --name "$HOSTNAME:$1 - TigerVNC")
+#    if [ -n "$CLIENT" ]; then
+#        wmctrl -r "$HOSTNAME:$1 - TigerVNC" -T "Tibia $1"
+#        break 
+#    fi
+#    sleep 0.3
+#done
