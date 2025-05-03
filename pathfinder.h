@@ -1,5 +1,5 @@
 #pragma once
-#include "shared.h"
+#include "util.h"
 #include "pathfinder.h"
 
 class Pathfinder {

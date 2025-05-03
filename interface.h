@@ -94,12 +94,21 @@ void on_start_clicked(GtkWidget *widget, gpointer mydata) {
     if (!::data[id][0].empty() && !::data[id][1].empty()) {
       execute(id, "/opt/afk/characters/"+ ::data[id][0] + ".json", "/opt/afk/waypoints/"+::data[id][1] + ".json");
     }
+  } else if (*pauses[id] == true) {
+    *pauses[id] = false;
   }
+}
+
+void on_pause_clicked(GtkWidget *widget, gpointer mydata) {
+  int id = GPOINTER_TO_INT(mydata);
+  if (*pauses[id] == false) *pauses[id] = true;
+  g_print("Pause\n");
 }
 
 void on_stop_clicked(GtkWidget *widget, gpointer mydata) {
   int id = GPOINTER_TO_INT(mydata);
-  *runnings[id] = false;
+  if (*runnings[id] == true) *runnings[id] = false;
+  else if (*pauses[id] == true) *pauses[id] = false;
   g_print("Stop\n");
 }
 
@@ -137,12 +146,15 @@ GtkWidget* create_page(int id) {
     gtk_box_set_homogeneous(GTK_BOX(bot_box), TRUE);
 
     GtkWidget *start_btn = gtk_button_new_with_label("Start");
+    GtkWidget *pause_btn = gtk_button_new_with_label("Pause");
     GtkWidget *stop_btn = gtk_button_new_with_label("Stop");
     
     g_signal_connect(start_btn, "clicked", G_CALLBACK(on_start_clicked), GINT_TO_POINTER(id));
+    g_signal_connect(pause_btn, "clicked", G_CALLBACK(on_pause_clicked), GINT_TO_POINTER(id));
     g_signal_connect(stop_btn, "clicked", G_CALLBACK(on_stop_clicked), GINT_TO_POINTER(id));
     
     gtk_box_pack_start(GTK_BOX(bot_box), start_btn, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(bot_box), pause_btn, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(bot_box), stop_btn, TRUE, TRUE, 0);
     
     gtk_box_pack_start(GTK_BOX(box), bot_box, FALSE, FALSE, 5);

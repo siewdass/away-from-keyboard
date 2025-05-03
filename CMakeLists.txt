@@ -20,7 +20,6 @@ include_directories( ${X11_INCLUDE_DIR} )
 
 set( SOURCE
      ${CMAKE_SOURCE_DIR}/character.cpp
-     ${CMAKE_SOURCE_DIR}/acknow.cpp
      ${CMAKE_SOURCE_DIR}/location.cpp
      ${CMAKE_SOURCE_DIR}/inputs.cpp
      ${CMAKE_SOURCE_DIR}/screenshot.cpp

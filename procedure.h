@@ -1,11 +1,8 @@
 #pragma once
 #include "util.h"
-#include "shared.h"
 #include "character.h"
-#include "acknow.h"
 #include "pathfinder.h"
 
-Acknow acknow;
 Pathfinder pathfinder;
 
 class {
@@ -177,7 +174,7 @@ public:
 
     tuple<int, int, bool, bool, bool, bool, vector<Point>, bool, bool, bool, bool, bool, bool, bool> stats( Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK, Mat Monsters, int AlarmCount ) {
 
-        vector<Pixel> monsters = acknow.inspect( Monsters );
+        vector<Pixel> monsters = inspect( Monsters );
 
         bool target = false;
 
@@ -188,7 +185,7 @@ public:
             }
         }
 
-        vector<Pixel> capacity = acknow.inspect( CAPACITY );
+        vector<Pixel> capacity = inspect( CAPACITY );
 
         int cap = 0;
         bool lowcap = false;
@@ -206,7 +203,7 @@ public:
 
         bool weaponEquipped = false;
 
-        vector<Pixel> weapon = acknow.inspect( WEAPON );
+        vector<Pixel> weapon = inspect( WEAPON );
 
         for ( Pixel pixel : weapon ) {
             int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -218,7 +215,7 @@ public:
 
         bool amuletEquipped = true;
 
-        vector<Pixel> amulet = acknow.inspect( AMULET );
+        vector<Pixel> amulet = inspect( AMULET );
 
         for ( Pixel pixel : amulet ) {
             int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -230,7 +227,7 @@ public:
 
         bool ringEquipped = true;
 
-        vector<Pixel> ring = acknow.inspect( RING );
+        vector<Pixel> ring = inspect( RING );
 
         for ( Pixel pixel : ring ) {
             int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -243,7 +240,7 @@ public:
         bool near = false;
         bool alarm = false;
 
-        vector<Pixel> battle = acknow.inspect( BATTLE );
+        vector<Pixel> battle = inspect( BATTLE );
 
         for ( Pixel pixel : battle ) {
             int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -255,7 +252,7 @@ public:
 
         if ( AlarmCount >= 4 ) { AlarmCount = 0; alarm = true; }
 
-        vector<Pixel> chat = acknow.inspect( CHAT );
+        vector<Pixel> chat = inspect( CHAT );
 
         for ( Pixel pixel : chat ) {
             int r = pixel.r, g = pixel.g, b = pixel.b;
@@ -265,7 +262,7 @@ public:
             }
         }
 
-        vector<Pixel> HealthPoints = acknow.inspect( HP );
+        vector<Pixel> HealthPoints = inspect( HP );
         int health = (1012 / 2)-188-40;
 
         for ( Pixel pixel : HealthPoints ) {
@@ -275,7 +272,7 @@ public:
             }
         }
 
-        vector<Pixel> ManaPoints = acknow.inspect( MP );
+        vector<Pixel> ManaPoints = inspect( MP );
         int mana = 0;
 
         for ( Pixel pixel : ManaPoints ) {
@@ -287,7 +284,7 @@ public:
             }
         }
 
-        vector<Pixel> BenefitsAndDamages = acknow.inspect( BD );
+        vector<Pixel> BenefitsAndDamages = inspect( BD );
         bool hungry = false;
         bool paralyze = false;
         bool poison = false;
@@ -308,7 +305,7 @@ public:
             }
         }
 
-        vector < Point > Flask = acknow.flask( FK );
+        vector < Point > Flask = findflask( FK );
 
         return {
             health,
@@ -339,7 +336,7 @@ public:
         int width = 41 * 15;
         int height = 41 * 11;
         
-        auto [ old, GameWindow ] = acknow.detect( GW );
+        auto [ old, GameWindow ] = detect( GW );
         
         oldTarget = old;
 
@@ -403,6 +400,195 @@ public:
         //imwrite( "screenshot.png", GW );
 
         return make_tuple( box, arr, side, target, TARGET, oldTarget );
+    }
+
+    vector < Point > findflask( Mat img ) {
+
+        vector < Point > arr;
+        Pixel pixel;
+        vector < tuple < int, int, int > > NORMAL {
+            { 87, 87, 87 }, { 81, 81, 81 }, { 56, 57, 56 }, { 49, 49, 49 },
+            { 44, 45, 45 }, { 40, 40, 40 }, { 40, 40, 40 }, { 36, 36, 36 },
+            { 45, 46, 46 }, { 0, 0, 24 }, { 0, 0, 24 }, { 0, 0, 24 }, { 0, 0, 24 },
+            { 39, 40, 40 }, { 39, 39, 40 }, { 44, 44, 44 }, { 45, 46, 46 }, { 32, 32, 32 },
+            { 40, 40, 41 }, { 34, 34, 35 }, { 24, 25, 25 }, { 2, 2, 5 }, 
+            { 38, 38, 39 }, { 36, 36, 37 }, { 44, 44, 44 }, { 44, 45, 45 },
+            { 57, 57, 57 }, { 62, 63, 63 }, { 63, 64, 64 }, { 87, 87, 87 }
+        };
+        vector < tuple < int, int, int > > STRONG {
+            { 87, 87, 87 }, { 81, 81, 81 }, { 56, 57, 56 }, { 49, 49, 49 },
+            { 0, 0, 0 }, { 101, 100, 100 }, { 146, 146, 147 }, { 42, 42, 45 },
+            { 45, 46, 46 }, { 7, 5, 3 }, { 40, 40, 41 }, { 40, 40, 41 }, { 36, 36, 36 },
+            { 39, 40, 40 }, { 39, 39, 40 }, { 7, 5, 3 }, { 45, 46, 46 }, { 32, 32, 32 },
+            { 40, 40, 41 }, { 34, 34, 35 }, { 24, 25, 25 }, { 66, 66, 66 },
+            { 31, 26, 24 }, { 14, 14, 25 }, { 92, 91, 91 }, { 0, 0, 0 },
+            { 57, 57, 57 }, { 62, 63, 63 }, { 63, 64, 64 }, { 87, 87, 87 }
+        };
+        vector < tuple < int, int, int > > GREAT {
+            { 87, 87, 87 }, { 81, 81, 81 }, { 56, 57, 56 }, { 49, 49, 49 },
+            { 44, 45, 45 }, { 0, 0, 0 }, { 0, 0, 0 }, { 63, 63, 63 }, { 45, 46, 46 },
+            { 36, 36, 36 }, { 40, 40, 41 }, { 40, 40, 41 }, { 36, 36, 36 },
+            { 39, 40, 40 }, { 39, 39, 40 }, { 44, 44, 44 }, { 52, 52, 52 },
+            { 52, 52, 52 }, { 40, 40, 41 }, { 97, 97, 97 }, { 24, 25, 25 },
+            { 30, 30, 31 }, { 0, 0, 0 }, { 154, 52, 0 }, { 191, 91, 0 },
+            { 44, 45, 45 }, { 57, 57, 57 }, { 62, 63, 63 }, { 0, 0, 0 }, { 87, 87, 87 }
+        };
+
+        try {
+
+            if ( !img.empty( ) ) {
+
+                int width = img.cols, height = img.rows;
+                int total = 30;
+
+                for ( int y = 0; y <= height; y++ ) {
+                    for ( int x = 0; x <= width; x++ ) {
+
+                        int normal = 0, strong = 0, great = 0;
+
+                        pixel = rgb( img, x, y );
+                        Pixel pixel2 = rgb( img, x + 1, y );
+                        Pixel pixel3 = rgb( img, x + 2, y );
+
+                        if ( pixel.r == 87 & pixel.g == 87 & pixel.b == 87 &&
+                            pixel2.r == 81 & pixel2.g == 81 & pixel2.b == 81 &&
+                            pixel3.r == 56 & pixel3.g == 57 & pixel3.b == 56 ) {
+                            
+                            for ( int i = 0; i <= NORMAL.size( ); i++ ) {
+                                pixel = rgb( img, x + i, y );
+                                auto [ r, g, b ] = NORMAL[ i ];
+                                if ( pixel.r == r && pixel.g == g && pixel.b == b ) {
+                                    normal += 1;
+                                } else {
+                                    i == NORMAL.size( );
+                                }
+                            }
+
+                            for ( int i = 0; i <= STRONG.size( ); i++ ) {
+                                pixel = rgb( img, x + i, y );
+                                auto [ r, g, b ] = STRONG[ i ];
+                                if ( pixel.r == r && pixel.g == g && pixel.b == b ) {
+                                    strong += 1;
+                                } else {
+                                    i == STRONG.size( );
+                                }
+                            }
+
+                            for ( int i = 0; i <= GREAT.size( ); i++ ) {
+                                pixel = rgb( img, x + i, y );
+                                auto [ r, g, b ] = GREAT[ i ];
+                                if ( pixel.r == r && pixel.g == g && pixel.b == b ) {
+                                    great += 1;
+                                } else {
+                                    i == GREAT.size( );
+                                }
+                            }
+
+                            if ( normal == total || strong == total || great == total ) {
+                            
+                                Point point;
+                                point.x = x + 15;
+                                point.y = y + 15; 
+
+                                arr.push_back( point );
+
+                                x += total;
+
+                            }
+                        }                     
+                    }
+                }
+            }
+
+        } catch ( exception &e ) {
+        }
+        
+        return arr;
+    }
+
+    Pixel rgb( Mat img, int x, int y ) {
+
+        Vec3b rgb = img.at < Vec3b > ( y, x );
+        Pixel pixel;
+        pixel.r = rgb[ 2 ];
+        pixel.g = rgb[ 1 ];
+        pixel.b = rgb[ 0 ];
+
+        return pixel;
+    }
+
+    vector < Pixel > inspect( Mat img ) {
+        vector < Pixel > arr; 
+        if ( !img.empty( ) ) {
+            
+            for ( int i = 0; i < img.rows; i++ ) {
+                for ( int j = 0; j < img.cols; j++ ) {
+                    cv::Vec3b rgb = img.at < cv::Vec3b > ( i, j );
+                    Pixel pixel;
+                    pixel.r = rgb[ 2 ];
+                    pixel.g = rgb[ 1 ];
+                    pixel.b = rgb[ 0 ];
+
+                    arr.push_back( pixel );
+                }
+            }
+
+        }
+        return arr;
+    }
+
+    tuple < bool, vector < tuple < Point, bool > > > detect( Mat img ) {
+
+        vector < tuple < Point, bool > > arr;
+        int max = 30;
+        bool target;
+
+        try {
+
+            if ( !img.empty( ) ) {
+
+                for ( int y = 0; y <= img.rows; y++ ) {
+                    for ( int x = 0; x <= img.cols; x++ ) {
+
+                        int top = 0, bottom = 0, left = 0, right = 0;
+
+                        if ( img.at < Vec3b > ( y, x ) == Vec3b( 0, 0, 0 ) ) {
+
+                            while ( top < max ) top = img.at < Vec3b > ( y, x + top ) != Vec3b( 0, 0, 0 ) ? 100 : top + 1;
+
+                            while ( top == max && bottom < max ) bottom = img.at < Vec3b > ( y + 3, x + max ) != Vec3b( 0, 0, 0 ) ? 100 : bottom + 1;
+                        
+                            while ( bottom == max && left < 3 ) left = img.at < Vec3b > ( y + left, x ) != Vec3b( 0, 0, 0 ) ? 100 : left + 1;
+
+                            while ( left == 3 && right < 3 ) right = img.at < Vec3b > ( y + right, x + max ) != Vec3b( 0, 0, 0 ) ? 100 : right + 1;
+                            
+                            if ( top == max & bottom == max & left == 3 & right == 3 ) {
+                                //img.at < Vec3b > ( y, x ) = Vec3b( 255, 0, 0 );
+
+                                int targeting = 0;
+
+                                for ( int t = 1; t <= 20; t++ ) {
+                                    Pixel pixel = rgb( img, x + 15 - t, y + 28 - t );
+                                    if ( pixel.r <= 233 && pixel.r >= 127 && pixel.g < 66 && pixel.b < 66 && pixel.b > 12 ) targeting++;
+                                }
+
+                                target = targeting > 3;
+
+                                arr.push_back( make_tuple( Point( x, y ), target ) );
+                                x += max;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        } catch ( exception &e ) {
+        }
+
+        //imwrite( "viewport.png", img ); 
+        
+        return make_tuple( target, arr );
     }
 
 } procedure;
