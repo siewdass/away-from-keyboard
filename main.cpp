@@ -1,6 +1,5 @@
 #include "screenshot.h"
 #include "inputs.h"
-#include "character.h"
 #include "procedure.h"
 
 vector<shared_ptr<atomic<bool>>> runnings(6, make_shared<atomic<bool>>(false));

@@ -1,6 +1,5 @@
 #pragma once
 #include "util.h"
-#include "character.h"
 #include "pathfinder.h"
 
 Pathfinder pathfinder;
