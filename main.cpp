@@ -1,10 +1,8 @@
 #include "screenshot.h"
 #include "inputs.h"
-#include "location.h"
 #include "character.h"
 #include "procedure.h"
 
-Location location;
 vector<shared_ptr<atomic<bool>>> runnings(6, make_shared<atomic<bool>>(false));
 vector<shared_ptr<atomic<bool>>> pauses(6, make_shared<atomic<bool>>(false));
 
@@ -25,7 +23,7 @@ void locationThread(atomic<bool>& running, atomic<bool>& pause, Screenshot& scre
 		
 		Minimap = screenshot.get( 898 - 16, 59 - 16, 34, 34 );
 
-		auto [ x, y, z, validSqm ] = location.update( FloorIndex, Minimap, player.x, player.y );
+		auto [ x, y, z, validSqm ] = procedure.location( FloorIndex, Minimap, player.x, player.y );
 
 		count = ( oldX == x && oldY == y ) ? count + 1 : 0;
 		oldX = x;
@@ -115,7 +113,7 @@ void alternatorThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, In
 					mode.attacking = true;
 					mode.walking = false;
 				} else {
-					auto [ attacking, X, Y ] = procedure.walker( player, character, location.paths, position );
+					auto [ attacking, X, Y ] = procedure.walker( player, character, procedure.paths, position );
 					if ( !attacking && X != 0 && Y != 0 ) {
 						inputs.mouse( X, Y, 1 );
 					} else if ( attacking ) {
@@ -590,7 +588,7 @@ void execute(int client, string CHARACTER, string waypoint) {
 
 int main(int argc, char *argv[]) {
  
-  thread([&](){ location.load( ); }).detach();
+  thread([&](){ procedure.load( ); }).detach();
  
   interface(argc, argv);
 
