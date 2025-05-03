@@ -18,13 +18,7 @@ include_directories( ${Jsoncpp_INCLUDE_DIR} )
 find_package( X11 REQUIRED )
 include_directories( ${X11_INCLUDE_DIR} )
 
-set( SOURCE
-     ${CMAKE_SOURCE_DIR}/character.cpp
-     ${CMAKE_SOURCE_DIR}/location.cpp
-     ${CMAKE_SOURCE_DIR}/inputs.cpp
-     ${CMAKE_SOURCE_DIR}/screenshot.cpp
-     ${CMAKE_SOURCE_DIR}/main.cpp
-)
+set( SOURCE ${CMAKE_SOURCE_DIR}/main.cpp )
 
 add_executable(afk ${SOURCE})
 

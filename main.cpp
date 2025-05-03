@@ -487,7 +487,7 @@ void execute(int client, string CHARACTER, string waypoint) {
 	// knight pegarle al que tiene mas vida
 	// paladin pegarle a los de la cruz
 	// mode entra dentro de player
-	// agregar restart
+	// agregar flowcontrol comom running stop open pause
 
 	thread([=]() { // Location
 		try {
