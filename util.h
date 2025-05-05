@@ -23,6 +23,11 @@ using namespace cv;
 using namespace std::chrono;
 using namespace std;
 
+namespace Jsoncpp = Json;
+
+#define Json _Json
+#define Array std::vector
+
 struct PathNode {
     Point pos;
     Point parent;
@@ -53,6 +58,7 @@ public:
 		x = waypoints.size() > 0 ? waypoints[0].x : 0;
 		y = waypoints.size() > 0 ? waypoints[0].y : 0;
 	}
+	bool walking = true, attacking = false, looting = false;
 	int validSqm;
 	int health = 267, mana = 267;
 	bool hungry, paralyze, poison, haste;
@@ -66,21 +72,38 @@ public:
 	Point targetPosition;
 	bool target;
 	bool alarm;
-	bool weapon, necklace, ring;
+	bool weapon, necklace, ring, offhand;
 	bool lowcapacity = false;
 	bool canWalk;
 	bool nearPlayer;
+	int position = 0;
 };
 
-class Mode {
+class Control {
 public:
-	bool walking = true, attacking = false, looting = false;
+    std::vector<std::shared_ptr<std::atomic<bool>>> runnings;
+    std::vector<std::shared_ptr<std::atomic<bool>>> pauses;
+    
+    Control() {
+        for (int i = 0; i < 6; ++i) {
+            runnings.push_back(std::make_shared<std::atomic<bool>>(false));
+            pauses.push_back(std::make_shared<std::atomic<bool>>(false));
+        }
+    }
+	
+	bool getPause( int client ) {
+		return *pauses[ client ];
+	}
+	void setPause( int client, bool p ) {
+		*pauses[ client ] = p;
+	}
+	bool getRunning( int client ) {
+		return *runnings[ client ];
+	}
+	void setRunning( int client, bool r ) {
+		*runnings[ client ] = r;
+	}
 };
-
-namespace Jsoncpp = Json;
-
-#define Json _Json
-#define Array std::vector
 
 class {
 	public:
@@ -269,7 +292,6 @@ public:
 	}
 } other;
 
-
 class Character {
 public:
     string vocation = "";
@@ -291,8 +313,7 @@ public:
     string etherealspear = "";
     string divinemissile = "";
     string curecurse = "";
-    string quiver1 = "";
-    string quiver2 = "";
+
     string throwing = "";
     string healing = "";
     int healingpercent = 0;
@@ -316,7 +337,11 @@ public:
     string leave = "";
     vector<Waypoint> waypoints;
     vector<Waypoint> walkable;
-    string ammunition = "";
+
+    string quiver1 = "";
+    string quiver2 = "";
+    string ammunition1 = "";
+	string ammunition2 = "";
 
     Character(string c, string w) {
         Json config;
@@ -346,11 +371,14 @@ public:
         divinemissile = paladin.readString("DivineMissile");
         curecurse = paladin.readString("CureCurse");
         throwing = paladin.readString("Throwing");
-        ammunition = paladin.readString("Ammunition");
         
-        Json qv = paladin.readObject("Quiver");
-        quiver1 = qv.readString("First");
-        quiver2 = qv.readString("Second");
+        Json ga = paladin.readObject("GroupArrow");
+        quiver1 = ga.readString("Quiver");
+        ammunition1 = ga.readString("Ammunition");
+
+        Json ta = paladin.readObject("TargetArrow");
+        quiver2 = ta.readString("Quiver");
+        ammunition2 = ta.readString("Ammunition");
 
         Json h = config.readObject("Healing");
         healing = h.readString("Hotkey");

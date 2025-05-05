@@ -101,35 +101,42 @@ public:
         return Point( X, Y );
     }
 
-    tuple<bool, int, int> walker( Player player, Character character, vector < vector < vector < int > > > paths, atomic<int>& position ) {
+    tuple<bool, int, int> walker( Player& player, Character character, vector < vector < vector < int > > > paths ) {
 
         bool attack = false;
         int left = 898, top = 59, pixel = 1;
         int x = 0, y = 0;
 
-        if ( abs( player.x - character.waypoints[ position ].x ) <= 1 && abs( player.y - character.waypoints[ position ].y ) <= 1 ) {
-            console.log( "action", character.waypoints[ position ].action );
-            attack = character.waypoints[ position ].action == "attack" ? true : false;
-            position += 1;
+        if ( abs( player.x - character.waypoints[ player.position ].x ) <= 2 && abs( player.y - character.waypoints[ player.position ].y ) <= 2 ) {
+            console.log( "action", character.waypoints[ player.position ].action );
+            attack = character.waypoints[ player.position ].action == "attack" ? true : false;
+            player.position += 1;
             if ( attack && player.monsters.size( ) > 0 ) return { attack, x, y };
         }
 
-        if ( position == character.waypoints.size( ) ) position = 0;
+        if ( player.position == character.waypoints.size( ) ) player.position = 0;
 
         pathfinder.loadMap(paths[ player.z ]);
 
         auto ways = pathfinder.findPath(
             Point(player.x, player.y),
-            Point( character.waypoints[ position ].x, character.waypoints[ position ].y )
+            Point( character.waypoints[ player.position ].x, character.waypoints[ player.position ].y )
         );
 
         if ( ways.size( ) > 0 ) {
             x = ways[ ways.size( ) >= 57 ? 56 : ways.size( ) - 1 ].x;
             y = ways[ ways.size( ) >= 57 ? 56 : ways.size( ) - 1 ].y;
 
-            if ( character.waypoints[ position ].action == "walk" ) {
-                x += other.plusMinus();
-                y += other.plusMinus();
+            while (true) {
+                int offsetX = x + other.plusMinus();
+                int offsetY = y + other.plusMinus();
+                try {
+                    if (pathfinder.has3x3Space(Point(offsetX, offsetY))) {
+                        x = offsetX;
+                        y = offsetY;
+                        break;
+                    }
+                } catch (exception &e) {}
             }
 
             x = left + ( pixel * ( x - player.x ) );
@@ -174,7 +181,7 @@ public:
         return All;
     }
 
-    tuple<int, int, bool, bool, bool, bool, vector<Point>, bool, bool, bool, bool, bool, bool, bool> stats( Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK, Mat Monsters, int AlarmCount ) {
+    tuple<int, int, bool, bool, bool, bool, vector<Point>, bool, bool, bool, bool, bool, bool, bool, bool> stats( Mat OFFHAND, Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK, Mat Monsters, int AlarmCount ) {
 
         vector<Pixel> monsters = inspect( Monsters );
 
@@ -211,6 +218,18 @@ public:
             int r = pixel.r, g = pixel.g, b = pixel.b;
             if ( r == 94 && g == 96 && b == 98 ) {
                 weaponEquipped = true;
+                break;
+            }
+        }
+
+        bool offhandEquipped = false;
+
+        vector<Pixel> off = inspect( OFFHAND );
+
+        for ( Pixel pixel : off ) {
+            int r = pixel.r, g = pixel.g, b = pixel.b;
+            if ( r != 82 && g != 85 && b != 88 ) {
+                offhandEquipped = true;
                 break;
             }
         }
@@ -323,7 +342,8 @@ public:
             amuletEquipped,
             ringEquipped,
             lowcap,
-            target
+            target,
+            offhandEquipped,
         };
     }
 

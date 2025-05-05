@@ -89,26 +89,24 @@ void on_window_closed(GtkWidget *widget, gpointer data) {
 void on_start_clicked(GtkWidget *widget, gpointer mydata) {
   int id = GPOINTER_TO_INT(mydata);
 
-  if (*runnings[id] == false) {
-    *runnings[id] = true;
+  if (control.getRunning( id ) == false) {
+    control.setRunning( id, true );
     if (!::data[id][0].empty() && !::data[id][1].empty()) {
       execute(id, "/opt/afk/characters/"+ ::data[id][0] + ".json", "/opt/afk/waypoints/"+::data[id][1] + ".json");
     }
-  } else if (*pauses[id] == true) {
-    *pauses[id] = false;
-  }
+  } else if (control.getPause( id ) == true) control.setPause( id, false );
 }
 
 void on_pause_clicked(GtkWidget *widget, gpointer mydata) {
   int id = GPOINTER_TO_INT(mydata);
-  if (*pauses[id] == false) *pauses[id] = true;
+  if (control.getPause( id ) == false) control.setPause( id, true );
   g_print("Pause\n");
 }
 
 void on_stop_clicked(GtkWidget *widget, gpointer mydata) {
   int id = GPOINTER_TO_INT(mydata);
-  if (*runnings[id] == true) *runnings[id] = false;
-  else if (*pauses[id] == true) *pauses[id] = false;
+  if (control.getRunning( id ) == true) control.setRunning( id, false );
+  if (control.getPause( id ) == true) control.setPause( id, false );
   g_print("Stop\n");
 }
 

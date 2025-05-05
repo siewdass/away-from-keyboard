@@ -2,18 +2,19 @@
 #include "inputs.h"
 #include "procedure.h"
 
-vector<shared_ptr<atomic<bool>>> runnings(6, make_shared<atomic<bool>>(false));
-vector<shared_ptr<atomic<bool>>> pauses(6, make_shared<atomic<bool>>(false));
+Control control;
 
-void locationThread(atomic<bool>& running, atomic<bool>& pause, Screenshot& screenshot, Inputs& inputs, Player& player) {
+#define PARAMS int client, Screenshot& screenshot, Inputs& inputs, Player& player, Character& character
+
+void locationThread(PARAMS) {
 
     Mat FloorIndex, Minimap;
 	double cooldown = 0;
 	int oldX, oldY, count = 0;
 
-	while ( running ) {
+	while ( control.getRunning( client ) ) {
 
-		while ( pause ) timer.sleep( 2000 );
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 		
 		//auto [ XPOS, YPOS ] = inputs.mouseLocation( );		
 		//if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
@@ -40,15 +41,15 @@ void locationThread(atomic<bool>& running, atomic<bool>& pause, Screenshot& scre
 	}
 }
 
-void statsThread(atomic<bool>& running, atomic<bool>& pause, Screenshot& screenshot, Inputs& inputs, Player& player) {
+void statsThread(PARAMS) {
 
 	int width = 1012, middle = ( 1012 / 2 );
 	int AlarmCount = 0;
-	Mat HP, MP, BD, FK, Player, CHAT, LOOTCHAT, WEAPON, RING, AMULET, CAPACITY, GameWindow, Monsters;
+	Mat HP, MP, BD, FK, Player, CHAT, LOOTCHAT, WEAPON, RING, AMULET, OFFHAND, CAPACITY, GameWindow, Monsters;
 
-	while ( running ) {
+	while ( control.getRunning( client ) ) {
 
-		while ( pause ) timer.sleep( 2000 );
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
 		GameWindow = screenshot.get( 189, 40, 615, 451 );
 		
@@ -71,9 +72,11 @@ void statsThread(atomic<bool>& running, atomic<bool>& pause, Screenshot& screens
 		BD = screenshot.get( 480, 4, 53, 27);
 		FK = screenshot.get( 836, 304, 176, 296 );
 		Monsters = screenshot.get( 23, 72, 1, 174 );
-		//imwrite( "screenshot.png", GameWindow );
+		OFFHAND = screenshot.get( 935, 186, 1, 1 );
 
-		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, near, weapon, necklace, ring, lowcapacity, target ] = procedure.stats( CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters, AlarmCount);
+		//imwrite( "screenshot.png", OFFHAND );
+
+		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, near, weapon, necklace, ring, lowcapacity, target, offhand ] = procedure.stats( OFFHAND, CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters, AlarmCount);
 
 		player.health = health;
 		player.mana = mana;
@@ -84,6 +87,7 @@ void statsThread(atomic<bool>& running, atomic<bool>& pause, Screenshot& screens
 		player.flasks = flasks;
 		player.alarm = alarm;
 		player.weapon = weapon;
+		player.offhand = offhand;
 		player.necklace = necklace;
 		player.ring = ring;
 		player.lowcapacity = lowcapacity;
@@ -96,42 +100,42 @@ void statsThread(atomic<bool>& running, atomic<bool>& pause, Screenshot& screens
 	}
 }
 
-void alternatorThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& inputs, Player& player, Character& character, atomic<int>& position) {
+void alternatorThread(PARAMS) {
     
 	int count = 0;
 
-	while ( running ) {
+	while ( control.getRunning( client ) ) {
 
-		while ( pause ) timer.sleep( 2000 );
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
-		if ( mode.walking ) {
+		if ( player.walking ) {
 
 			if ( player.canWalk ) {
 				if ( player.box == player.validSqm || player.box == player.validSqm - 1 ) {
-					position = (position == character.waypoints.size()) ? 0 : position + 1;
-					mode.attacking = true;
-					mode.walking = false;
+					player.position = (player.position == character.waypoints.size()) ? 0 : player.position + 1;
+					player.attacking = true;
+					player.walking = false;
 				} else {
-					auto [ attacking, X, Y ] = procedure.walker( player, character, procedure.paths, position );
+					auto [ attacking, X, Y ] = procedure.walker( player, character, procedure.paths );
 					if ( !attacking && X != 0 && Y != 0 ) {
 						inputs.mouse( X, Y, 1 );
 					} else if ( attacking ) {
-						mode.attacking = true;
-						mode.walking = false;
+						player.attacking = true;
+						player.walking = false;
 					}
 					timer.sleep( 2000 );
 				}
 			}
 
-		} else if ( mode.attacking ) {		
+		} else if ( player.attacking ) {		
 
 			if ( player.box == 0 ) count++;
 			else count = 0;
 
-			mode.looting = count == 3;
-			if ( mode.looting ) mode.attacking = false;
+			player.looting = count == 2;
+			if ( player.looting ) player.attacking = false;
 
-		} else if ( mode.looting ) {
+		} else if ( player.looting ) {
 
 			inputs.shiftDown( );
 			for ( auto [ X, Y ] : procedure.looter( ) ) {
@@ -140,8 +144,8 @@ void alternatorThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, In
 			}
 			inputs.shiftUp( );
 
-			mode.looting = false;
-			mode.walking = true;
+			player.looting = false;
+			player.walking = true;
 
 			for ( auto [ flaskX, flaskY ] : procedure.throwFlask( player ) ) inputs.mouseDrag( flaskX, flaskY );
 
@@ -151,14 +155,14 @@ void alternatorThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, In
 	}
 }
 
-void healThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& inputs, Player& player, Character& character) {
+void healThread(PARAMS) {
 
 	int percent = ( ( 1012 / 2 ) - 188 ) - 32;
 	double global = 1050, healCooldown = 0, healCooldown1 = 0, recoveryCooldown = 0;
 
-	while ( running ) {
+	while ( control.getRunning( client ) ) {
 
-		while ( pause ) timer.sleep( 2000 );
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
 		int hppercent = ( double ) player.health / percent * 100;
 		int mppercent = ( double ) player.mana / percent * 100;
@@ -168,7 +172,7 @@ void healThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& 
 				inputs.keyboard( character.healing );
 				healCooldown = timer.clock( ) + global;
 				healCooldown1 = timer.clock( ) + global;
-			} else if ( player.paralyze && character.paralyze != "" && mode.walking ) {
+			} else if ( player.paralyze && character.paralyze != "" && player.walking ) {
 				inputs.keyboard( character.paralyze );
 				healCooldown = timer.clock( ) + global;
 			} else if ( player.poison && character.curepoison != "" ) {
@@ -185,15 +189,15 @@ void healThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& 
 	}
 }
 
-void potionsThread(atomic<bool>& running, atomic<bool>& pause, Inputs& inputs, Player& player, Character& character) {
+void potionsThread(PARAMS) {
 
 	int percent = ( ( 1012 / 2 ) - 188 ) - 32;
 	double global = 1050;
 	double potionCooldown = 0;
 
-	while ( running ) {
-		
-		while ( pause ) timer.sleep( 2000 );
+	while ( control.getRunning( client ) ) {
+
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
 		int hppercent = ( double ) player.health / percent * 100;
 		int mppercent = ( double ) player.mana / percent * 100;
@@ -212,50 +216,53 @@ void potionsThread(atomic<bool>& running, atomic<bool>& pause, Inputs& inputs, P
 	}
 }
 
-void ammoThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& inputs, Player& player, Character& character) {
+void ammoThread(PARAMS) {
+	bool quiver = false;
+	double ammo = 0;
 
-	double quiver = 0, throwing = 0, change = 0;
-	bool changed = false;
+	while ( control.getRunning( client ) ) {
 
-	while ( running ) {
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
-		while ( pause ) timer.sleep( 2000 );
-
-		if ( false && timer.clock( ) > change && mode.attacking && character.quiver1 != "" && character.quiver2 != "" && character.hunt == "box" && player.monsters.size() >= 4 ) {
-			changed = false;
-			while ( mode.attacking ) {
-				if ( player.monsters.size() <= 3 ) {
-					changed = true;
-					inputs.keyboard( character.quiver2 );
-				}
-				timer.sleep( 250 );
+		if ( character.quiver1 != "" && character.quiver2 != "" && character.ammunition1 != "" && character.ammunition2 != "" && character.hunt == "box" ) {
+			if ( player.offhand == false ) {
+				inputs.keyboard( character.quiver1 );
+				timer.sleep( 1000 );
 			}
-			inputs.keyboard( character.quiver1 );
+
+			if ( player.attacking && player.box >= 1 && player.box <= 3 && player.monsters.size() <= 3 ) {
+				console.log( "quiver2" );
+				inputs.keyboard( character.quiver2 );
+				timer.sleep( 1000 );
+				while ( player.monsters.size() != 0 ) timer.sleep( 500 );
+				console.log( "quiver1" );
+				inputs.keyboard( character.quiver1 );
+				timer.sleep( 1000 );
+			}
 		}
 
-		if ( timer.clock( ) > quiver && mode.walking && character.ammunition != "" ) {
-			inputs.keyboard( character.ammunition );
-			inputs.keyboard( character.ammunition );
-			inputs.keyboard( character.ammunition );
-			quiver = timer.clock( ) + 60000;
-		} else if ( player.weapon && character.throwing != "" ) {
-			inputs.keyboard( character.throwing );
+		if ( timer.clock() > ammo && (player.walking || player.looting) && player.offhand ) {
+			console.log( "ammunition1"	);
+			inputs.keyboard( character.ammunition1 );
+			inputs.keyboard( character.ammunition1 );
+			inputs.keyboard( character.ammunition1 );
+			ammo = timer.clock( ) + 60000;
 		}
 
 
-		timer.sleep( 2000 );
+		timer.sleep( 500 );
 	}
 }
 
-void toolsThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& inputs, Player& player, Character& character) {
+void toolsThread(PARAMS) {
 
 	double necklaceCooldown = 0, ringCooldown = 0, foodCooldown = 0, hasteCooldown = 0;
 
-	while ( running ) {
+	while ( control.getRunning( client ) ) {
 
-		while ( pause ) timer.sleep( 2000 );
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
-		if ( mode.walking ) {
+		if ( player.walking ) {
 			if ( timer.clock( ) > hasteCooldown && character.haste != "" && !player.haste ) {
 				inputs.keyboard( character.haste );
 				hasteCooldown = timer.clock( ) + 33000;
@@ -279,7 +286,7 @@ void toolsThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs&
 	}
 }
 
-void knightThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& inputs, Player& player, Character& character) {
+void knightThread(PARAMS) {
 
 	bool keepAttacking;
 	double global = 2100, challengeCooldown = 0, bloodrageCooldown = 0, attackCooldown = 0,
@@ -287,11 +294,11 @@ void knightThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs
 						  attackCooldown4 = 0, attackCooldown5 = 0, attackCooldown6 = 0, 
 						  attackCooldown7 = 0;
 
-	while ( running ) {
+	while ( control.getRunning( client ) ) {
 
-		while ( pause ) timer.sleep( 2000 );
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
-		if ( mode.attacking ) {
+		if ( player.attacking ) {
 
 			if ( player.mana > 10 ) {
 				if ( player.box >= 2 || keepAttacking ) {
@@ -350,20 +357,21 @@ void knightThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs
 	}
 }
 
-void paladinThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& inputs, Player& player, Character& character) {
+void paladinThread(PARAMS) {
 
-	bool keepAttacking;
+	bool keepAttacking, quiver = false;
 	double global = 2100;
 	double attackCooldown = 0, attackCooldown1 = 0, attackCooldown2 = 0,
 		   attackCooldown3 = 0, attackCooldown4 = 0, attackCooldown5 = 0,
 		   attackCooldown6 = 0, attackCooldown7 = 0;
 
-	while ( running ) {
+	while ( control.getRunning( client ) ) {
 
-		while ( pause ) timer.sleep( 2000 );
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
-		if ( mode.attacking ) {
+		if ( player.attacking ) {
 			if ( player.box >= 3 || keepAttacking ) {
+
 				keepAttacking = true;
 				if ( timer.clock( ) > attackCooldown && player.mana > 10 ) {
 					if ( character.sharpshooter != "" && timer.clock( ) > attackCooldown1 && player.box >= 2 ) {
@@ -398,15 +406,15 @@ void paladinThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Input
 	}
 }
 
-void targetThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& inputs, Player& player) {
+void targetThread(PARAMS) {
 
 	double autoAttackCooldown = 0;
 
-	while ( running ) {
+	while ( control.getRunning( client ) ) {
 
-		while ( pause ) timer.sleep( 2000 );
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
-		if ( mode.attacking ) {
+		if ( player.attacking ) {
 
 			if ( timer.clock( ) > autoAttackCooldown && player.box >= 1 && !player.target ) {
 				inputs.keyboard( "space" );
@@ -421,32 +429,34 @@ void targetThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs
 	}
 }
 
-void alarmThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs& inputs, Player& player, Character& character, atomic<int>& position) {
+void alarmThread(PARAMS) {
 
 	double criticalCooldown = 0, safeCooldown = 0;
 
-	while ( running ) {
+	timer.sleep( 5000 );
 
-		while ( pause ) timer.sleep( 2000 );
+	while ( control.getRunning( client ) ) {
+
+		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
 		if ( timer.clock( ) > criticalCooldown && ( player.alarm || player.mana <= 20 || player.health <= 20 ) )  {
 			player.alarm = false;
-			running = false;
+			control.setRunning( client, false );
 			system( "mpg123 /opt/afk/critical.mp3 > /dev/null 2>&1" );
 			criticalCooldown = timer.clock( ) + 60000;
 		} else if ( timer.clock( ) > safeCooldown && player.lowcapacity ) {
 			player.lowcapacity = false;
 			system( "mpg123 /opt/afk/safe.mp3 > /dev/null 2>&1" );
 			safeCooldown = timer.clock( ) + 60000;
-		} else if ( mode.walking && player.nearPlayer ) {
-			int index = position;
+		} else if ( player.walking && player.nearPlayer ) {
+			int index = player.position;
 
 			while ( true ) {
 				if ( index == character.waypoints.size( ) ) index = 0;
 
 				Waypoint waypoint = character.waypoints[ index ];
 				if ( waypoint.action == "attack" ) {
-					position = index + 1;
+					player.position = index + 1;
 					break;
 				}
 				
@@ -463,123 +473,49 @@ void alarmThread(atomic<bool>& running, atomic<bool>& pause, Mode& mode, Inputs&
 	player.alarm = false;
 }
 
-void execute(int client, string CHARACTER, string waypoint) {
-	string tibia = ":" + to_string(client);
+void execute(int client, string spells, string waypoint) {
+	auto tibia = ":" + to_string(client);
 
-	console.log("Executing " + tibia + " " + CHARACTER + " " + waypoint);
+	console.log("Executing " + tibia + " " + spells + " " + waypoint);
 
-    auto character = make_shared<Character>(CHARACTER, waypoint);
-    auto mode = make_shared<Mode>();
+    auto character = make_shared<Character>(spells, waypoint);
 	auto screenshot = make_shared<Screenshot>(tibia);
 	auto inputs = make_shared<Inputs>(tibia);
 	auto player = make_shared<Player>(character->waypoints);
-	auto& running = runnings[client];
-	auto& pause = pauses[client];
-	auto position = make_shared<atomic<int>>(0);
-	
-	// global CDS aqui en esta funcion?
+
 	// verificar si el spot donde va a atacar tiene para hacer box si no que elija otro hasta que ya consiga uno
-	// crear una clase para knight otra para rp y asi
 	// detectar cantidad de vida segun pixeles internos de la barra de vida
-	// knight pegarle al que tiene mas vida
-	// paladin pegarle a los de la cruz
-	// mode entra dentro de player
-	// agregar flowcontrol comom running stop open pause
+	// si casi llega al spot de atacar y no hay monstruos que vaya al siguiente
 
-	thread([=]() { // Location
-		try {
-			locationThread(*running, *pause, *screenshot, *inputs, *player);
-		} catch (exception& e) {
-			console.log("Location error:", e.what());
-		}
-	}).detach();
-	
-	thread([=]() { // Stats
-		try {
-			statsThread(*running, *pause, *screenshot, *inputs, *player);
-		} catch (exception& e) {
-			console.log("Stats error:", e.what());
-		}
-	}).detach();
-	
-    thread([=]() { // Heal
-        try {
-            healThread(*running, *pause, *mode, *inputs, *player, *character);
-        } catch (exception& e) {
-            console.log("Heal error:", e.what());
-        }
-    }).detach();
-
-    thread([=]() { // Potion
-        try {
-            potionsThread(*running, *pause, *inputs, *player, *character);
-        } catch (exception& e) {
-            console.log("Potion error:", e.what());
-        }
-    }).detach();
-	
-   	thread([=]() { // Tool
-        try {
-            toolsThread(*running, *pause, *mode, *inputs, *player, *character);
-        } catch (exception& e) {
-            cerr << "Tool Error: " << e.what() << endl;
-        }
-    }).detach();
+	vector<function<void(int, Screenshot&, Inputs&, Player&, Character&)>> functions = {
+		locationThread,
+		statsThread,
+		healThread,
+		potionsThread,
+		toolsThread
+	};
 
 	if ( character->waypoints.size( ) > 0 ) {
+		functions.push_back(alarmThread);
+		functions.push_back(alternatorThread);
+		functions.push_back(targetThread);
 
-		thread([=]() { // Alarm
-			try {
-				alarmThread(*running, *pause, *mode, *inputs, *player, *character, *position);
-			} catch (exception& e) {
-				console.log("Alarm error:", e.what());
-			}
-		}).detach();
-
-		thread([=]() { // Alternator
-			try {
-				alternatorThread(*running, *pause, *mode, *inputs, *player, *character, *position);
-			} catch (exception& e) {
-				console.log("Alternator error:", e.what());
-			}
-		}).detach();
-
-		thread([=]() { // Target
-			try {
-				targetThread(*running, *pause, *mode, *inputs, *player);
-			} catch (exception& e) {
-				console.log("Target error:", e.what());
-			}
-		}).detach();
-		
 		if ( character->vocation == "knight" && character->hunt == "box" ) {
-
-			thread([=]() { // Knight
-				try {
-					knightThread(*running, *pause, *mode, *inputs, *player, *character);
-				} catch (exception& e) {
-					console.log("Knight error:", e.what());
-				}
-			}).detach();
-
+			functions.push_back( knightThread );
 		} else if ( character->vocation == "paladin" && character->hunt == "box" ) {
-			
-			thread([=]() { // Paladin
-				try {
-					paladinThread(*running, *pause, *mode, *inputs, *player, *character);
-				} catch (exception& e) {
-					console.log("Paladin error:", e.what());
-				}
-			}).detach();
-
-			thread([=]() { // Ammo
-				try {
-					ammoThread(*running, *pause, *mode, *inputs, *player, *character);
-				} catch (exception& e) {
-					console.log("Ammo error:", e.what());
-				}
-			}).detach();
+			functions.push_back( paladinThread );
+			functions.push_back( ammoThread );
 		}
+	}
+
+	for ( auto& f : functions ) {
+		thread([=]() { // Knight
+			try {
+				f(client, *screenshot, *inputs, *player, *character);
+			} catch (exception& e) {
+				console.log("Error:", e.what());
+			}
+		}).detach();
 	}
 }
 
