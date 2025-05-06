@@ -124,7 +124,7 @@ GtkWidget* create_page(int id) {
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 7);
 
   {
-    GtkWidget *label_worker = gtk_label_new("Client:");
+    GtkWidget *label_worker = gtk_label_new("Tibia:");
     gtk_label_set_xalign(GTK_LABEL(label_worker), 0.0);
     gtk_widget_set_margin_start(label_worker, 0);
     gtk_box_pack_start(GTK_BOX(box), label_worker, FALSE, FALSE, 0);
