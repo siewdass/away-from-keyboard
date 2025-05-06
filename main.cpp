@@ -129,7 +129,7 @@ void alternatorThread(PARAMS) {
 
 		} else if ( player.attacking ) {		
 
-			if ( player.box == 0 ) count++;
+			if ( player.monsters.size() == 0 ) count++;
 			else count = 0;
 
 			player.looting = count == 2;
