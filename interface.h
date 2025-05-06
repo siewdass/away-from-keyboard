@@ -89,25 +89,35 @@ void on_window_closed(GtkWidget *widget, gpointer data) {
 void on_start_clicked(GtkWidget *widget, gpointer mydata) {
   int id = GPOINTER_TO_INT(mydata);
 
-  if (control.getRunning( id ) == false) {
-    control.setRunning( id, true );
-    if (!::data[id][0].empty() && !::data[id][1].empty()) {
-      execute(id, "/opt/afk/characters/"+ ::data[id][0] + ".json", "/opt/afk/waypoints/"+::data[id][1] + ".json");
+  if ( !control.getRunning(id) && !::data[id][0].empty() && !::data[id][1].empty() ) {
+    control.setRunning(id, true);
+    control.setPause(id, false);
+    gtk_button_set_label(GTK_BUTTON(widget), "Pause");
+    execute(id, "/opt/afk/characters/"+ ::data[id][0] + ".json", "/opt/afk/waypoints/"+::data[id][1] + ".json");
+  } else if ( control.getRunning(id) ) {
+    if ( !control.getPause(id) ) {
+      control.setPause(id, true);
+      gtk_button_set_label(GTK_BUTTON(widget), "Start");
+    } else if ( control.getPause(id) ) {
+      control.setPause(id, false);
+      gtk_button_set_label(GTK_BUTTON(widget), "Pause");
     }
-  } else if (control.getPause( id ) == true) control.setPause( id, false );
-}
+  }
 
-void on_pause_clicked(GtkWidget *widget, gpointer mydata) {
-  int id = GPOINTER_TO_INT(mydata);
-  if (control.getPause( id ) == false) control.setPause( id, true );
-  g_print("Pause\n");
 }
 
 void on_stop_clicked(GtkWidget *widget, gpointer mydata) {
   int id = GPOINTER_TO_INT(mydata);
-  if (control.getRunning( id ) == true) control.setRunning( id, false );
-  if (control.getPause( id ) == true) control.setPause( id, false );
-  g_print("Stop\n");
+  if (control.getRunning(id)) {
+    control.setRunning(id, false);
+    control.setPause(id, false);
+    
+    GtkWidget *parent = gtk_widget_get_parent(widget);
+    GList *children = gtk_container_get_children(GTK_CONTAINER(parent));
+    GtkWidget *start_btn = GTK_WIDGET(g_list_nth_data(children, 0));
+    gtk_button_set_label(GTK_BUTTON(start_btn), "Start");
+    g_list_free(children);
+  }
 }
 
 GtkWidget* create_page(int id) {
@@ -119,7 +129,7 @@ GtkWidget* create_page(int id) {
     gtk_widget_set_margin_start(label_worker, 0);
     gtk_box_pack_start(GTK_BOX(box), label_worker, FALSE, FALSE, 0);
 
-    GtkWidget *worker_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    GtkWidget *worker_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_box_set_homogeneous(GTK_BOX(worker_box), TRUE);
 
     GtkWidget *open_btn = gtk_button_new_with_label("Open");
@@ -140,19 +150,16 @@ GtkWidget* create_page(int id) {
     gtk_widget_set_margin_start(label_bot, 0);
     gtk_box_pack_start(GTK_BOX(box), label_bot, FALSE, FALSE, 0);
 
-    GtkWidget *bot_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    GtkWidget *bot_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     gtk_box_set_homogeneous(GTK_BOX(bot_box), TRUE);
 
     GtkWidget *start_btn = gtk_button_new_with_label("Start");
-    GtkWidget *pause_btn = gtk_button_new_with_label("Pause");
     GtkWidget *stop_btn = gtk_button_new_with_label("Stop");
     
     g_signal_connect(start_btn, "clicked", G_CALLBACK(on_start_clicked), GINT_TO_POINTER(id));
-    g_signal_connect(pause_btn, "clicked", G_CALLBACK(on_pause_clicked), GINT_TO_POINTER(id));
     g_signal_connect(stop_btn, "clicked", G_CALLBACK(on_stop_clicked), GINT_TO_POINTER(id));
     
     gtk_box_pack_start(GTK_BOX(bot_box), start_btn, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(bot_box), pause_btn, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(bot_box), stop_btn, TRUE, TRUE, 0);
     
     gtk_box_pack_start(GTK_BOX(box), bot_box, FALSE, FALSE, 5);
@@ -194,14 +201,14 @@ void interface( int argc, char** argv ) {
 
   GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "AFK");
-  gtk_window_set_default_size(GTK_WINDOW(window), 350, 350);
+  gtk_window_set_default_size(GTK_WINDOW(window), 250, 350);
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   g_signal_connect(window, "destroy", G_CALLBACK(on_window_closed), NULL);
 
   GtkWidget *notebook = gtk_notebook_new();
   gtk_container_add(GTK_CONTAINER(window), notebook);
 
-  for (int i = 1; i <= 6; i++) {
+  for (int i = 1; i <= 4; i++) {
     GtkWidget *page = create_page(i);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), page, gtk_label_new(to_string(i).c_str()));
   }

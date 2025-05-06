@@ -16,8 +16,8 @@ void locationThread(PARAMS) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 		
-		//auto [ XPOS, YPOS ] = inputs.mouseLocation( );		
-		//if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
+		auto [ XPOS, YPOS ] = inputs.mouseLocation( );		
+		if ( XPOS < 190 || XPOS > 824 || YPOS < 42 || YPOS > 507 ) { inputs.mouseMove( 742, 596 ); }
 
 		FloorIndex = screenshot.get( 1001, 54, 1, 61 );
 		
