@@ -126,14 +126,16 @@ GtkWidget* create_page(int id) {
   {
     GtkWidget *label_worker = gtk_label_new("Tibia:");
     gtk_label_set_xalign(GTK_LABEL(label_worker), 0.0);
-    gtk_widget_set_margin_start(label_worker, 0);
+    gtk_widget_set_margin_start(label_worker, 3);
     gtk_box_pack_start(GTK_BOX(box), label_worker, FALSE, FALSE, 0);
 
     GtkWidget *worker_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    gtk_box_set_homogeneous(GTK_BOX(worker_box), TRUE);
+    //gtk_box_set_homogeneous(GTK_BOX(worker_box), TRUE);
 
     GtkWidget *open_btn = gtk_button_new_with_label("Open");
+    gtk_widget_set_size_request(open_btn, -1, 30);
     GtkWidget *close_btn = gtk_button_new_with_label("Close");
+    gtk_widget_set_size_request(close_btn, -1, 30);
     
     g_signal_connect(open_btn, "clicked", G_CALLBACK(open_worker), GINT_TO_POINTER(id));
     g_signal_connect(close_btn, "clicked", G_CALLBACK(close_worker), GINT_TO_POINTER(id));
@@ -147,14 +149,16 @@ GtkWidget* create_page(int id) {
   {
     GtkWidget *label_bot = gtk_label_new("Bot:");
     gtk_label_set_xalign(GTK_LABEL(label_bot), 0.0);
-    gtk_widget_set_margin_start(label_bot, 0);
+    gtk_widget_set_margin_start(label_bot, 3);
     gtk_box_pack_start(GTK_BOX(box), label_bot, FALSE, FALSE, 0);
 
     GtkWidget *bot_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    gtk_box_set_homogeneous(GTK_BOX(bot_box), TRUE);
+    //gtk_box_set_homogeneous(GTK_BOX(bot_box), TRUE);
 
     GtkWidget *start_btn = gtk_button_new_with_label("Start");
+    gtk_widget_set_size_request(start_btn, -1, 30);
     GtkWidget *stop_btn = gtk_button_new_with_label("Stop");
+    gtk_widget_set_size_request(stop_btn, -1, 30);
     
     g_signal_connect(start_btn, "clicked", G_CALLBACK(on_start_clicked), GINT_TO_POINTER(id));
     g_signal_connect(stop_btn, "clicked", G_CALLBACK(on_stop_clicked), GINT_TO_POINTER(id));
@@ -169,6 +173,8 @@ GtkWidget* create_page(int id) {
     GtkWidget *label_char = gtk_label_new("Character:");
     gtk_label_set_xalign(GTK_LABEL(label_char), 0.0);
     gtk_widget_set_margin_start(label_char, 3);
+    gtk_widget_set_margin_top(label_char, 3);
+    gtk_widget_set_margin_bottom(label_char, 7);
     gtk_box_pack_start(GTK_BOX(box), label_char, FALSE, FALSE, 0);
     GtkWidget *dropdown_char = gtk_combo_box_text_new();
     for (const auto& file : characters) {
@@ -182,6 +188,8 @@ GtkWidget* create_page(int id) {
     GtkWidget *label_waypoint = gtk_label_new("Waypoint:");
     gtk_label_set_xalign(GTK_LABEL(label_waypoint), 0.0);
     gtk_widget_set_margin_start(label_waypoint, 3);
+    gtk_widget_set_margin_top(label_waypoint, 3);
+    gtk_widget_set_margin_bottom(label_waypoint, 7);
     gtk_box_pack_start(GTK_BOX(box), label_waypoint, FALSE, FALSE, 0);
     GtkWidget *dropdown_waypoint = gtk_combo_box_text_new();
     for (const auto& file : waypoints) {
@@ -201,7 +209,7 @@ void interface( int argc, char** argv ) {
 
   GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "AFK");
-  gtk_window_set_default_size(GTK_WINDOW(window), 250, 350);
+  gtk_window_set_default_size(GTK_WINDOW(window), 250, 360);
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   g_signal_connect(window, "destroy", G_CALLBACK(on_window_closed), NULL);
 

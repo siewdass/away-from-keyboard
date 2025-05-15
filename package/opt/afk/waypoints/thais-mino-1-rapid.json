@@ -1,0 +1,12 @@
+{
+  "Waypoints": [
+    { "x": 205, "y": 1511, "z": 8, "action": "attack", "optional": null },
+    { "x": 173, "y": 1498, "z": 8, "action": "attack", "optional": null },
+    { "x": 195, "y": 1490, "z": 8, "action": "attack", "optional": null },
+    { "x": 211, "y": 1463, "z": 8, "action": "walk", "optional": null },
+    { "x": 208, "y": 1459, "z": 8, "action": "attack", "optional": null },
+    { "x": 216, "y": 1490, "z": 8, "action": "attack", "optional": null }
+  ]
+}
+
+

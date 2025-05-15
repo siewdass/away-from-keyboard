@@ -7,6 +7,18 @@ Pathfinder pathfinder;
 class {
 public:
 
+    vector < Point > around = { 
+        Point( -1, -1 ), 
+        Point( 0, -1 ), 
+        Point( 1, -1 ),
+        Point( 1, 0 ),
+        Point( 1, 1 ),
+        Point( 0, 1 ),
+        Point( -1, 1 ), 
+        Point( -1, 0 ),
+        Point( 0, 0 )
+    };
+
     vector<Mat> maps;
     vector<vector<vector<int>>> paths;
 
@@ -105,7 +117,7 @@ public:
 
         bool attack = false;
         int left = 898, top = 59, pixel = 1;
-        int x = 0, y = 0;
+        int x = 0, y = 0, offsetX = 0, offsetY = 0;
 
         if ( abs( player.x - character.waypoints[ player.position ].x ) <= 2 && abs( player.y - character.waypoints[ player.position ].y ) <= 2 ) {
             console.log( "action", character.waypoints[ player.position ].action );
@@ -127,22 +139,35 @@ public:
             x = ways[ ways.size( ) >= 57 ? 56 : ways.size( ) - 1 ].x;
             y = ways[ ways.size( ) >= 57 ? 56 : ways.size( ) - 1 ].y;
 
+            /*for ( Point offset : other.reordened( around ) ) {
+                int newX = x, newY = y;
+                newX += offset.x;
+                newY += offset.y;
+                try {
+                    if (pathfinder.has3x3Space(Point(newX, newX))) {
+                        x = offset.x;
+                        y = offset.y;
+                        break;
+                    }
+                } catch (exception &e) {}
+            }*/
+
             while (true) {
-                int offsetX = x + other.plusMinus();
-                int offsetY = y + other.plusMinus();
+                offsetX = x + other.plusMinus();
+                offsetY = y + other.plusMinus();
                 try {
                     if (pathfinder.has3x3Space(Point(offsetX, offsetY))) {
-                        x = offsetX;
-                        y = offsetY;
+                       ///x = offsetX;
+                       //y = offsetY;
                         break;
                     }
                 } catch (exception &e) {}
             }
 
-            x = left + ( pixel * ( x - player.x ) );
-            y = top + ( pixel * ( y - player.y ) );
+            x = left + ( pixel * ( offsetX - player.x ) );
+            y = top + ( pixel * ( offsetY - player.y ) );
             
-            console.log( "from x:", player.x, "from y:", player.y, "to x:", y, "to y:", y );
+            console.log( "from x:", player.x, "from y:", player.y, "to x:", offsetX, "to y:", offsetY );
         }
 
         return { attack, x, y };
@@ -159,21 +184,9 @@ public:
 
     vector<tuple<int, int>> looter( ) {
 
-        vector < Point > Around = { 
-            Point( -1, -1 ), 
-            Point( 0, -1 ), 
-            Point( 1, -1 ),
-            Point( 1, 0 ),
-            Point( 1, 1 ),
-            Point( 0, 1 ),
-            Point( -1, 1 ), 
-            Point( -1, 0 ),
-            Point( 0, 0 )
-        };
-
         vector < tuple < int, int > > All;
 
-        for ( Point point : Around ) {
+        for ( Point point : around ) {
             auto [ x, y ] = gameWindow( point.x, point.y );
             All.push_back( { x, y } );
         }

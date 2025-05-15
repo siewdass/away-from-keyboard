@@ -1,7 +1,7 @@
 {
   "Vocation": "knight",
   "Knight": {
-    "BloodRage": "",
+    "BloodRage": "1",
     "Challenge": "",
     "ChivalrousChallenge": "",
     "Berserker": "r",
@@ -29,7 +29,7 @@
   "HealthPotion": { "Percent": 40, "Hotkey": "2" },
   "ManaPotion": { "Percent": 70, "Hotkey": "3" },
   "Recovery": "p",
-  "Haste": "b",
+  "Haste": "",
   "CurePoison": "",
   "Food": "h",
   "Paralyze": "4",

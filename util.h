@@ -18,6 +18,7 @@
 #include <random>
 #include <cmath>
 #include <queue>
+#include <algorithm>
 
 using namespace cv;
 using namespace std::chrono;
@@ -290,6 +291,12 @@ public:
 		uniform_int_distribution<> dis(-1, 1);
 		return dis(gen);
 	}
+	vector<Point> reordened(vector<Point> myv) {
+		vector<Point> newone = myv;
+		unsigned seed = system_clock::now().time_since_epoch().count();
+		shuffle(newone.begin(), newone.end(), mt19937(seed));
+		return newone;
+	}
 } other;
 
 class Character {
@@ -422,5 +429,23 @@ public:
         }
     }
 };
+
+class {
+public:
+	string process( string cmd ) {
+		const int MAX_BUFFER = 2048;
+		char buffer[ MAX_BUFFER ];
+		FILE *stream = popen( cmd.c_str( ) , "r" );
+		if ( stream ) {
+			while ( !feof( stream ) ) {
+				if ( fgets( buffer, MAX_BUFFER, stream ) != NULL) { }
+			}
+			pclose( stream );
+		}
+		string v{ buffer };
+		v.pop_back( );
+		return v;
+	}
+} client;
 
 #endif

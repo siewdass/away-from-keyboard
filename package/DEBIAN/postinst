@@ -2,6 +2,5 @@
 set -e
 chmod -R 777 /opt/afk
 chmod +x /opt/afk/afk
-chmod +x /opt/afk/gui
 chmod +x /opt/afk/vncviewer
 exit 0

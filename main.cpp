@@ -119,7 +119,7 @@ void alternatorThread(PARAMS) {
 					auto [ attacking, X, Y ] = procedure.walker( player, character, procedure.paths );
 					if ( !attacking && X != 0 && Y != 0 ) {
 						inputs.mouse( X, Y, 1 );
-					} else if ( attacking ) {
+					} else if ( attacking && player.monsters.size() != 0 ) {
 						player.attacking = true;
 						player.walking = false;
 					}
@@ -129,7 +129,7 @@ void alternatorThread(PARAMS) {
 
 		} else if ( player.attacking ) {		
 
-			if ( player.monsters.size() == 0 ) count++;
+			if ( player.box == 0 ) count++;
 			else count = 0;
 
 			player.looting = count == 2;
@@ -148,7 +148,6 @@ void alternatorThread(PARAMS) {
 			player.walking = true;
 
 			for ( auto [ flaskX, flaskY ] : procedure.throwFlask( player ) ) inputs.mouseDrag( flaskX, flaskY );
-
 		}
 
 		timer.sleep( 250 );
@@ -224,7 +223,7 @@ void ammoThread(PARAMS) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
-		if ( character.quiver1 != "" && character.quiver2 != "" && character.ammunition1 != "" && character.ammunition2 != "" && character.hunt == "box" ) {
+		/*if ( character.quiver1 != "" && character.quiver2 != "" && character.ammunition1 != "" && character.ammunition2 != "" && character.hunt == "box" ) {
 			if ( player.offhand == false ) {
 				inputs.keyboard( character.quiver1 );
 				timer.sleep( 1000 );
@@ -239,18 +238,18 @@ void ammoThread(PARAMS) {
 				inputs.keyboard( character.quiver1 );
 				timer.sleep( 1000 );
 			}
-		}
+		}*/
 
 		if ( timer.clock() > ammo && (player.walking || player.looting) && player.offhand ) {
 			console.log( "ammunition1"	);
 			inputs.keyboard( character.ammunition1 );
 			inputs.keyboard( character.ammunition1 );
 			inputs.keyboard( character.ammunition1 );
-			ammo = timer.clock( ) + 60000;
+			ammo = timer.clock( ) + 30000;
 		}
 
 
-		timer.sleep( 500 );
+		timer.sleep( 2000 );
 	}
 }
 
@@ -441,7 +440,7 @@ void alarmThread(PARAMS) {
 
 		if ( timer.clock( ) > criticalCooldown && ( player.alarm || player.mana <= 20 || player.health <= 20 ) )  {
 			player.alarm = false;
-			control.setRunning( client, false );
+			//control.setRunning( client, false );
 			system( "mpg123 /opt/afk/critical.mp3 > /dev/null 2>&1" );
 			criticalCooldown = timer.clock( ) + 60000;
 		} else if ( timer.clock( ) > safeCooldown && player.lowcapacity ) {
@@ -486,6 +485,7 @@ void execute(int client, string spells, string waypoint) {
 	// verificar si el spot donde va a atacar tiene para hacer box si no que elija otro hasta que ya consiga uno
 	// detectar cantidad de vida segun pixeles internos de la barra de vida
 	// si casi llega al spot de atacar y no hay monstruos que vaya al siguiente
+	// corregir el pause lado alarma o quitarlo mientras
 
 	vector<function<void(int, Screenshot&, Inputs&, Player&, Character&)>> functions = {
 		locationThread,
@@ -523,9 +523,26 @@ void execute(int client, string spells, string waypoint) {
 
 int main(int argc, char *argv[]) {
  
-  thread([&](){ procedure.load( ); }).detach();
- 
-  interface(argc, argv);
+	thread([&](){ procedure.load( ); }).detach();
 
-  return 0;
+	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
+
+	system( "rm -f /tmp/licence.json" );
+	system( "wget -O /tmp/licence.json https://siewdass.github.io/licence.json > /dev/null 2>&1" );
+
+	Json config;
+	config.open( "/tmp/licence.json" );
+
+	for ( Json entry: config.readArray( "accepted" ) ) {
+		if ( entry.readString( "id" ) == serial ) {
+			interface(argc, argv);
+			break;
+		}
+	}
+
+	console.log( serial );
+
+	//interface(argc, argv);
+
+	return 0;
 }
