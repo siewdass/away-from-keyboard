@@ -36,20 +36,6 @@ void open_worker(GtkWidget *widget, gpointer data) {
         fi
         sleep 0.3
       done
-      
-      # Clipboard synchronization loop
-      (
-        while [ -S "/tmp/.X11-unix/X)" + to_string(id) + R"(" ]; do
-          clipboard0=$(xclip -display :0 -o -selection clipboard 2>/dev/null)
-          clipboard1=$(xclip -display :)" + to_string(id) + R"( -o -selection clipboard 2>/dev/null)
-          
-          if [ -n "$clipboard0" ] && [ "$clipboard0" != "$clipboard1" ]; then
-            echo "$clipboard0" | xclip -display :)" + to_string(id) + R"( -selection clipboard
-          fi
-          
-          sleep 1
-        done
-      ) &
     )";
     
     system(("bash -c '" + script + "'").c_str());
@@ -83,6 +69,7 @@ void on_waypoint_changed(GtkComboBox *widget, gpointer data) {
 }
 
 void on_window_closed(GtkWidget *widget, gpointer data) {
+  g_spawn_command_line_async("rm -f /opt/afk/afk.lock", NULL);
   gtk_main_quit();
 }
 
@@ -207,6 +194,21 @@ GtkWidget* create_page(int id) {
 void interface( int argc, char** argv ) {
   gtk_init(&argc, &argv);
 
+  string script = R"(
+    touch /opt/afk/afk.lock
+    (
+      while pgrep -x "afk" >/dev/null; do
+        sleep 2
+      done
+
+      if [ -f "/opt/afk/afk.lock" ]; then
+        mpg123 /opt/afk/critical.mp3
+      fi
+    ) &
+  )";
+  
+  system(("bash -c '" + script + "'").c_str());
+
   GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "AFK");
   gtk_window_set_default_size(GTK_WINDOW(window), 250, 360);
@@ -223,5 +225,4 @@ void interface( int argc, char** argv ) {
 
   gtk_widget_show_all(window);
   gtk_main();
-
 }

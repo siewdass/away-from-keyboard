@@ -1,12 +1,12 @@
 {
   "Waypoints": [
-    { "x": 1776, "y": 1550, "z": 6, "action": "attack", "optional": null },
-    { "x": 1758, "y": 1548, "z": 6, "action": "attack", "optional": null },
-    { "x": 1797, "y": 1555, "z": 6, "action": "walk", "optional": null },
-    { "x": 1798, "y": 1562, "z": 6, "action": "attack", "optional": null },
-    { "x": 1828, "y": 1558, "z": 6, "action": "walk", "optional": null },
-    { "x": 1832, "y": 1563, "z": 6, "action": "attack", "optional": null },
-    { "x": 1786, "y": 1551, "z": 6, "action": "walk", "optional": null }
+    { "x": 1776, "y": 1550, "z": 6, "action": "attack", "direction": "" },
+    { "x": 1758, "y": 1548, "z": 6, "action": "attack", "direction": "" },
+    { "x": 1797, "y": 1555, "z": 6, "action": "walk", "direction": "" },
+    { "x": 1798, "y": 1562, "z": 6, "action": "attack", "direction": "" },
+    { "x": 1828, "y": 1558, "z": 6, "action": "walk", "direction": "" },
+    { "x": 1832, "y": 1563, "z": 6, "action": "attack", "direction": "" },
+    { "x": 1786, "y": 1551, "z": 6, "action": "walk", "direction": "" }
   ],
   "Walkable": []
 }

@@ -4,7 +4,6 @@
 
 class Pathfinder {
 public:
-    // Load 2D grid map (0 = blocked, 1 = free)
     void loadMap(const std::vector<std::vector<int>>& map) {
         m_height = map.size();
         if (m_height == 0) return;
@@ -16,7 +15,6 @@ public:
         }
     }
 
-    // Find path from start to target
     std::vector<Point> findPath(Point start, Point target) {
         if (m_grid.empty()) return {};
         
@@ -34,8 +32,7 @@ public:
         open.emplace(0, PathNode(start, Point(-1,-1), 0));
         cameFrom[start.y * m_width + start.x] = start;
 
-        const Point directions[] = {{-1,0}, {1,0}, {0,1}, {0,-1},
-                                  {-1,-1}, {1,1}, {-1,1}, {1,-1}};
+        const Point directions[] = {{-1,0}, {1,0}, {0,1}, {0,-1}};
 
         while (!open.empty()) {
             PathNode current = open.top().second;

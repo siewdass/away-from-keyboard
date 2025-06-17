@@ -1,0 +1,12 @@
+{
+  "Waypoints": [
+    { "x": 216, "y": 1490, "z": 8, "action": "attack", "direction": "" },
+    { "x": 205, "y": 1511, "z": 8, "action": "attack", "direction": "" },
+    { "x": 173, "y": 1498, "z": 8, "action": "attack", "direction": "" },
+    { "x": 195, "y": 1490, "z": 8, "action": "attack", "direction": "" },
+    { "x": 208, "y": 1459, "z": 8, "action": "attack", "direction": "" },
+    { "x": 208, "y": 1446, "z": 8, "action": "attack", "direction": "" },
+    { "x": 178, "y": 1447, "z": 8, "action": "attack", "direction": "" },
+    { "x": 167, "y": 1476, "z": 8, "action": "attack", "direction": "" }
+  ]
+}

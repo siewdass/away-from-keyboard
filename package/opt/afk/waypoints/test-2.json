@@ -1,0 +1,31 @@
+{
+  "Waypoints": [
+    { "x": 182, "y": 1494, "z": 9, "action": "walk", "direction": "" },
+    { "x": 193, "y": 1489, "z": 9, "action": "attack", "direction": "" },
+    
+    { "x": 197, "y": 1467, "z": 9, "action": "walk", "direction": "" },
+    { "x": 187, "y": 1456, "z": 9, "action": "attack", "direction": "" },
+    
+    { "x": 168, "y": 1469, "z": 9, "action": "walk", "direction": "" },
+    { "x": 168, "y": 1472, "z": 9, "action": "walk", "direction": "" },
+    
+    { "x": 180, "y": 1478, "z": 9, "action": "walk", "direction": "" },
+    { "x": 171, "y": 1479, "z": 9, "action": "attack", "direction": "" },
+
+    { "x": 169, "y": 1510, "z": 9, "action": "walk", "direction": "" },
+    { "x": 177, "y": 1524, "z": 9, "action": "attack", "direction": "" },
+    
+    { "x": 204, "y": 1526, "z": 9, "action": "attack", "direction": "" },
+    
+    { "x": 202, "y": 1505, "z": 9, "action": "walk", "direction": "" },
+    { "x": 211, "y": 1500, "z": 9, "action": "attack", "direction": "" },
+
+    { "x": 213, "y": 1493, "z": 9, "action": "door", "direction": "up" },
+    { "x": 214, "y": 1481, "z": 9, "action": "attack", "direction": "" },
+    { "x": 213, "y": 1491, "z": 9, "action": "door", "direction": "down" }
+  ],
+  "Walkable": [
+    { "x": 213, "y": 1492, "z": 9 }
+  ]
+}
+

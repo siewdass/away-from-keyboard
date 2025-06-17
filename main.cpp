@@ -3,14 +3,17 @@
 #include "procedure.h"
 
 Control control;
+bool found = false;
 
-#define PARAMS int client, Screenshot& screenshot, Inputs& inputs, Player& player, Character& character
+#define PARAMS int client, Screenshot& screenshot, Inputs& inputs, Player& player, Character& character, Actions& actions
 
 void locationThread(PARAMS) {
 
     Mat FloorIndex, Minimap;
 	double cooldown = 0;
 	int oldX, oldY, count = 0;
+
+	procedure.setWalkable( character.walkables );
 
 	while ( control.getRunning( client ) ) {
 
@@ -45,7 +48,8 @@ void statsThread(PARAMS) {
 
 	int width = 1012, middle = ( 1012 / 2 );
 	int AlarmCount = 0;
-	Mat HP, MP, BD, FK, Player, CHAT, LOOTCHAT, WEAPON, RING, AMULET, OFFHAND, CAPACITY, GameWindow, Monsters;
+	Mat HP, MP, BD, FK, Player, CHAT, LOOTCHAT, CAPACITY, GameWindow, Monsters,
+	WEAPON, RING, AMULET, OFFHAND, HELMET, ARMOR;
 
 	while ( control.getRunning( client ) ) {
 
@@ -73,10 +77,16 @@ void statsThread(PARAMS) {
 		FK = screenshot.get( 836, 304, 176, 296 );
 		Monsters = screenshot.get( 23, 72, 1, 174 );
 		OFFHAND = screenshot.get( 935, 186, 1, 1 );
+		ARMOR = screenshot.get( 900, 170, 1, 1 );
+		HELMET = screenshot.get( 900, 133, 1, 1 );
 
-		//imwrite( "screenshot.png", OFFHAND );
+		//imwrite( "screenshot.png", HELMET );
 
-		auto [ health, mana, hungry, paralyze, poison, haste, flasks, alarm, near, weapon, necklace, ring, lowcapacity, target, offhand ] = procedure.stats( OFFHAND, CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters, AlarmCount);
+		auto [
+			health, mana, hungry, paralyze, poison, haste, flasks, alarm, near, weapon, necklace, ring, lowcapacity, target, offhand
+		] = procedure.stats(
+			HELMET, ARMOR, OFFHAND, CAPACITY, WEAPON, AMULET, RING, Player, CHAT, HP, MP, BD, FK, Monsters, AlarmCount
+		);
 
 		player.health = health;
 		player.mana = mana;
@@ -103,6 +113,7 @@ void statsThread(PARAMS) {
 void alternatorThread(PARAMS) {
     
 	int count = 0;
+	bool avoid = false;
 
 	while ( control.getRunning( client ) ) {
 
@@ -116,14 +127,20 @@ void alternatorThread(PARAMS) {
 					player.attacking = true;
 					player.walking = false;
 				} else {
-					auto [ attacking, X, Y ] = procedure.walker( player, character, procedure.paths );
-					if ( !attacking && X != 0 && Y != 0 ) {
+					auto [ attacking, X, Y, door ] = procedure.walker( player, character, procedure.paths );
+					if ( door ) {
+						inputs.mouse( X, Y, 3 );
+						avoid = true;
+					} else if ( !attacking && X != 0 && Y != 0 ) {
 						inputs.mouse( X, Y, 1 );
 					} else if ( attacking && player.monsters.size() != 0 ) {
 						player.attacking = true;
 						player.walking = false;
 					}
-					timer.sleep( 2000 );
+					if ( !avoid ) timer.sleep( 1500 );
+					avoid = false;
+					// si hay mas de 1 monstruo 2000 si hay 1 o menos entonces 500
+					// con esto tengo para hacer que camine mas rapido en ocaciones especificas
 				}
 			}
 
@@ -132,22 +149,24 @@ void alternatorThread(PARAMS) {
 			if ( player.box == 0 ) count++;
 			else count = 0;
 
-			player.looting = count == 2;
-			if ( player.looting ) player.attacking = false;
+			// agregue para que looteara mas rapido
+			if ( count == 5 ) {
+				player.looting = true;
+				player.attacking = false;
+			}
 
 		} else if ( player.looting ) {
 
-			inputs.shiftDown( );
 			for ( auto [ X, Y ] : procedure.looter( ) ) {
-				inputs.mouse( X, Y, 3 );
-				timer.sleep( 130 );
+				inputs.shiftClick( X, Y, 3 );
+				timer.sleep( 100 );
 			}
-			inputs.shiftUp( );
 
 			player.looting = false;
 			player.walking = true;
 
 			for ( auto [ flaskX, flaskY ] : procedure.throwFlask( player ) ) inputs.mouseDrag( flaskX, flaskY );
+			procedure.walk = true;
 		}
 
 		timer.sleep( 250 );
@@ -215,47 +234,9 @@ void potionsThread(PARAMS) {
 	}
 }
 
-void ammoThread(PARAMS) {
-	bool quiver = false;
-	double ammo = 0;
-
-	while ( control.getRunning( client ) ) {
-
-		while ( control.getPause( client ) ) timer.sleep( 2000 );
-
-		/*if ( character.quiver1 != "" && character.quiver2 != "" && character.ammunition1 != "" && character.ammunition2 != "" && character.hunt == "box" ) {
-			if ( player.offhand == false ) {
-				inputs.keyboard( character.quiver1 );
-				timer.sleep( 1000 );
-			}
-
-			if ( player.attacking && player.box >= 1 && player.box <= 3 && player.monsters.size() <= 3 ) {
-				console.log( "quiver2" );
-				inputs.keyboard( character.quiver2 );
-				timer.sleep( 1000 );
-				while ( player.monsters.size() != 0 ) timer.sleep( 500 );
-				console.log( "quiver1" );
-				inputs.keyboard( character.quiver1 );
-				timer.sleep( 1000 );
-			}
-		}*/
-
-		if ( timer.clock() > ammo && (player.walking || player.looting) && player.offhand ) {
-			console.log( "ammunition1"	);
-			inputs.keyboard( character.ammunition1 );
-			inputs.keyboard( character.ammunition1 );
-			inputs.keyboard( character.ammunition1 );
-			ammo = timer.clock( ) + 30000;
-		}
-
-
-		timer.sleep( 2000 );
-	}
-}
-
 void toolsThread(PARAMS) {
 
-	double necklaceCooldown = 0, ringCooldown = 0, foodCooldown = 0, hasteCooldown = 0;
+	double necklaceCooldown = 0, ringCooldown = 0, hasteCooldown = 0, ammo = 0;
 
 	while ( control.getRunning( client ) ) {
 
@@ -265,19 +246,15 @@ void toolsThread(PARAMS) {
 			if ( timer.clock( ) > hasteCooldown && character.haste != "" && !player.haste ) {
 				inputs.keyboard( character.haste );
 				hasteCooldown = timer.clock( ) + 33000;
-			} else if ( timer.clock( ) > foodCooldown && character.food != "" && player.hungry ) {
-				inputs.keyboard( character.food );
-				inputs.keyboard( character.food );
-				inputs.keyboard( character.food );
-				foodCooldown = timer.clock( ) + 180000;
+			} else if ( character.food != "" && player.hungry ) {
+				for ( int i = 0; i < 3; i++ ) inputs.keyboard( character.food );
 			} else if ( character.ring != "" && player.ring == false ) {
-				inputs.keyboard( character.ring );
-				inputs.keyboard( character.ring );
-				inputs.keyboard( character.ring );
+				for ( int i = 0; i < 3; i++ ) inputs.keyboard( character.ring );
 			} else if ( character.necklace != "" && player.necklace == false ) {
-				inputs.keyboard( character.necklace );
-				inputs.keyboard( character.necklace );
-				inputs.keyboard( character.necklace );
+				for ( int i = 0; i < 3; i++ ) inputs.keyboard( character.necklace );
+			} else if ( timer.clock() > ammo && character.vocation == "paladin" && player.walking && player.offhand ) {
+				for ( int i = 0; i < 3; i++ ) inputs.keyboard( character.ammunition1 );
+				ammo = timer.clock( ) + 30000;
 			}
 		}
 
@@ -473,6 +450,8 @@ void alarmThread(PARAMS) {
 }
 
 void execute(int client, string spells, string waypoint) {
+	if ( !found ) return;
+
 	auto tibia = ":" + to_string(client);
 
 	console.log("Executing " + tibia + " " + spells + " " + waypoint);
@@ -481,13 +460,12 @@ void execute(int client, string spells, string waypoint) {
 	auto screenshot = make_shared<Screenshot>(tibia);
 	auto inputs = make_shared<Inputs>(tibia);
 	auto player = make_shared<Player>(character->waypoints);
+	auto actions = make_shared<Actions>();
 
-	// verificar si el spot donde va a atacar tiene para hacer box si no que elija otro hasta que ya consiga uno
 	// detectar cantidad de vida segun pixeles internos de la barra de vida
 	// si casi llega al spot de atacar y no hay monstruos que vaya al siguiente
-	// corregir el pause lado alarma o quitarlo mientras
 
-	vector<function<void(int, Screenshot&, Inputs&, Player&, Character&)>> functions = {
+	vector<function<void(int, Screenshot&, Inputs&, Player&, Character&, Actions&)>> functions = {
 		locationThread,
 		statsThread,
 		healThread,
@@ -504,14 +482,13 @@ void execute(int client, string spells, string waypoint) {
 			functions.push_back( knightThread );
 		} else if ( character->vocation == "paladin" && character->hunt == "box" ) {
 			functions.push_back( paladinThread );
-			functions.push_back( ammoThread );
 		}
 	}
 
 	for ( auto& f : functions ) {
 		thread([=]() { // Knight
 			try {
-				f(client, *screenshot, *inputs, *player, *character);
+				f(client, *screenshot, *inputs, *player, *character, *actions);
 			} catch (exception& e) {
 				console.log("Error:", e.what());
 			}
@@ -526,23 +503,34 @@ int main(int argc, char *argv[]) {
 	thread([&](){ procedure.load( ); }).detach();
 
 	string serial = client.process( "lsblk --nodeps -no serial /dev/$(lsblk -ndo pkname $(df -h / | sed 1d | cut -d ' ' -f 1))" );
-
-	system( "rm -f /tmp/licence.json" );
-	system( "wget -O /tmp/licence.json https://siewdass.github.io/licence.json > /dev/null 2>&1" );
-
-	Json config;
-	config.open( "/tmp/licence.json" );
-
-	for ( Json entry: config.readArray( "accepted" ) ) {
-		if ( entry.readString( "id" ) == serial ) {
-			interface(argc, argv);
-			break;
-		}
-	}
-
 	console.log( serial );
 
-	//interface(argc, argv);
+	thread([=]() {
+		try {
+			while ( true ) {
+				system( "rm -f /tmp/licence.json" );
+				system( "wget -O /tmp/licence.json https://siewdass.github.io/licence.json > /dev/null 2>&1" );
+
+				Json config;
+				config.open( "/tmp/licence.json" );
+
+				found = false;
+
+				for ( Json entry: config.readArray( "accepted" ) ) {
+					if ( entry.readString( "id" ) == serial ) {
+						found = true;
+						break;
+					}
+				}
+
+				timer.sleep( 60000 * 60 * 6 );
+			}
+		} catch (exception& e) {
+			console.log("Error:", e.what());
+		}
+	}).detach();
+
+	interface(argc, argv);
 
 	return 0;
 }

@@ -10,6 +10,8 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
+#include <unordered_map>
 #include <filesystem>
 
 #pragma once
@@ -40,8 +42,8 @@ struct PathNode {
 
 struct Waypoint {
 	int x, y, z;
-	string action = "attack"; // walk, rope, stairs
-	int direction = 1;
+	string action; // walk, rope, stairs
+	string direction;
 };
 
 struct Position {
@@ -343,7 +345,7 @@ public:
     string hunt = "";
     string leave = "";
     vector<Waypoint> waypoints;
-    vector<Waypoint> walkable;
+    vector<Waypoint> walkables;
 
     string quiver1 = "";
     string quiver2 = "";
@@ -415,6 +417,7 @@ public:
         leave = config.readString("Leave");
 
         waypoints.clear();
+		walkables.clear();
 
         Json configw;
         configw.open(w.c_str());
@@ -425,7 +428,16 @@ public:
             wp.y = waypoint.readInteger("y");
             wp.z = waypoint.readInteger("z");
             wp.action = waypoint.readString("action");
+			wp.direction = waypoint.readString("direction");
             waypoints.push_back(wp);
+        }
+
+		for (Json walkable : configw.readArray("Walkable")) {
+            Waypoint wp;
+            wp.x = walkable.readInteger("x");
+            wp.y = walkable.readInteger("y");
+            wp.z = walkable.readInteger("z");
+			walkables.push_back(wp);
         }
     }
 };
@@ -447,5 +459,40 @@ public:
 		return v;
 	}
 } client;
+
+struct Hotkey {
+    int priority;
+    string key;
+	string combination;
+
+	Hotkey(int p, string k, string c = String()) : priority(p), key(k), combination(c) {}
+
+    bool operator<(const Hotkey& other) const {
+        return priority < other.priority;
+    }
+};
+
+class Actions {
+public:
+    std::priority_queue<Hotkey> queue;
+    std::mutex mtx;
+
+    void add(const Hotkey& hotkey) {
+        std::lock_guard<std::mutex> lock(mtx);
+        queue.push(hotkey);
+    }
+
+    Hotkey retrieve() {
+        std::lock_guard<std::mutex> lock(mtx);
+        Hotkey next = queue.top();
+        queue.pop();
+        return next;
+    }
+
+    bool isEmpty() {
+        std::lock_guard<std::mutex> lock(mtx);
+        return queue.empty();
+    }
+};
 
 #endif

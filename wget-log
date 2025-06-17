@@ -1,0 +1,9 @@
+connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 549 [application/json]
+Saving to: ‘/tmp/licence.json’
+
+     0K                                                       100% 7.40M=0s
+
+2025-06-16 19:37:10 (7.40 MB/s) - ‘/tmp/licence.json’ saved [549/549]
+

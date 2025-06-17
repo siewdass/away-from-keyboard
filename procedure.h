@@ -15,12 +15,12 @@ public:
         Point( 1, 1 ),
         Point( 0, 1 ),
         Point( -1, 1 ), 
-        Point( -1, 0 ),
-        Point( 0, 0 )
+        Point( -1, 0 )
     };
 
     vector<Mat> maps;
     vector<vector<vector<int>>> paths;
+    bool walk = true;
 
     tuple<int, int> gameWindow( int x, int y ) {
         int sqm = 41;
@@ -113,55 +113,65 @@ public:
         return Point( X, Y );
     }
 
-    tuple<bool, int, int> walker( Player& player, Character character, vector < vector < vector < int > > > paths ) {
+    tuple<bool, int, int, bool> walker( Player& player, Character character, vector < vector < vector < int > > > paths ) {
 
         bool attack = false;
         int left = 898, top = 59, pixel = 1;
         int x = 0, y = 0, offsetX = 0, offsetY = 0;
 
-        if ( abs( player.x - character.waypoints[ player.position ].x ) <= 2 && abs( player.y - character.waypoints[ player.position ].y ) <= 2 ) {
+        unordered_map<string, Point> directions = { {"up", Point(0, -1)}, {"right", Point(1,  0)}, {"down",  Point(0,  1)}, {"left",  Point(-1, 0)} };
+
+        if ( character.waypoints[ player.position ].action == "door" &&
+             character.waypoints[ player.position ].direction != "" &&
+             character.waypoints[ player.position ].x == player.x &&
+             character.waypoints[ player.position ].y == player.y ) {
+            Point point = directions[character.waypoints[ player.position ].direction];
+            console.log( "direction", character.waypoints[ player.position ].direction );
+            auto [ X, Y ] = gameWindow( point.x, point.y );
+            player.position += 1;
+            return { attack, X, Y, true };
+        } else if ( abs( player.x - character.waypoints[ player.position ].x ) <= 2 && abs( player.y - character.waypoints[ player.position ].y ) <= 2 ) {
             console.log( "action", character.waypoints[ player.position ].action );
             attack = character.waypoints[ player.position ].action == "attack" ? true : false;
             player.position += 1;
-            if ( attack && player.monsters.size( ) > 0 ) return { attack, x, y };
+            if ( attack && player.monsters.size( ) > 0 ) return { attack, x, y, false };
         }
 
         if ( player.position == character.waypoints.size( ) ) player.position = 0;
 
-        pathfinder.loadMap(paths[ player.z ]);
+        pathfinder.loadMap( paths[ player.z ] );
 
         auto ways = pathfinder.findPath(
-            Point(player.x, player.y),
+            Point( player.x, player.y ),
             Point( character.waypoints[ player.position ].x, character.waypoints[ player.position ].y )
         );
 
-        if ( ways.size( ) > 0 ) {
-            x = ways[ ways.size( ) >= 57 ? 56 : ways.size( ) - 1 ].x;
-            y = ways[ ways.size( ) >= 57 ? 56 : ways.size( ) - 1 ].y;
+        int count = ways.size();
 
-            /*for ( Point offset : other.reordened( around ) ) {
-                int newX = x, newY = y;
-                newX += offset.x;
-                newY += offset.y;
-                try {
-                    if (pathfinder.has3x3Space(Point(newX, newX))) {
-                        x = offset.x;
-                        y = offset.y;
-                        break;
-                    }
-                } catch (exception &e) {}
-            }*/
+        if ( count > 0 ) {
 
-            while (true) {
-                offsetX = x + other.plusMinus();
-                offsetY = y + other.plusMinus();
-                try {
-                    if (pathfinder.has3x3Space(Point(offsetX, offsetY))) {
-                       ///x = offsetX;
-                       //y = offsetY;
-                        break;
-                    }
-                } catch (exception &e) {}
+            bool monsters = player.monsters.size() > 0;
+            int index = count >= 56 ? 56 : count - 1;
+
+            if ( character.waypoints[ player.position ].action == "attack" ) {
+                index = count >= 78 ? 56 : count >= 18 ? count - 12 : count - 1;
+            }
+
+            offsetX = ways[ index ].x;
+            offsetY = ways[ index ].y;
+
+            if ( character.waypoints[ player.position ].action != "door" ) {
+                for ( Point offset : other.reordened( around ) ) {
+                    int newX = offsetX + offset.x;
+                    int newY = offsetY + offset.y;
+                    try {
+                        if (pathfinder.has3x3Space(Point(newX, newY))) {
+                            offsetX = newX;
+                            offsetY = newY;
+                            break;
+                        }
+                    } catch (...) {}
+                }
             }
 
             x = left + ( pixel * ( offsetX - player.x ) );
@@ -170,7 +180,7 @@ public:
             console.log( "from x:", player.x, "from y:", player.y, "to x:", offsetX, "to y:", offsetY );
         }
 
-        return { attack, x, y };
+        return { attack, x, y, false };
     }
 
     vector<tuple<int, int>> throwFlask( Player player ) {
@@ -194,7 +204,7 @@ public:
         return All;
     }
 
-    tuple<int, int, bool, bool, bool, bool, vector<Point>, bool, bool, bool, bool, bool, bool, bool, bool> stats( Mat OFFHAND, Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK, Mat Monsters, int AlarmCount ) {
+    tuple<int, int, bool, bool, bool, bool, vector<Point>, bool, bool, bool, bool, bool, bool, bool, bool> stats( Mat HELMET, Mat ARMOR, Mat OFFHAND, Mat CAPACITY, Mat WEAPON, Mat AMULET, Mat RING, Mat BATTLE, Mat CHAT, Mat HP, Mat MP, Mat BD, Mat FK, Mat Monsters, int AlarmCount ) {
 
         vector<Pixel> monsters = inspect( Monsters );
 
@@ -203,7 +213,7 @@ public:
         for ( Pixel pixel : monsters ) {
             if ( pixel.r == 255 && pixel.g == 0 && pixel.b == 0 ) {
                 target = true;
-                break;   
+                break;
             }
         }
 
@@ -245,6 +255,22 @@ public:
                 offhandEquipped = true;
                 break;
             }
+        }
+
+        bool helmetEquipped = false;
+
+        Pixel helmet = inspect( HELMET )[0];
+
+        if ( helmet.r != 73 && helmet.g != 75 && helmet.b != 78 ) {
+            helmetEquipped = true;
+        }
+
+        bool armorEquipped = false;
+
+        Pixel armor = inspect( ARMOR )[0];
+
+        if ( armor.r != 68 && armor.g != 71 && armor.b != 75 ) {
+            armorEquipped = true;
         }
 
         bool amuletEquipped = true;
@@ -648,6 +674,14 @@ public:
 
     void walkable(vector<Waypoint> walkable) {
         for (Waypoint wp : walkable) paths[wp.z][wp.y][wp.x] = 0;
+    }
+
+    void setWalkable(vector<Waypoint> walkables) {
+        for (Waypoint wp : walkables) {
+            if (wp.z >= 0 && wp.z < paths.size() && wp.y >= 0 && wp.y < paths[wp.z].size() && wp.x >= 0 && wp.x < paths[wp.z][wp.y].size())  {
+                paths[wp.z][wp.y][wp.x] = 1;
+            }
+        }
     }
 
     tuple<int, int, int, int> location(Mat FloorIndex, Mat Minimap, int x, int y) {
