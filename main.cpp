@@ -187,17 +187,21 @@ void healThread(PARAMS) {
 
 		if ( timer.clock( ) > healCooldown && player.mana >= 5 ) {
 			if ( timer.clock( ) > healCooldown1 && character.healing != "" && hppercent <= character.healingpercent ) {
-				inputs.keyboard( character.healing );
+				//inputs.keyboard( character.healing );
+				actions.add( { 3, character.healing } );
 				healCooldown = timer.clock( ) + global;
 				healCooldown1 = timer.clock( ) + global;
 			} else if ( player.paralyze && character.paralyze != "" && player.walking ) {
-				inputs.keyboard( character.paralyze );
+				//inputs.keyboard( character.paralyze );
+				actions.add( { 3, character.paralyze } );
 				healCooldown = timer.clock( ) + global;
 			} else if ( player.poison && character.curepoison != "" ) {
-				inputs.keyboard( character.curepoison );
+				//inputs.keyboard( character.curepoison );
+				actions.add( { 3, character.curepoison } );
 				healCooldown = timer.clock( ) + global;
 			} else if ( timer.clock( ) > recoveryCooldown && character.recovery != "" && hppercent < 100 ) {
-				inputs.keyboard( character.recovery );
+				//inputs.keyboard( character.recovery );
+				actions.add( { 3, character.recovery } );
 				healCooldown = timer.clock( ) + global;
 				recoveryCooldown = timer.clock( ) + 63000;
 			}
@@ -222,10 +226,12 @@ void potionsThread(PARAMS) {
 
 		if ( timer.clock( ) > potionCooldown ) {
 			if ( character.healthpotion != "" && hppercent <= character.healthpotionpercent ) {
-				inputs.keyboard( character.healthpotion );
+				//inputs.keyboard( character.healthpotion );
+				actions.add( { 3, character.healthpotion } );
 				potionCooldown = timer.clock( ) + global;
 			} else if ( character.manapotion != "" && mppercent <= character.manapotionpercent ) {
-				inputs.keyboard( character.manapotion );
+				//inputs.keyboard( character.manapotion );
+				actions.add( { 3, character.manapotion } );
 				potionCooldown = timer.clock( ) + global;
 			}
 		}
@@ -280,7 +286,7 @@ void knightThread(PARAMS) {
 				if ( player.box >= 2 || keepAttacking ) {
 					keepAttacking = true;
 					if ( timer.clock( ) > attackCooldown ) {
-						if ( character.bloodrage != "" && timer.clock( ) > bloodrageCooldown && player.box > 0 ) {
+						if ( character.bloodrage != "" && timer.clock( ) > bloodrageCooldown && player.box > 2 ) {
 							inputs.keyboard( character.bloodrage );
 							bloodrageCooldown = timer.clock( ) + 10500;
 							attackCooldown = timer.clock( ) + 100;
@@ -350,7 +356,7 @@ void paladinThread(PARAMS) {
 
 				keepAttacking = true;
 				if ( timer.clock( ) > attackCooldown && player.mana > 10 ) {
-					if ( character.sharpshooter != "" && timer.clock( ) > attackCooldown1 && player.box >= 2 ) {
+					if ( character.sharpshooter != "" && timer.clock( ) > attackCooldown1 && player.box > 2 ) {
 						inputs.keyboard( character.sharpshooter );
 						attackCooldown = timer.clock( ) + 1000;
 						attackCooldown1 = timer.clock( ) + 8400;
@@ -449,6 +455,29 @@ void alarmThread(PARAMS) {
 	player.alarm = false;
 }
 
+void inputThread(PARAMS) {
+
+    while ( control.getRunning( client ) ) {
+
+        while ( control.getPause( client ) ) timer.sleep( 2000 );
+
+        try {
+			if (!actions.isEmpty()) {
+				Hotkey hotkey = actions.retrieve();
+				if (!hotkey.combination.empty()) {
+					inputs.keywith( hotkey.combination.c_str( ) );
+					timer.sleep( 100 );	
+				}
+				inputs.keyboard( hotkey.key );
+			}
+        } catch (...) {
+            console.log("Unknown exception caught in inputThread");
+        }
+
+        timer.sleep( 250 );
+    }
+}
+
 void execute(int client, string spells, string waypoint) {
 	if ( !found ) return;
 
@@ -470,7 +499,8 @@ void execute(int client, string spells, string waypoint) {
 		statsThread,
 		healThread,
 		potionsThread,
-		toolsThread
+		toolsThread,
+		inputThread
 	};
 
 	if ( character->waypoints.size( ) > 0 ) {
