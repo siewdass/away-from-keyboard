@@ -1,0 +1,49 @@
+version: '3.8'
+
+networks:
+  tibia_net:
+    driver: bridge
+
+volumes:
+  shared_game_data:
+
+services:
+  # SERVICIO DE DESCARGA: Solo descarga si el archivo es diferente en el servidor
+  downloader:
+    build: .
+    container_name: tibia_downloader
+    platform: linux/amd64
+    volumes:
+      - shared_game_data:/tibia_app
+    command: >
+      sh -c "echo 'Comprobando actualizaciones...' && 
+             wget -N https://static.tibia.com/download/tibia.x64.tar.gz &&
+             echo 'Descarga completa o ya actualizado.'"
+
+  # CLIENTE 1: Instala desde el volumen y ejecuta
+  tibia_1:
+    build: .
+    container_name: tibia_cliente_1
+    platform: linux/amd64
+    shm_size: '2gb' # Evita que se cierre por falta de memoria compartida
+    depends_on:
+      downloader:
+        condition: service_completed_successfully
+    networks:
+      - tibia_net
+    volumes:
+      - shared_game_data:/tibia_app
+      - ./config_1:/root/.local/share/CipSoft/Tibia
+    environment:
+      - DISPLAY=:1
+    command: >
+      sh -c " # 1. Limpieza de procesos y locks previos rm -f /tmp/.X1-lock /tmp/.X11-unix/X1; rm -f ./Tibia/Tibia.lock;
+
+      # 2. Descomprimir (solo actualiza archivos nuevos) tar -xzvf tibia.x64.tar.gz;
+
+      # 3. Iniciar pantalla virtual Xvfb :1 -screen 0 1024x768x24 +extension GLX +render -noreset & sleep 5;
+
+      # 4. Ejecutar el juego echo 'Iniciando Tibia...'; ./Tibia/Tibia"
+
+    # Si se cierra, Docker intentará reiniciarlo automáticamente
+    restart: unless-stopped
