@@ -98,6 +98,7 @@ void on_stop_clicked(GtkWidget *widget, gpointer mydata) {
   if (control.getRunning(id)) {
     control.setRunning(id, false);
     control.setPause(id, false);
+    control.nextGeneration(id);
     
     GtkWidget *parent = gtk_widget_get_parent(widget);
     GList *children = gtk_container_get_children(GTK_CONTAINER(parent));
