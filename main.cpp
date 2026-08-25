@@ -14,8 +14,9 @@ void locationThread(PARAMS) {
 	int oldX, oldY, count = 0;
 
 	procedure.setWalkable( character.walkables );
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 		
@@ -51,7 +52,9 @@ void statsThread(PARAMS) {
 	Mat HP, MP, BD, FK, Player, CHAT, LOOTCHAT, CAPACITY, GameWindow, Monsters,
 	WEAPON, RING, AMULET, OFFHAND, HELMET, ARMOR;
 
-	while ( control.getRunning( client ) ) {
+	int gen = control.getGeneration( client );
+
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -114,8 +117,9 @@ void alternatorThread(PARAMS) {
     
 	int count = 0;
 	bool avoid = false;
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -123,7 +127,7 @@ void alternatorThread(PARAMS) {
 
 			if ( player.canWalk ) {
 				if ( player.box == player.validSqm || player.box == player.validSqm - 1 ) {
-					player.position = (player.position == character.waypoints.size()) ? 0 : player.position + 1;
+					player.position = ( player.position + 1 ) % character.waypoints.size();
 					player.attacking = true;
 					player.walking = false;
 				} else {
@@ -177,8 +181,9 @@ void healThread(PARAMS) {
 
 	int percent = ( ( 1012 / 2 ) - 188 ) - 32;
 	double global = 1050, healCooldown = 0, healCooldown1 = 0, recoveryCooldown = 0;
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -216,8 +221,9 @@ void potionsThread(PARAMS) {
 	int percent = ( ( 1012 / 2 ) - 188 ) - 32;
 	double global = 1050;
 	double potionCooldown = 0;
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -243,8 +249,9 @@ void potionsThread(PARAMS) {
 void toolsThread(PARAMS) {
 
 	double necklaceCooldown = 0, ringCooldown = 0, hasteCooldown = 0, ammo = 0;
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -258,7 +265,9 @@ void toolsThread(PARAMS) {
 				for ( int i = 0; i < 3; i++ ) inputs.keyboard( character.ring );
 			} else if ( character.necklace != "" && player.necklace == false ) {
 				for ( int i = 0; i < 3; i++ ) inputs.keyboard( character.necklace );
-			} else if ( timer.clock() > ammo && character.vocation == "paladin" && player.walking && player.offhand ) {
+			}
+			
+			if ( timer.clock() > ammo && character.vocation == "paladin" && player.offhand ) {
 				for ( int i = 0; i < 3; i++ ) inputs.keyboard( character.ammunition1 );
 				ammo = timer.clock( ) + 30000;
 			}
@@ -275,8 +284,9 @@ void knightThread(PARAMS) {
 						  attackCooldown1 = 0, attackCooldown2 = 0, attackCooldown3 = 0,
 						  attackCooldown4 = 0, attackCooldown5 = 0, attackCooldown6 = 0, 
 						  attackCooldown7 = 0;
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -346,8 +356,9 @@ void paladinThread(PARAMS) {
 	double attackCooldown = 0, attackCooldown1 = 0, attackCooldown2 = 0,
 		   attackCooldown3 = 0, attackCooldown4 = 0, attackCooldown5 = 0,
 		   attackCooldown6 = 0, attackCooldown7 = 0;
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -391,8 +402,9 @@ void paladinThread(PARAMS) {
 void targetThread(PARAMS) {
 
 	double autoAttackCooldown = 0;
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -416,8 +428,9 @@ void alarmThread(PARAMS) {
 	double criticalCooldown = 0, safeCooldown = 0;
 
 	timer.sleep( 5000 );
+	int gen = control.getGeneration( client );
 
-	while ( control.getRunning( client ) ) {
+	while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
 		while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -438,7 +451,7 @@ void alarmThread(PARAMS) {
 
 				Waypoint waypoint = character.waypoints[ index ];
 				if ( waypoint.action == "attack" ) {
-					player.position = index + 1;
+					player.position = ( index + 1 ) % character.waypoints.size();
 					break;
 				}
 				
@@ -457,7 +470,9 @@ void alarmThread(PARAMS) {
 
 void inputThread(PARAMS) {
 
-    while ( control.getRunning( client ) ) {
+    int gen = control.getGeneration( client );
+
+    while ( control.getRunning( client ) && control.getGeneration( client ) == gen ) {
 
         while ( control.getPause( client ) ) timer.sleep( 2000 );
 
@@ -481,6 +496,7 @@ void inputThread(PARAMS) {
 void execute(int client, string spells, string waypoint) {
 	if ( !found ) return;
 
+	control.nextGeneration( client );
 	auto tibia = ":" + to_string(client);
 
 	console.log("Executing " + tibia + " " + spells + " " + waypoint);
@@ -516,8 +532,10 @@ void execute(int client, string spells, string waypoint) {
 	}
 
 	for ( auto& f : functions ) {
-		thread([=]() { // Knight
+		int gen = control.getGeneration( client );
+		thread([=]() {
 			try {
+				if ( control.getGeneration( client ) != gen ) return;
 				f(client, *screenshot, *inputs, *player, *character, *actions);
 			} catch (exception& e) {
 				console.log("Error:", e.what());

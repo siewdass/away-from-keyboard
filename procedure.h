@@ -113,13 +113,16 @@ public:
         return Point( X, Y );
     }
 
-    tuple<bool, int, int, bool> walker( Player& player, Character character, vector < vector < vector < int > > > paths ) {
+    tuple<bool, int, int, bool> walker( Player& player, Character character, const vector < vector < vector < int > > >& paths ) {
 
         bool attack = false;
         int left = 898, top = 59, pixel = 1;
         int x = 0, y = 0, offsetX = 0, offsetY = 0;
 
         unordered_map<string, Point> directions = { {"up", Point(0, -1)}, {"right", Point(1,  0)}, {"down",  Point(0,  1)}, {"left",  Point(-1, 0)} };
+
+        if ( character.waypoints.empty( ) ) return { attack, x, y, false };
+        if ( player.position >= character.waypoints.size( ) ) player.position = 0;
 
         if ( character.waypoints[ player.position ].action == "door" &&
              character.waypoints[ player.position ].direction != "" &&
@@ -138,6 +141,8 @@ public:
         }
 
         if ( player.position == character.waypoints.size( ) ) player.position = 0;
+
+        if ( player.z < 0 || player.z >= (int)paths.size( ) ) return { attack, x, y, false };
 
         pathfinder.loadMap( paths[ player.z ] );
 
@@ -515,33 +520,33 @@ public:
                             pixel2.r == 81 & pixel2.g == 81 & pixel2.b == 81 &&
                             pixel3.r == 56 & pixel3.g == 57 & pixel3.b == 56 ) {
                             
-                            for ( int i = 0; i <= NORMAL.size( ); i++ ) {
+                            for ( int i = 0; i < NORMAL.size( ); i++ ) {
                                 pixel = rgb( img, x + i, y );
                                 auto [ r, g, b ] = NORMAL[ i ];
                                 if ( pixel.r == r && pixel.g == g && pixel.b == b ) {
                                     normal += 1;
                                 } else {
-                                    i == NORMAL.size( );
+                                    break;
                                 }
                             }
 
-                            for ( int i = 0; i <= STRONG.size( ); i++ ) {
+                            for ( int i = 0; i < STRONG.size( ); i++ ) {
                                 pixel = rgb( img, x + i, y );
                                 auto [ r, g, b ] = STRONG[ i ];
                                 if ( pixel.r == r && pixel.g == g && pixel.b == b ) {
                                     strong += 1;
                                 } else {
-                                    i == STRONG.size( );
+                                    break;
                                 }
                             }
 
-                            for ( int i = 0; i <= GREAT.size( ); i++ ) {
+                            for ( int i = 0; i < GREAT.size( ); i++ ) {
                                 pixel = rgb( img, x + i, y );
                                 auto [ r, g, b ] = GREAT[ i ];
                                 if ( pixel.r == r && pixel.g == g && pixel.b == b ) {
                                     great += 1;
                                 } else {
-                                    i == GREAT.size( );
+                                    break;
                                 }
                             }
 
@@ -654,10 +659,12 @@ public:
 
     void load() {
         Mat img;
+        vector<Mat> tmpMaps;
+        vector<vector<vector<int>>> tmpPaths;
 
         for (int i = 0; i <= 15; i++) {
             img = imread("/opt/afk/maps/" + to_string(i) + "-map.png");
-            maps.push_back(img);
+            tmpMaps.push_back(img);
             img = imread("/opt/afk/maps/" + to_string(i) + "-path.png");
 
             vector<vector<int>> tmp;
@@ -668,8 +675,11 @@ public:
                 }
                 tmp.push_back(row);
             }
-            paths.push_back(tmp);
+            tmpPaths.push_back(tmp);
         }
+
+        maps.swap(tmpMaps);
+        paths.swap(tmpPaths);
     }
 
     void walkable(vector<Waypoint> walkable) {
@@ -693,6 +703,8 @@ public:
                 z++;
             }
 
+            if (z >= maps.size( )) z = maps.size( ) - 1;
+
             if (x == 0 && y == 0) {
                 for (int i = 16; i < maps[z].rows - 16; i++) {
                     for (int j = 16; j < maps[z].cols - 16; j++) {
@@ -707,9 +719,11 @@ public:
                 y = Y;
             }
 
-            for (int i = y - 1; i < y + 2; ++i) {
-                for (int j = x - 1; j < x + 2; ++j) {
-                    if (paths[z][i][j] == 1) valid++;
+            if (z < paths.size( ) && y >= 1 && y + 1 < paths[z].size( ) && x >= 1 && x + 1 < paths[z][y].size( ) ) {
+                for (int i = y - 1; i < y + 2; ++i) {
+                    for (int j = x - 1; j < x + 2; ++j) {
+                        if (paths[z][i][j] == 1) valid++;
+                    }
                 }
             }
 

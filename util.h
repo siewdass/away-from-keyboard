@@ -86,11 +86,13 @@ class Control {
 public:
     std::vector<std::shared_ptr<std::atomic<bool>>> runnings;
     std::vector<std::shared_ptr<std::atomic<bool>>> pauses;
+    std::vector<std::shared_ptr<std::atomic<int>>> generations;
     
     Control() {
         for (int i = 0; i < 6; ++i) {
             runnings.push_back(std::make_shared<std::atomic<bool>>(false));
             pauses.push_back(std::make_shared<std::atomic<bool>>(false));
+            generations.push_back(std::make_shared<std::atomic<int>>(0));
         }
     }
 	
@@ -105,6 +107,12 @@ public:
 	}
 	void setRunning( int client, bool r ) {
 		*runnings[ client ] = r;
+	}
+	int nextGeneration( int client ) {
+		return (*generations[ client ])++;
+	}
+	int getGeneration( int client ) {
+		return *generations[ client ];
 	}
 };
 
